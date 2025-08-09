@@ -34,7 +34,7 @@ The project required:
 - Lombok
 
 For the full backend documentation and implementation details,  
-please navigate to the [Backend README](./backend/README.md).
+please navigate to the [Backend README](./Backend/JobPortal/README.md). 
 
 ### 🎨 Frontend
 - React.js
