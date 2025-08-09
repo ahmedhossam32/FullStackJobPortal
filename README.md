@@ -1,7 +1,25 @@
 # 💼 Full Stack Job Portal App
 
-A complete full-stack job portal web application built with **Java Spring Boot (Backend)** and **React + Vite (Frontend)**.  
-It supports secure authentication, job browsing, filtering, saving, applying, and role-based access for job seekers and employers.
+A complete **full-stack job portal web application** built with **Java Spring Boot (Backend)** and **React + Vite (Frontend)**.  
+It supports **secure authentication**, job browsing, filtering, saving, applying, and **role-based access** for job seekers and employers.  
+
+This project is designed to provide a **real-world job marketplace experience** — from a job seeker discovering, applying, and tracking jobs,  
+to an employer posting jobs, managing applicants, and making hiring decisions.  
+
+Every feature was **planned, built, and tested end-to-end**, covering frontend, backend, database, and API integration.
+
+---
+
+## 📖 About the Project
+
+This application simulates the core workflows of modern job platforms like LinkedIn or Indeed but built entirely from scratch.  
+It includes **secure JWT authentication**, dynamic job listing, saving and applying features, applicant management, and a fully interactive dashboard for employers.  
+
+The project required:  
+- Building a **REST API** with authentication, file upload handling, and relational data modeling in the backend.  
+- Designing and implementing a **responsive React UI** from scratch without pre-made templates.  
+- Managing **real-time-like updates** (e.g., notifications, application status changes).  
+- Writing clean, maintainable code with modular architecture.
 
 ---
 
@@ -14,6 +32,9 @@ It supports secure authentication, job browsing, filtering, saving, applying, an
 - Hibernate (JPA)
 - PostgreSQL
 - Lombok
+
+For the full backend documentation and implementation details,  
+please navigate to the [Backend README](./backend/README.md).
 
 ### 🎨 Frontend
 - React.js
@@ -28,24 +49,36 @@ It supports secure authentication, job browsing, filtering, saving, applying, an
 ## ✨ Features
 
 ### 👤 Job Seeker
-- Sign up, sign in, and logout
-- Browse & filter jobs by title, location, and type
-- View job details
-- Save & unsave jobs
-- Apply to jobs (with optional screening questions)
-- View saved jobs, applied jobs, and application details
-- Withdraw applications
-- Edit profile (picture, resume, username, email)
-- Receive & mark notifications
+- **Authentication:** Secure sign up, sign in, and logout flows.
+- **Job Discovery:** Browse, filter, and search jobs by title, location, and type.
+- **Job Details:** View full job descriptions, responsibilities, and required skills.
+- **Job Saving:** Save and unsave jobs with instant visual feedback.
+- **Applications:** Apply to jobs, answer optional screening questions, and upload a resume.
+- **Tracking:** View saved jobs, applied jobs, and detailed application status.
+- **Management:** Withdraw applications at any time.
+- **Profile Editing:** Update profile picture, resume, username, email, etc.
+- **Notifications:** Get notified when application status changes, and mark notifications as read.
 
 ### 🧑‍💼 Employer
-- Sign up, sign in, and logout
-- Create, update, and delete jobs
-- View all posted jobs
-- View applicants per job or across jobs
-- Accept or reject applicants
-- View resumes
-- Dashboard with statistics
+- **Authentication:** Sign up, sign in, and logout.
+- **Job Posting:** Create and publish jobs with full details, responsibilities, skills, and optional screening questions.
+- **Job Management:** Edit and delete posted jobs.
+- **Applicant Management:** View applicants per job or across all jobs.
+- **Decision Making:** Accept or reject applicants and notify them automatically.
+- **Resume Review:** View resumes directly in-browser.
+- **Dashboard:** View statistics for total jobs, applicants, accepted, rejected, and pending applications.
+
+---
+
+## 🌟 Why This Project Stands Out
+
+- **60+ unique UI screens** designed and implemented manually.
+- **Fully functional backend** with clean service-layer architecture.
+- **Real database integration** (PostgreSQL) with optimized queries and entity relationships.
+- **File uploads** for resumes and profile pictures with secure handling.
+- **Notification system** that mimics real-time updates using efficient state management.
+- **Role-based access control** ensuring separate flows for job seekers and employers.
+- **Responsive design** that adapts to various screen sizes without relying on heavy UI frameworks.
 
 ---
 
@@ -130,7 +163,7 @@ Dropdown list of notifications accessible from the navbar bell icon.
 ### 🧑‍💼 Employer Flow (10 Screenshots)
 
 #### 1. Employer Sign Up
-![EmployerSignUp](./ScreenShots/EmployerSignUp.png)  
+![EmployerSignUp](./ScreenShots/EmployerSiginUp.png)  
 Signup form for employers with account info, company name, industry, email, and logo.
 
 #### 2. Employer Dashboard (Empty)
@@ -154,7 +187,7 @@ Confirmation screen with options to view the job or add another.
 Job details page with edit and delete controls.
 
 #### 7. Dashboard After Adding Jobs
-![DashboardGoogleAfterAddingJobs](./ScreenShots/DashboardGoogleAfterAddingJobs.png)  
+![DashboardGoogleAfterAddingJobs](./ScreenShots/DashboardGoogleAfteraddingJobs.png)  
 Dashboard with counts for jobs and applicants after posting multiple jobs.
 
 #### 8. Viewing Applicants
@@ -178,3 +211,9 @@ To see **all 60+ screenshots** with detailed explanations for every step of both
 ---
 
 ## 📂 Project Structure
+project-root/
+│ README.md
+│ Full_Walkthrough.md
+│ backend/
+│ frontend/
+└── ScreenShots/
