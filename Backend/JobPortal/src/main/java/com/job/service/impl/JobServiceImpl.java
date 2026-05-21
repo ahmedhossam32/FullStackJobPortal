@@ -2,6 +2,7 @@ package com.job.service.impl;
 
 import com.job.dto.request.JobRequestDTO;
 import com.job.dto.response.JobResponseDTO;
+import com.job.dto.response.PageResponseDTO;
 import com.job.entity.Employer;
 import com.job.entity.Job;
 import com.job.enums.JobType;
@@ -13,6 +14,10 @@ import com.job.repository.JobRepository;
 import com.job.service.interfaces.IJobService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -45,26 +50,23 @@ public class JobServiceImpl implements IJobService {
     }
 
     @Override
-    public List<JobResponseDTO> getAllJobsSortedByDate() {
-        return jobRepository.findAllByOrderByPostedAtDesc().stream()
-                .map(this::mapToDTO)
-                .toList();
+    public PageResponseDTO<JobResponseDTO> getAllJobsSortedByDate(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("postedAt").descending());
+        return toPageResponse(jobRepository.findAll(pageable));
     }
 
     @Override
-    public List<JobResponseDTO> searchByTitle(String keyword) {
-        return jobRepository.findByTitleContainingIgnoreCase(keyword).stream()
-                .map(this::mapToDTO)
-                .toList();
+    public PageResponseDTO<JobResponseDTO> searchByTitle(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return toPageResponse(jobRepository.findByTitleContainingIgnoreCase(keyword, pageable));
     }
 
     @Override
-    public List<JobResponseDTO> searchByType(String type) {
+    public PageResponseDTO<JobResponseDTO> searchByType(String type, int page, int size) {
         try {
             JobType jobType = JobType.valueOf(type.toUpperCase());
-            return jobRepository.findByType(jobType).stream()
-                    .map(this::mapToDTO)
-                    .toList();
+            Pageable pageable = PageRequest.of(page, size);
+            return toPageResponse(jobRepository.findByType(jobType, pageable));
         } catch (IllegalArgumentException e) {
             log.warn("Invalid job type provided: {}", type);
             throw new BadRequestException("Invalid job type: " + type);
@@ -72,19 +74,17 @@ public class JobServiceImpl implements IJobService {
     }
 
     @Override
-    public List<JobResponseDTO> searchByLocation(String location) {
-        return jobRepository.findByLocationContainingIgnoreCase(location).stream()
-                .map(this::mapToDTO)
-                .toList();
+    public PageResponseDTO<JobResponseDTO> searchByLocation(String location, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return toPageResponse(jobRepository.findByLocationContainingIgnoreCase(location, pageable));
     }
 
     @Override
-    public List<JobResponseDTO> searchByWorkMode(String workMode) {
+    public PageResponseDTO<JobResponseDTO> searchByWorkMode(String workMode, int page, int size) {
         try {
             WorkMode mode = WorkMode.valueOf(workMode.toUpperCase());
-            return jobRepository.findByWorkMode(mode).stream()
-                    .map(this::mapToDTO)
-                    .toList();
+            Pageable pageable = PageRequest.of(page, size);
+            return toPageResponse(jobRepository.findByWorkMode(mode, pageable));
         } catch (IllegalArgumentException e) {
             log.warn("Invalid work mode provided: {}", workMode);
             throw new BadRequestException("Invalid work mode: " + workMode);
@@ -138,6 +138,20 @@ public class JobServiceImpl implements IJobService {
         return jobRepository.findByEmployer(employer).stream()
                 .map(this::mapToDTO)
                 .toList();
+    }
+
+    private PageResponseDTO<JobResponseDTO> toPageResponse(Page<Job> page) {
+        List<JobResponseDTO> content = page.getContent().stream()
+                .map(this::mapToDTO)
+                .toList();
+        return new PageResponseDTO<>(
+                content,
+                page.getNumber(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                page.getSize(),
+                page.isLast()
+        );
     }
 
     private JobResponseDTO mapToDTO(Job job) {

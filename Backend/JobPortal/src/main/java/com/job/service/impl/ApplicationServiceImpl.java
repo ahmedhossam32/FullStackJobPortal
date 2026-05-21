@@ -4,6 +4,7 @@ import com.job.designpatterns.Observer.ApplicationObserver;
 import com.job.dto.request.ApplicationRequestDTO;
 import com.job.dto.response.ApplicationResponseDTO;
 import com.job.dto.response.ApplicationViewForEmployerDTO;
+import com.job.dto.response.PageResponseDTO;
 import com.job.entity.Application;
 import com.job.entity.Employer;
 import com.job.entity.Job;
@@ -18,6 +19,8 @@ import com.job.repository.JobRepository;
 import com.job.service.interfaces.IApplicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -84,10 +87,13 @@ public class ApplicationServiceImpl implements IApplicationService {
     }
 
     @Override
-    public List<ApplicationResponseDTO> getMyApplications(JobSeeker jobSeeker) {
-        return applicationRepository.findByJobSeeker(jobSeeker).stream()
+    public PageResponseDTO<ApplicationResponseDTO> getMyApplications(JobSeeker jobSeeker, int page, int size) {
+        Page<Application> result = applicationRepository.findByJobSeeker(jobSeeker, PageRequest.of(page, size));
+        List<ApplicationResponseDTO> content = result.getContent().stream()
                 .map(this::mapToDTO)
                 .toList();
+        return new PageResponseDTO<>(content, result.getNumber(), result.getTotalPages(),
+                result.getTotalElements(), result.getSize(), result.isLast());
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.job.dto.request.ApplicationRequestDTO;
 import com.job.dto.request.ApplicationStatusUpdateDTO;
 import com.job.dto.response.ApplicationResponseDTO;
 import com.job.dto.response.ApplicationViewForEmployerDTO;
+import com.job.dto.response.PageResponseDTO;
 import com.job.entity.Employer;
 import com.job.entity.JobSeeker;
 import com.job.entity.User;
@@ -44,10 +45,11 @@ public class ApplicationsController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity<List<ApplicationResponseDTO>> getMyApplications(
-            @RequestAttribute("user") JobSeeker jobSeeker) {
-        List<ApplicationResponseDTO> applications = applicationService.getMyApplications(jobSeeker);
-        return ResponseEntity.ok(applications);
+    public ResponseEntity<PageResponseDTO<ApplicationResponseDTO>> getMyApplications(
+            @RequestAttribute("user") JobSeeker jobSeeker,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(applicationService.getMyApplications(jobSeeker, page, size));
     }
 
     @GetMapping("/{id}")

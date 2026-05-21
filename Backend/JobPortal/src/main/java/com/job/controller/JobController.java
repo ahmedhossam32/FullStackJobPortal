@@ -2,6 +2,7 @@ package com.job.controller;
 
 import com.job.dto.request.JobRequestDTO;
 import com.job.dto.response.JobResponseDTO;
+import com.job.dto.response.PageResponseDTO;
 import com.job.entity.Employer;
 import com.job.entity.Job;
 import com.job.enums.Role;
@@ -36,9 +37,10 @@ public class JobController {
     }
 
     @GetMapping
-    public ResponseEntity<List<JobResponseDTO>> getAllJobs() {
-        List<JobResponseDTO> jobs = jobService.getAllJobsSortedByDate();
-        return ResponseEntity.ok(jobs);
+    public ResponseEntity<PageResponseDTO<JobResponseDTO>> getAllJobs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(jobService.getAllJobsSortedByDate(page, size));
     }
 
     @GetMapping("/{id}")
@@ -48,27 +50,35 @@ public class JobController {
     }
 
     @GetMapping("/search/title")
-    public ResponseEntity<List<JobResponseDTO>> searchByTitle(@RequestParam String keyword) {
-        List<JobResponseDTO> jobs = jobService.searchByTitle(keyword);
-        return ResponseEntity.ok(jobs);
+    public ResponseEntity<PageResponseDTO<JobResponseDTO>> searchByTitle(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(jobService.searchByTitle(keyword, page, size));
     }
 
     @GetMapping("/search/type")
-    public ResponseEntity<List<JobResponseDTO>> searchByType(@RequestParam String type) {
-        List<JobResponseDTO> jobs = jobService.searchByType(type);
-        return ResponseEntity.ok(jobs);
+    public ResponseEntity<PageResponseDTO<JobResponseDTO>> searchByType(
+            @RequestParam String type,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(jobService.searchByType(type, page, size));
     }
 
     @GetMapping("/search/location")
-    public ResponseEntity<List<JobResponseDTO>> searchByLocation(@RequestParam String location) {
-        List<JobResponseDTO> jobs = jobService.searchByLocation(location);
-        return ResponseEntity.ok(jobs);
+    public ResponseEntity<PageResponseDTO<JobResponseDTO>> searchByLocation(
+            @RequestParam String location,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(jobService.searchByLocation(location, page, size));
     }
 
     @GetMapping("/search/workmode")
-    public ResponseEntity<List<JobResponseDTO>> searchByWorkMode(@RequestParam String workMode) {
-        List<JobResponseDTO> jobs = jobService.searchByWorkMode(workMode);
-        return ResponseEntity.ok(jobs);
+    public ResponseEntity<PageResponseDTO<JobResponseDTO>> searchByWorkMode(
+            @RequestParam String workMode,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(jobService.searchByWorkMode(workMode, page, size));
     }
 
     @PutMapping("/{id}")
