@@ -11,11 +11,13 @@ import com.job.repository.JobRepository;
 import com.job.repository.JobSeekerRepository;
 import com.job.service.interfaces.ISavedJobService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SavedJobServiceImpl implements ISavedJobService {
@@ -41,6 +43,7 @@ public class SavedJobServiceImpl implements ISavedJobService {
             throw new DuplicateResourceException("You already saved this job.");
         }
 
+        log.info("Job seeker {} saving job id: {}", user.getUsername(), jobId);
         jobSeeker.getSavedJobs().add(job);
         jobSeekerRepository.save(jobSeeker);
     }
@@ -63,6 +66,7 @@ public class SavedJobServiceImpl implements ISavedJobService {
             throw new ResourceNotFoundException("This job is not in your saved list.");
         }
 
+        log.info("Job seeker {} unsaving job id: {}", user.getUsername(), jobId);
         jobSeeker.getSavedJobs().remove(job);
         jobSeekerRepository.save(jobSeeker);
     }

@@ -13,11 +13,13 @@ import com.job.repository.EmployerRepository;
 import com.job.repository.JobRepository;
 import com.job.service.interfaces.IJobService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JobServiceImpl implements IJobService {
@@ -28,6 +30,7 @@ public class JobServiceImpl implements IJobService {
 
     @Override
     public Job createJob(JobRequestDTO dto, Employer employer) {
+        log.info("Creating job '{}' for employer: {}", dto.getTitle(), employer.getUsername());
         Job job = new Job();
 
         job.setTitle(dto.getTitle());
@@ -77,7 +80,7 @@ public class JobServiceImpl implements IJobService {
             List<Job> filtered = sorter.sortJobs(jobs);
             return filtered.stream().map(this::mapToDTO).toList();
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ Invalid job type: " + type);
+            log.warn("Invalid job type provided: {}", type);
             return List.of(); // return empty list on bad type input
         }
     }
@@ -91,6 +94,7 @@ public class JobServiceImpl implements IJobService {
 
     @Override
     public JobResponseDTO updateJob(Long id, JobRequestDTO dto, Employer employer) {
+        log.info("Updating job id: {} by employer: {}", id, employer.getUsername());
         Job job = jobRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
@@ -112,6 +116,7 @@ public class JobServiceImpl implements IJobService {
 
     @Override
     public void deleteJob(Long jobId, Employer employer) {
+        log.info("Deleting job id: {} by employer: {}", jobId, employer.getUsername());
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 

@@ -1,10 +1,12 @@
 package com.job.designpatterns.strategy;
 
 import com.job.enums.SortType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Slf4j
 @Component
 public class JobSortContext {
 
@@ -17,7 +19,7 @@ public class JobSortContext {
                 try {
                     yield new SortByTypeStrategy(normalizedKeyword);
                 } catch (IllegalArgumentException e) {
-                    System.out.println("⚠️ Invalid JobType keyword: " + normalizedKeyword);
+                    log.warn("Invalid JobType keyword: {}", normalizedKeyword);
                     yield jobs -> List.of(); // return empty list on invalid input
                 }
             }

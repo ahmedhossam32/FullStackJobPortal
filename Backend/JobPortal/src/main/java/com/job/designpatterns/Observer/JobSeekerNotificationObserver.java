@@ -5,9 +5,11 @@ import com.job.entity.JobSeeker;
 import com.job.entity.Notification;
 import com.job.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JobSeekerNotificationObserver implements ApplicationObserver {
@@ -29,5 +31,7 @@ public class JobSeekerNotificationObserver implements ApplicationObserver {
         notification.setRecipient(jobSeeker);
         notification.setApplication(application);
         notificationRepository.save(notification);
+        log.info("Notification created for user: {} regarding application for job: '{}'",
+                jobSeeker.getUsername(), application.getJob().getTitle());
     }
 }

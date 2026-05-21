@@ -10,6 +10,7 @@ import com.job.exception.BadRequestException;
 import com.job.repository.UserRepository;
 import com.job.service.interfaces.IProfileService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements IProfileService {
@@ -25,6 +27,7 @@ public class ProfileServiceImpl implements IProfileService {
 
     @Override
     public String uploadResume(MultipartFile file, JobSeeker jobSeeker) {
+        log.info("Uploading resume for user: {}, file: {}", jobSeeker.getUsername(), file.getOriginalFilename());
         try {
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             String uploadDir = System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "resumes" + File.separator;
@@ -38,12 +41,14 @@ public class ProfileServiceImpl implements IProfileService {
 
             return "/uploads/resumes/" + fileName;
         } catch (IOException e) {
+            log.error("Resume upload failed for user: {}: {}", jobSeeker.getUsername(), e.getMessage());
             throw new BadRequestException("Resume upload failed", e);
         }
     }
 
     @Override
     public String uploadProfilePicture(MultipartFile file, User user) {
+        log.info("Uploading profile picture for user: {}, file: {}", user.getUsername(), file.getOriginalFilename());
         try {
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             String uploadDir = System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "profile-pictures" + File.separator;
@@ -56,12 +61,14 @@ public class ProfileServiceImpl implements IProfileService {
             userRepository.save(user);
             return "/uploads/profile-pictures/" + fileName;
         } catch (IOException e) {
+            log.error("Profile picture upload failed for user: {}: {}", user.getUsername(), e.getMessage());
             throw new BadRequestException("Profile picture upload failed", e);
         }
     }
 
     @Override
     public void updateJobSeekerProfile(JobSeeker currentUser, JobSeeker updatedInfo) {
+        log.info("Updating profile for job seeker: {}", currentUser.getUsername());
         currentUser.setName(updatedInfo.getName());
         currentUser.setUsername(updatedInfo.getUsername());
         currentUser.setEmail(updatedInfo.getEmail());

@@ -14,6 +14,7 @@ import com.job.repository.UserRepository;
 import com.job.service.interfaces.IUserService;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +27,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements IUserService {
@@ -48,6 +50,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public JobSeeker registerJobSeekerWithoutFiles(JobSeekerRegisterRequestDTO dto) {
+        log.info("Registering new job seeker: {}", dto.getUsername());
         JobSeeker jobSeeker = new JobSeeker();
         jobSeeker.setName(dto.getName());
         jobSeeker.setUsername(dto.getUsername());
@@ -65,6 +68,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public Employer registerEmployer(EmployerRegisterRequestDTO dto) {
+        log.info("Registering new employer: {}", dto.getUsername());
         Employer employer = new Employer();
         employer.setName(dto.getName());
         employer.setUsername(dto.getUsername());
@@ -74,7 +78,6 @@ public class UserServiceImpl implements IUserService {
         employer.setRole(Role.EMPLOYER);
         employer.setEmail(dto.getEmail());
         employer.setIndustry(dto.getIndustry());
-        System.out.println("Employer Usernamee " + employer.getUsername());
         return employerRepository.save(employer);
     }
 

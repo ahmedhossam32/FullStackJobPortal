@@ -6,17 +6,19 @@ import com.job.entity.User;
 import com.job.service.interfaces.IProfileService;
 import com.job.service.interfaces.ISavedJobService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
-public class UserController
-{
+public class UserController {
+
     private final IProfileService profileService;
     private final ISavedJobService savedJobService;
 
@@ -25,6 +27,7 @@ public class UserController
             @RequestParam("file") MultipartFile file,
             @RequestAttribute("user") JobSeeker jobSeeker
     ) {
+        log.info("Resume upload requested by: {}, file: {}", jobSeeker.getUsername(), file.getOriginalFilename());
         String resumeUrl = profileService.uploadResume(file, jobSeeker);
         return ResponseEntity.ok("Resume uploaded successfully: " + resumeUrl);
     }
@@ -34,9 +37,7 @@ public class UserController
             @RequestParam("file") MultipartFile file,
             @RequestAttribute("user") User user
     ) {
-        System.out.println("📷 Uploading profile pic for: " + user.getUsername());
-        System.out.println("➡️ File Name: " + file.getOriginalFilename());
-
+        log.info("Profile picture upload requested by: {}, file: {}", user.getUsername(), file.getOriginalFilename());
         String profileUrl = profileService.uploadProfilePicture(file, user);
         return ResponseEntity.ok("Profile picture uploaded successfully: " + profileUrl);
     }
@@ -71,5 +72,4 @@ public class UserController
     public ResponseEntity<?> getCurrentUser(@RequestAttribute("user") User user) {
         return ResponseEntity.ok(profileService.getCurrentUserDto(user));
     }
-
 }

@@ -9,10 +9,12 @@ import com.job.repository.NotificationRepository;
 import com.job.service.interfaces.INotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements INotificationService {
@@ -50,11 +52,13 @@ public class NotificationServiceImpl implements INotificationService {
     @Override
     @Transactional
     public void deleteAllNotificationsForUser(JobSeeker jobSeeker) {
+        log.info("Deleting all notifications for user: {}", jobSeeker.getUsername());
         notificationRepository.deleteAllByRecipient(jobSeeker);
     }
 
     @Override
     public void markAsRead(Long notificationId, JobSeeker jobSeeker) {
+        log.info("Marking notification id: {} as read for user: {}", notificationId, jobSeeker.getUsername());
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
 

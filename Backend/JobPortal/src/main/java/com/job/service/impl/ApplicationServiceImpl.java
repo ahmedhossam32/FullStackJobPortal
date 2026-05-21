@@ -17,11 +17,13 @@ import com.job.repository.ApplicationRepository;
 import com.job.repository.JobRepository;
 import com.job.service.interfaces.IApplicationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ApplicationServiceImpl implements IApplicationService {
@@ -32,6 +34,7 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Override
     public ApplicationResponseDTO applyToJob(ApplicationRequestDTO dto, JobSeeker jobSeeker) {
+        log.info("Job seeker {} applying to job id: {}", jobSeeker.getUsername(), dto.getJobId());
         if (jobSeeker.getResumeFileName() == null || jobSeeker.getResumeFileName().isBlank()) {
             throw new BadRequestException("You must upload a resume before applying to a job.");
         }
@@ -101,6 +104,7 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Override
     public void withdrawApplication(Long id, JobSeeker requester) {
+        log.info("Job seeker {} withdrawing application id: {}", requester.getUsername(), id);
         Application app = applicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
@@ -141,6 +145,7 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Override
     public void updateApplicationStatus(Long applicationId, ApplicationStatus newStatus, Employer employer) {
+        log.info("Employer {} updating application id: {} to status: {}", employer.getUsername(), applicationId, newStatus);
         Application app = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
