@@ -5,14 +5,13 @@ import com.job.dto.response.JobResponseDTO;
 import com.job.dto.response.PageResponseDTO;
 import com.job.entity.Employer;
 import com.job.entity.Job;
-import com.job.enums.Role;
-import com.job.entity.User;
 import com.job.service.interfaces.IJobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +25,7 @@ public class JobController {
 
     private final IJobService jobService;
 
+    @PreAuthorize("hasRole('EMPLOYER')")
     @PostMapping
     public ResponseEntity<?> createJob(@RequestBody @Valid JobRequestDTO dto,
                                        @RequestAttribute("user") Employer employer) {
@@ -45,8 +45,7 @@ public class JobController {
 
     @GetMapping("/{id}")
     public ResponseEntity<JobResponseDTO> getJobById(@PathVariable Long id) {
-        JobResponseDTO job = jobService.getJobById(id);
-        return ResponseEntity.ok(job);
+        return ResponseEntity.ok(jobService.getJobById(id));
     }
 
     @GetMapping("/search/title")
@@ -81,48 +80,30 @@ public class JobController {
         return ResponseEntity.ok(jobService.searchByWorkMode(workMode, page, size));
     }
 
+    @PreAuthorize("hasRole('EMPLOYER')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateJob(
             @PathVariable Long id,
             @RequestBody @Valid JobRequestDTO jobRequestDTO,
-            @RequestAttribute("user") User user) {
-
-        if (user.getRole() != Role.EMPLOYER) {
-            log.warn("Forbidden: user {} attempted to update job {}", user.getUsername(), id);
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
-        }
-
-        Employer employer = (Employer) user;
+            @RequestAttribute("user") Employer employer) {
         log.info("Updating job id: {} by employer: {}", id, employer.getUsername());
         JobResponseDTO updatedJob = jobService.updateJob(id, jobRequestDTO, employer);
         return ResponseEntity.ok(updatedJob);
     }
 
+    @PreAuthorize("hasRole('EMPLOYER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteJob(
             @PathVariable Long id,
-            @RequestAttribute("user") User user) {
-
-        if (user.getRole() != Role.EMPLOYER) {
-            log.warn("Forbidden: user {} attempted to delete job {}", user.getUsername(), id);
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
-        }
-
-        Employer employer = (Employer) user;
+            @RequestAttribute("user") Employer employer) {
         log.info("Deleting job id: {} by employer: {}", id, employer.getUsername());
         jobService.deleteJob(id, employer);
         return ResponseEntity.ok("Job deleted successfully.");
     }
 
+    @PreAuthorize("hasRole('EMPLOYER')")
     @GetMapping("/my")
-    public ResponseEntity<List<JobResponseDTO>> getMyJobs(@RequestAttribute("user") User user) {
-        if (user.getRole() != Role.EMPLOYER) {
-            log.warn("Forbidden: user {} attempted to access employer job list", user.getUsername());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-        }
-
-        Employer employer = (Employer) user;
-        List<JobResponseDTO> jobs = jobService.getJobsByEmployer(employer);
-        return ResponseEntity.ok(jobs);
+    public ResponseEntity<List<JobResponseDTO>> getMyJobs(@RequestAttribute("user") Employer employer) {
+        return ResponseEntity.ok(jobService.getJobsByEmployer(employer));
     }
 }

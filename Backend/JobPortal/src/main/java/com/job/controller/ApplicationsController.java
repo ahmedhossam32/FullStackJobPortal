@@ -7,14 +7,12 @@ import com.job.dto.response.ApplicationViewForEmployerDTO;
 import com.job.dto.response.PageResponseDTO;
 import com.job.entity.Employer;
 import com.job.entity.JobSeeker;
-import com.job.entity.User;
 import com.job.enums.ApplicationStatus;
-import com.job.enums.Role;
 import com.job.service.interfaces.IApplicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +25,7 @@ public class ApplicationsController {
 
     private final IApplicationService applicationService;
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @PostMapping
     public ResponseEntity<ApplicationResponseDTO> applyToJob(
             @RequestBody ApplicationRequestDTO dto,
@@ -36,14 +35,15 @@ public class ApplicationsController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping("/has-applied/{jobId}")
     public ResponseEntity<Boolean> hasAppliedToJob(
             @PathVariable Long jobId,
             @RequestAttribute("user") JobSeeker jobSeeker) {
-        boolean applied = applicationService.hasUserAppliedToJob(jobId, jobSeeker);
-        return ResponseEntity.ok(applied);
+        return ResponseEntity.ok(applicationService.hasUserAppliedToJob(jobId, jobSeeker));
     }
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping("/my")
     public ResponseEntity<PageResponseDTO<ApplicationResponseDTO>> getMyApplications(
             @RequestAttribute("user") JobSeeker jobSeeker,
@@ -52,14 +52,15 @@ public class ApplicationsController {
         return ResponseEntity.ok(applicationService.getMyApplications(jobSeeker, page, size));
     }
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping("/{id}")
     public ResponseEntity<ApplicationResponseDTO> getApplicationById(
             @PathVariable Long id,
             @RequestAttribute("user") JobSeeker jobSeeker) {
-        ApplicationResponseDTO detail = applicationService.getApplicationById(id, jobSeeker);
-        return ResponseEntity.ok(detail);
+        return ResponseEntity.ok(applicationService.getApplicationById(id, jobSeeker));
     }
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> withdrawApplication(
             @PathVariable Long id,
@@ -69,65 +70,38 @@ public class ApplicationsController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('EMPLOYER')")
     @GetMapping("/job/{jobId}")
     public ResponseEntity<List<ApplicationViewForEmployerDTO>> getApplicationsForJob(
             @PathVariable Long jobId,
-            @RequestAttribute("user") User user) {
-
-        if (user.getRole() != Role.EMPLOYER) {
-            log.warn("Forbidden: user {} attempted to view applications for job {}", user.getUsername(), jobId);
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-        }
-
-        Employer employer = (Employer) user;
-        List<ApplicationViewForEmployerDTO> list = applicationService.getApplicationsForJob(jobId, employer);
-        return ResponseEntity.ok(list);
+            @RequestAttribute("user") Employer employer) {
+        return ResponseEntity.ok(applicationService.getApplicationsForJob(jobId, employer));
     }
 
+    @PreAuthorize("hasRole('EMPLOYER')")
     @GetMapping("/employer/{id}")
     public ResponseEntity<ApplicationViewForEmployerDTO> getApplicationForEmployer(
             @PathVariable Long id,
-            @RequestAttribute("user") User user) {
-
-        if (user.getRole() != Role.EMPLOYER) {
-            log.warn("Forbidden: user {} attempted to view application id: {}", user.getUsername(), id);
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-        }
-
-        Employer employer = (Employer) user;
-        ApplicationViewForEmployerDTO dto = applicationService.getApplicationViewForEmployer(id, employer);
-        return ResponseEntity.ok(dto);
+            @RequestAttribute("user") Employer employer) {
+        return ResponseEntity.ok(applicationService.getApplicationViewForEmployer(id, employer));
     }
 
+    @PreAuthorize("hasRole('EMPLOYER')")
     @PutMapping("/{id}/status")
     public ResponseEntity<String> updateApplicationStatus(
             @PathVariable Long id,
             @RequestBody ApplicationStatusUpdateDTO dto,
-            @RequestAttribute("user") User user) {
-
-        if (user.getRole() != Role.EMPLOYER) {
-            log.warn("Forbidden: user {} attempted to update status for application id: {}", user.getUsername(), id);
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied.");
-        }
-
-        Employer employer = (Employer) user;
+            @RequestAttribute("user") Employer employer) {
         log.info("Employer {} updating application id: {} to status: {}", employer.getUsername(), id, dto.getStatus());
         applicationService.updateApplicationStatus(id, dto.getStatus(), employer);
         return ResponseEntity.ok("Application status updated successfully.");
     }
 
+    @PreAuthorize("hasRole('EMPLOYER')")
     @GetMapping("/employer")
     public ResponseEntity<List<ApplicationViewForEmployerDTO>> getAllApplicationsForEmployer(
-            @RequestAttribute("user") User user,
+            @RequestAttribute("user") Employer employer,
             @RequestParam(name = "status", required = false) ApplicationStatus status) {
-
-        if (user.getRole() != Role.EMPLOYER) {
-            log.warn("Forbidden: user {} attempted to access employer applications", user.getUsername());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-        }
-
-        Employer employer = (Employer) user;
-        List<ApplicationViewForEmployerDTO> applications = applicationService.getAllApplicationsForEmployer(employer, status);
-        return ResponseEntity.ok(applications);
+        return ResponseEntity.ok(applicationService.getAllApplicationsForEmployer(employer, status));
     }
 }

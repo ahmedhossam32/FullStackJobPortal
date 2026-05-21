@@ -1,6 +1,11 @@
 package com.job.security;
 
+import com.job.entity.Employer;
+import com.job.entity.JobSeeker;
 import com.job.entity.User;
+import com.job.enums.Role;
+import com.job.repository.EmployerRepository;
+import com.job.repository.JobSeekerRepository;
 import com.job.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,6 +31,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final EmployerRepository employerRepository;
+    private final JobSeekerRepository jobSeekerRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -71,7 +78,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         log.debug("Security context set for user: {} with role: {}", username, roleName);
 
-        request.setAttribute("user", user);
+        if (user.getRole() == Role.EMPLOYER) {
+            employerRepository.findById(user.getId()).ifPresentOrElse(
+                    employer -> request.setAttribute("user", employer),
+                    () -> log.warn("Employer record not found for user id: {}", user.getId())
+            );
+        } else if (user.getRole() == Role.JOB_SEEKER) {
+            jobSeekerRepository.findById(user.getId()).ifPresentOrElse(
+                    jobSeeker -> request.setAttribute("user", jobSeeker),
+                    () -> log.warn("JobSeeker record not found for user id: {}", user.getId())
+            );
+        } else {
+            request.setAttribute("user", user);
+        }
 
         filterChain.doFilter(request, response);
     }

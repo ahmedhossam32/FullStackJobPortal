@@ -8,6 +8,7 @@ import com.job.service.interfaces.ISavedJobService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +23,7 @@ public class UserController {
     private final IProfileService profileService;
     private final ISavedJobService savedJobService;
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @PostMapping("/jobseeker/upload-resume")
     public ResponseEntity<String> uploadResume(
             @RequestParam("file") MultipartFile file,
@@ -42,12 +44,14 @@ public class UserController {
         return ResponseEntity.ok("Profile picture uploaded successfully: " + profileUrl);
     }
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @PostMapping("/save-job/{jobId}")
     public ResponseEntity<String> saveJob(@RequestAttribute("user") User user, @PathVariable Long jobId) {
         savedJobService.saveJob(user, jobId);
         return ResponseEntity.ok("Job saved successfully.");
     }
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @PutMapping("/jobseeker/update-profile")
     public ResponseEntity<String> updateProfile(
             @RequestBody JobSeeker updatedInfo,
@@ -57,12 +61,14 @@ public class UserController {
         return ResponseEntity.ok("Profile updated successfully");
     }
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @DeleteMapping("/unsave-job/{jobId}")
     public ResponseEntity<String> unsaveJob(@RequestAttribute("user") User user, @PathVariable Long jobId) {
         savedJobService.unsaveJob(user, jobId);
         return ResponseEntity.ok("Job removed from saved list.");
     }
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping("/saved-jobs")
     public ResponseEntity<List<JobResponseDTO>> getSavedJobs(@RequestAttribute("user") User user) {
         return ResponseEntity.ok(savedJobService.getSavedJobs(user));

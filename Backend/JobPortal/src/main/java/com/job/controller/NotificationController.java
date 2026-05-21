@@ -6,6 +6,7 @@ import com.job.service.interfaces.INotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +19,14 @@ public class NotificationController {
 
     private final INotificationService notificationService;
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping
     public ResponseEntity<List<NotificationDTO>> getMyNotifications(
             @RequestAttribute("user") JobSeeker jobSeeker) {
         return ResponseEntity.ok(notificationService.getNotificationsFor(jobSeeker));
     }
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @DeleteMapping
     public ResponseEntity<?> deleteAllNotifications(@RequestAttribute("user") JobSeeker jobSeeker) {
         log.info("Deleting all notifications for user: {}", jobSeeker.getUsername());
@@ -31,6 +34,7 @@ public class NotificationController {
         return ResponseEntity.ok("All notifications deleted successfully.");
     }
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @PutMapping("/{id}/read")
     public ResponseEntity<Void> markAsRead(
             @PathVariable Long id,
@@ -40,11 +44,13 @@ public class NotificationController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping("/unread-count")
     public ResponseEntity<Integer> getUnreadCount(@RequestAttribute("user") JobSeeker jobSeeker) {
         return ResponseEntity.ok(notificationService.getUnreadCount(jobSeeker));
     }
 
+    @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping("/unread")
     public ResponseEntity<List<NotificationDTO>> getUnreadNotifications(
             @RequestAttribute("user") JobSeeker jobSeeker) {
