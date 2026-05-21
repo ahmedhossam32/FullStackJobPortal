@@ -1,4 +1,4 @@
-package com.job.service;
+package com.job.service.impl;
 
 import com.job.designpatterns.strategy.*;
 import com.job.dto.request.JobRequestDTO;
@@ -6,28 +6,27 @@ import com.job.dto.response.JobResponseDTO;
 import com.job.entity.Employer;
 import com.job.entity.Job;
 import com.job.enums.JobType;
-import com.job.enums.SortType;
 import com.job.enums.WorkMode;
 import com.job.exception.ResourceNotFoundException;
 import com.job.exception.UnauthorizedException;
 import com.job.repository.EmployerRepository;
 import com.job.repository.JobRepository;
+import com.job.service.interfaces.IJobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class JobService {
+public class JobServiceImpl implements IJobService {
 
     private final JobRepository jobRepository;
-    private final JobSortContext  jobSortContext;
+    private final JobSortContext jobSortContext;
     private final EmployerRepository employerRepository;
 
-
+    @Override
     public Job createJob(JobRequestDTO dto, Employer employer) {
         Job job = new Job();
 
@@ -42,9 +41,10 @@ public class JobService {
         job.setPostedAt(LocalDateTime.now());
         job.setEmployer(employer);
 
-       return jobRepository.save(job);
+        return jobRepository.save(job);
     }
 
+    @Override
     public List<JobResponseDTO> getAllJobsSortedByDate() {
         List<Job> jobs = jobRepository.findAll();
 
@@ -55,6 +55,7 @@ public class JobService {
         return sorted.stream().map(this::mapToDTO).toList();
     }
 
+    @Override
     public List<JobResponseDTO> searchByTitle(String keyword) {
         List<Job> jobs = jobRepository.findAll();
 
@@ -65,6 +66,7 @@ public class JobService {
         return filtered.stream().map(this::mapToDTO).toList();
     }
 
+    @Override
     public List<JobResponseDTO> searchByType(String type) {
         List<Job> jobs = jobRepository.findAll();
 
@@ -80,13 +82,14 @@ public class JobService {
         }
     }
 
-
+    @Override
     public JobResponseDTO getJobById(Long id) {
         Job job = jobRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
         return mapToDTO(job);
     }
 
+    @Override
     public JobResponseDTO updateJob(Long id, JobRequestDTO dto, Employer employer) {
         Job job = jobRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
@@ -107,7 +110,26 @@ public class JobService {
         return mapToDTO(updated);
     }
 
+    @Override
+    public void deleteJob(Long jobId, Employer employer) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
+        if (!job.getEmployer().getId().equals(employer.getId())) {
+            throw new UnauthorizedException("You are not authorized to delete this job");
+        }
+
+        jobRepository.delete(job);
+    }
+
+    @Override
+    public List<JobResponseDTO> getJobsByEmployer(Employer employer) {
+        List<Job> jobs = jobRepository.findByEmployer(employer);
+
+        return jobs.stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
 
     private JobResponseDTO mapToDTO(Job job) {
         JobResponseDTO dto = new JobResponseDTO();
@@ -125,24 +147,4 @@ public class JobService {
         dto.setScreeningQuestions(job.getScreeningQuestions());
         return dto;
     }
-
-    public void deleteJob(Long jobId, Employer employer) {
-        Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
-
-        if (!job.getEmployer().getId().equals(employer.getId())) {
-            throw new UnauthorizedException("You are not authorized to delete this job");
-        }
-
-        jobRepository.delete(job);
-    }
-
-    public List<JobResponseDTO> getJobsByEmployer(Employer employer) {
-        List<Job> jobs = jobRepository.findByEmployer(employer);
-
-        return jobs.stream()
-                .map(this::mapToDTO)
-                .toList();
-    }
-
 }

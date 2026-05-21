@@ -3,7 +3,8 @@ package com.job.controller;
 import com.job.dto.response.JobResponseDTO;
 import com.job.entity.JobSeeker;
 import com.job.entity.User;
-import com.job.service.UserService;
+import com.job.service.interfaces.IProfileService;
+import com.job.service.interfaces.ISavedJobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,14 +17,15 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController
 {
-    private final UserService userService;
+    private final IProfileService profileService;
+    private final ISavedJobService savedJobService;
 
     @PostMapping("/jobseeker/upload-resume")
     public ResponseEntity<String> uploadResume(
             @RequestParam("file") MultipartFile file,
             @RequestAttribute("user") JobSeeker jobSeeker
     ) {
-        String resumeUrl = userService.uploadResume(file, jobSeeker);
+        String resumeUrl = profileService.uploadResume(file, jobSeeker);
         return ResponseEntity.ok("Resume uploaded successfully: " + resumeUrl);
     }
 
@@ -35,13 +37,13 @@ public class UserController
         System.out.println("📷 Uploading profile pic for: " + user.getUsername());
         System.out.println("➡️ File Name: " + file.getOriginalFilename());
 
-        String profileUrl = userService.uploadProfilePicture(file, user);
+        String profileUrl = profileService.uploadProfilePicture(file, user);
         return ResponseEntity.ok("Profile picture uploaded successfully: " + profileUrl);
     }
 
     @PostMapping("/save-job/{jobId}")
     public ResponseEntity<String> saveJob(@RequestAttribute("user") User user, @PathVariable Long jobId) {
-        userService.saveJob(user, jobId);
+        savedJobService.saveJob(user, jobId);
         return ResponseEntity.ok("Job saved successfully.");
     }
 
@@ -50,24 +52,24 @@ public class UserController
             @RequestBody JobSeeker updatedInfo,
             @RequestAttribute("user") JobSeeker currentUser
     ) {
-        userService.updateJobSeekerProfile(currentUser, updatedInfo);
+        profileService.updateJobSeekerProfile(currentUser, updatedInfo);
         return ResponseEntity.ok("Profile updated successfully");
     }
 
     @DeleteMapping("/unsave-job/{jobId}")
     public ResponseEntity<String> unsaveJob(@RequestAttribute("user") User user, @PathVariable Long jobId) {
-        userService.unsaveJob(user, jobId);
+        savedJobService.unsaveJob(user, jobId);
         return ResponseEntity.ok("Job removed from saved list.");
     }
 
     @GetMapping("/saved-jobs")
     public ResponseEntity<List<JobResponseDTO>> getSavedJobs(@RequestAttribute("user") User user) {
-        return ResponseEntity.ok(userService.getSavedJobs(user));
+        return ResponseEntity.ok(savedJobService.getSavedJobs(user));
     }
 
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(@RequestAttribute("user") User user) {
-        return ResponseEntity.ok(userService.getCurrentUserDto(user));
+        return ResponseEntity.ok(profileService.getCurrentUserDto(user));
     }
 
 }

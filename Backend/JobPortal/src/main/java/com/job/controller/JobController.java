@@ -7,7 +7,7 @@ import com.job.entity.Job;
 import com.job.enums.Role;
 import com.job.entity.User;
 import com.job.enums.SortType;
-import com.job.service.JobService;
+import com.job.service.interfaces.IJobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class JobController {
 
-    private final JobService jobService;
+    private final IJobService jobService;
 
     @PostMapping
     public ResponseEntity<?> createJob(@RequestBody @Valid JobRequestDTO dto,

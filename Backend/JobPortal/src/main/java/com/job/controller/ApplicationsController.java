@@ -10,7 +10,7 @@ import com.job.entity.JobSeeker;
 import com.job.entity.User;
 import com.job.enums.ApplicationStatus;
 import com.job.enums.Role;
-import com.job.service.ApplicationService;
+import com.job.service.interfaces.IApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping("/applications")
 public class ApplicationsController
 {
-    private final ApplicationService applicationService;
+    private final IApplicationService applicationService;
 
 
     @PostMapping

@@ -1,10 +1,11 @@
-package com.job.service;
+package com.job.service.impl;
 
 import com.job.dto.response.NotificationDTO;
 import com.job.entity.JobSeeker;
 import com.job.entity.Notification;
 import com.job.entity.User;
 import com.job.repository.NotificationRepository;
+import com.job.service.interfaces.INotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,16 +14,18 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class NotificationService {
+public class NotificationServiceImpl implements INotificationService {
 
     private final NotificationRepository notificationRepository;
 
+    @Override
     public List<NotificationDTO> getNotificationsFor(JobSeeker jobSeeker) {
         return notificationRepository.findByRecipientOrderByCreatedAtDesc(jobSeeker).stream()
                 .map(this::mapToDTO)
                 .toList();
     }
 
+    @Override
     public NotificationDTO mapToDTO(Notification notification) {
         NotificationDTO dto = new NotificationDTO();
         dto.setId(notification.getId());
@@ -43,9 +46,9 @@ public class NotificationService {
         return dto;
     }
 
+    @Override
     @Transactional
     public void deleteAllNotificationsForUser(User user) {
         notificationRepository.deleteAllByRecipient(user);
     }
-
 }

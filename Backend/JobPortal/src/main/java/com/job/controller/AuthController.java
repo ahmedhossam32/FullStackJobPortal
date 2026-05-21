@@ -6,7 +6,7 @@ import com.job.dto.request.LoginRequestDTO;
 import com.job.dto.response.AuthResponseDTO;
 import com.job.entity.User;
 import com.job.security.JwtUtil;
-import com.job.service.UserService;
+import com.job.service.interfaces.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController
 {
-    private final UserService userService;
+    private final IUserService userService;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 

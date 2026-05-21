@@ -6,7 +6,7 @@ import com.job.entity.Notification;
 import com.job.entity.User;
 import com.job.exception.ResourceNotFoundException;
 import com.job.repository.NotificationRepository;
-import com.job.service.NotificationService;
+import com.job.service.interfaces.INotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final NotificationService notificationService;
+    private final INotificationService notificationService;
     private final NotificationRepository notificationRepository;
 
     @GetMapping

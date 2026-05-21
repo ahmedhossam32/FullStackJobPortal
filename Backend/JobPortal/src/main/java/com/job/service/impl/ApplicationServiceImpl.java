@@ -1,4 +1,4 @@
-package com.job.service;
+package com.job.service.impl;
 
 import com.job.designpatterns.Observer.ApplicationObserver;
 import com.job.dto.request.ApplicationRequestDTO;
@@ -15,6 +15,7 @@ import com.job.exception.ResourceNotFoundException;
 import com.job.exception.UnauthorizedException;
 import com.job.repository.ApplicationRepository;
 import com.job.repository.JobRepository;
+import com.job.service.interfaces.IApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +24,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ApplicationService {
+public class ApplicationServiceImpl implements IApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final JobRepository jobRepository;
     private final List<ApplicationObserver> observers;
 
-
+    @Override
     public ApplicationResponseDTO applyToJob(ApplicationRequestDTO dto, JobSeeker jobSeeker) {
         if (jobSeeker.getResumeFileName() == null || jobSeeker.getResumeFileName().isBlank()) {
             throw new BadRequestException("You must upload a resume before applying to a job.");
@@ -64,6 +65,7 @@ public class ApplicationService {
         return mapToDTO(application);
     }
 
+    @Override
     public List<ApplicationViewForEmployerDTO> getAllApplicationsForEmployer(Employer employer, ApplicationStatus status) {
         List<Application> applications;
 
@@ -78,40 +80,14 @@ public class ApplicationService {
                 .toList();
     }
 
-
-    private ApplicationResponseDTO mapToDTO(Application application) {
-        ApplicationResponseDTO dto = new ApplicationResponseDTO();
-
-        dto.setApplicationId(application.getId());
-        dto.setUsername(application.getJobSeeker().getUsername());
-        dto.setStatus(application.getStatus());
-        dto.setAppliedAt(application.getAppliedAt());
-
-
-        Job job = application.getJob();
-        dto.setJobTitle(job.getTitle());
-        dto.setJobType(job.getType().toString());           // Assuming JobType is an enum
-        dto.setWorkMode(job.getWorkMode().toString());      // Assuming WorkMode is an enum
-        dto.setLocation(job.getLocation());
-        dto.setJobDescription(job.getDescription());
-
-
-        Employer employer = job.getEmployer();
-        dto.setCompanyName(employer.getCompanyName());
-        dto.setCompanyLogoUrl(employer.getProfilePictureFileName()); // Assuming logo stored as profile picture field
-
-        dto.setResumeUrl(application.getResumeUrl());
-
-        return dto;
-    }
-
-
+    @Override
     public List<ApplicationResponseDTO> getMyApplications(JobSeeker jobSeeker) {
         return applicationRepository.findByJobSeeker(jobSeeker).stream()
                 .map(this::mapToDTO)
                 .toList();
     }
 
+    @Override
     public ApplicationResponseDTO getApplicationById(Long id, JobSeeker requester) {
         Application app = applicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
@@ -123,6 +99,7 @@ public class ApplicationService {
         return mapToDTO(app);
     }
 
+    @Override
     public void withdrawApplication(Long id, JobSeeker requester) {
         Application app = applicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
@@ -134,6 +111,7 @@ public class ApplicationService {
         applicationRepository.delete(app);
     }
 
+    @Override
     public List<ApplicationViewForEmployerDTO> getApplicationsForJob(Long jobId, Employer employer) {
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
@@ -149,6 +127,7 @@ public class ApplicationService {
                 .toList();
     }
 
+    @Override
     public ApplicationViewForEmployerDTO getApplicationViewForEmployer(Long id, Employer employer) {
         Application app = applicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
@@ -158,6 +137,52 @@ public class ApplicationService {
         }
 
         return mapToEmployerDTO(app);
+    }
+
+    @Override
+    public void updateApplicationStatus(Long applicationId, ApplicationStatus newStatus, Employer employer) {
+        Application app = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+
+        if (!app.getJob().getEmployer().getId().equals(employer.getId())) {
+            throw new UnauthorizedException("Unauthorized to update this application");
+        }
+
+        app.setStatus(newStatus);
+        applicationRepository.save(app);
+        notifyObservers(app.getJobSeeker(), app);
+    }
+
+    @Override
+    public boolean hasUserAppliedToJob(Long jobId, JobSeeker jobSeeker) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
+
+        return applicationRepository.existsByJobAndJobSeeker(job, jobSeeker);
+    }
+
+    private ApplicationResponseDTO mapToDTO(Application application) {
+        ApplicationResponseDTO dto = new ApplicationResponseDTO();
+
+        dto.setApplicationId(application.getId());
+        dto.setUsername(application.getJobSeeker().getUsername());
+        dto.setStatus(application.getStatus());
+        dto.setAppliedAt(application.getAppliedAt());
+
+        Job job = application.getJob();
+        dto.setJobTitle(job.getTitle());
+        dto.setJobType(job.getType().toString());           // Assuming JobType is an enum
+        dto.setWorkMode(job.getWorkMode().toString());      // Assuming WorkMode is an enum
+        dto.setLocation(job.getLocation());
+        dto.setJobDescription(job.getDescription());
+
+        Employer employer = job.getEmployer();
+        dto.setCompanyName(employer.getCompanyName());
+        dto.setCompanyLogoUrl(employer.getProfilePictureFileName()); // Assuming logo stored as profile picture field
+
+        dto.setResumeUrl(application.getResumeUrl());
+
+        return dto;
     }
 
     private ApplicationViewForEmployerDTO mapToEmployerDTO(Application app) {
@@ -180,31 +205,9 @@ public class ApplicationService {
         return dto;
     }
 
-
-    public void updateApplicationStatus(Long applicationId, ApplicationStatus newStatus, Employer employer) {
-        Application app = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
-
-        if (!app.getJob().getEmployer().getId().equals(employer.getId())) {
-            throw new UnauthorizedException("Unauthorized to update this application");
+    private void notifyObservers(JobSeeker jobSeeker, Application application) {
+        for (ApplicationObserver observer : observers) {
+            observer.notify(jobSeeker, application);
         }
-
-        app.setStatus(newStatus);
-        applicationRepository.save(app);
-        notifyObservers(app.getJobSeeker(), app);
-}
-
-private void notifyObservers(JobSeeker jobSeeker, Application application) {
-    for (ApplicationObserver observer : observers) {
-        observer.notify(jobSeeker, application);
     }
-}
-
-    public boolean hasUserAppliedToJob(Long jobId, JobSeeker jobSeeker) {
-        Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
-
-        return applicationRepository.existsByJobAndJobSeeker(job, jobSeeker);
-    }
-
 }
