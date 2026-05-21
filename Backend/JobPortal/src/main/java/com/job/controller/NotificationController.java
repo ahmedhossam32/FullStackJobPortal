@@ -2,10 +2,6 @@ package com.job.controller;
 
 import com.job.dto.response.NotificationDTO;
 import com.job.entity.JobSeeker;
-import com.job.entity.Notification;
-import com.job.entity.User;
-import com.job.exception.ResourceNotFoundException;
-import com.job.repository.NotificationRepository;
 import com.job.service.interfaces.INotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +15,6 @@ import java.util.List;
 public class NotificationController {
 
     private final INotificationService notificationService;
-    private final NotificationRepository notificationRepository;
 
     @GetMapping
     public ResponseEntity<List<NotificationDTO>> getMyNotifications(
@@ -29,24 +24,30 @@ public class NotificationController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteAllNotifications(@RequestAttribute("user") User user) {
-        notificationService.deleteAllNotificationsForUser(user);
+    public ResponseEntity<?> deleteAllNotifications(@RequestAttribute("user") JobSeeker jobSeeker) {
+        notificationService.deleteAllNotificationsForUser(jobSeeker);
         return ResponseEntity.ok("All notifications deleted successfully.");
     }
 
     @PutMapping("/{id}/read")
-    public ResponseEntity<Void> markAsRead(@PathVariable Long id) {
-        Notification notif = notificationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
-        notif.setSeen(true);
-        notificationRepository.save(notif);
+    public ResponseEntity<Void> markAsRead(
+            @PathVariable Long id,
+            @RequestAttribute("user") JobSeeker jobSeeker
+    ) {
+        notificationService.markAsRead(id, jobSeeker);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/unread-count")
     public ResponseEntity<Integer> getUnreadCount(@RequestAttribute("user") JobSeeker jobSeeker) {
-        int count = notificationRepository.countByRecipientAndSeenFalse(jobSeeker);
-        return ResponseEntity.ok(count);
+        return ResponseEntity.ok(notificationService.getUnreadCount(jobSeeker));
+    }
+
+    @GetMapping("/unread")
+    public ResponseEntity<List<NotificationDTO>> getUnreadNotifications(
+            @RequestAttribute("user") JobSeeker jobSeeker
+    ) {
+        return ResponseEntity.ok(notificationService.getUnreadNotifications(jobSeeker));
     }
 
 }

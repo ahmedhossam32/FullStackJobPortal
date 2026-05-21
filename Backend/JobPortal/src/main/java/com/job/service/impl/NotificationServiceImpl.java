@@ -3,7 +3,8 @@ package com.job.service.impl;
 import com.job.dto.response.NotificationDTO;
 import com.job.entity.JobSeeker;
 import com.job.entity.Notification;
-import com.job.entity.User;
+import com.job.exception.ResourceNotFoundException;
+import com.job.exception.UnauthorizedException;
 import com.job.repository.NotificationRepository;
 import com.job.service.interfaces.INotificationService;
 import jakarta.transaction.Transactional;
@@ -39,7 +40,7 @@ public class NotificationServiceImpl implements INotificationService {
 
             String logoFileName = notification.getApplication().getJob().getEmployer().getProfilePictureFileName();
             if (logoFileName != null) {
-                dto.setCompanyLogoUrl("http://localhost:8080/files/profile-picture/" + logoFileName);
+                dto.setCompanyLogoUrl(logoFileName);
             }
         }
 
@@ -48,7 +49,32 @@ public class NotificationServiceImpl implements INotificationService {
 
     @Override
     @Transactional
-    public void deleteAllNotificationsForUser(User user) {
-        notificationRepository.deleteAllByRecipient(user);
+    public void deleteAllNotificationsForUser(JobSeeker jobSeeker) {
+        notificationRepository.deleteAllByRecipient(jobSeeker);
+    }
+
+    @Override
+    public void markAsRead(Long notificationId, JobSeeker jobSeeker) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
+
+        if (!notification.getRecipient().getId().equals(jobSeeker.getId())) {
+            throw new UnauthorizedException("You are not authorized to mark this notification as read");
+        }
+
+        notification.setSeen(true);
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    public int getUnreadCount(JobSeeker jobSeeker) {
+        return notificationRepository.countByRecipientAndSeenFalse(jobSeeker);
+    }
+
+    @Override
+    public List<NotificationDTO> getUnreadNotifications(JobSeeker jobSeeker) {
+        return notificationRepository.findByRecipientAndSeenFalseOrderByCreatedAtDesc(jobSeeker).stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 }
