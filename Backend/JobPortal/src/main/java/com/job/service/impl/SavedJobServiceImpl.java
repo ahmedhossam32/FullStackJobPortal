@@ -95,7 +95,7 @@ public class SavedJobServiceImpl implements ISavedJobService {
         dto.setLocation(job.getLocation());
         dto.setPostedAt(job.getPostedAt());
         dto.setCompanyName(job.getEmployer().getCompanyName());
-        dto.setProfilePicture(job.getEmployer().getProfilePictureFileName());
+        dto.setProfilePicture(job.getEmployer().getProfilePictureUrl());
         dto.setType(job.getType());
         dto.setWorkMode(job.getWorkMode());
         dto.setResponsibilities(job.getResponsibilities());
