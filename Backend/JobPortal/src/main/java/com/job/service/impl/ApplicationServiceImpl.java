@@ -38,7 +38,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public ApplicationResponseDTO applyToJob(ApplicationRequestDTO dto, JobSeeker jobSeeker) {
         log.info("Job seeker {} applying to job id: {}", jobSeeker.getUsername(), dto.getJobId());
-        if (jobSeeker.getResumeFileName() == null || jobSeeker.getResumeFileName().isBlank()) {
+        if (jobSeeker.getResumeUrl() == null || jobSeeker.getResumeUrl().isBlank()) {
             throw new BadRequestException("You must upload a resume before applying to a job.");
         }
 
@@ -189,7 +189,7 @@ public class ApplicationServiceImpl implements IApplicationService {
 
         Employer employer = job.getEmployer();
         dto.setCompanyName(employer.getCompanyName());
-        dto.setCompanyLogoUrl(employer.getProfilePictureFileName()); // Assuming logo stored as profile picture field
+        dto.setCompanyLogoUrl(employer.getProfilePictureUrl());
 
         dto.setResumeUrl(application.getResumeUrl());
 
@@ -207,7 +207,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         dto.setId(app.getId());
         dto.setResumeUrl(app.getResumeUrl());
         dto.setApplicantName(applicant.getName());
-        dto.setApplicantProfilePicture(applicant.getProfilePictureFileName());
+        dto.setApplicantProfilePicture(applicant.getProfilePictureUrl());
         dto.setStatus(app.getStatus());
         dto.setAppliedAt(app.getAppliedAt());
 

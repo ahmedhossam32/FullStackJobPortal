@@ -40,9 +40,9 @@ public class NotificationServiceImpl implements INotificationService {
                 notification.getApplication().getJob() != null &&
                 notification.getApplication().getJob().getEmployer() != null) {
 
-            String logoFileName = notification.getApplication().getJob().getEmployer().getProfilePictureFileName();
-            if (logoFileName != null) {
-                dto.setCompanyLogoUrl(logoFileName);
+            String logoUrl = notification.getApplication().getJob().getEmployer().getProfilePictureUrl();
+            if (logoUrl != null) {
+                dto.setCompanyLogoUrl(logoUrl);
             }
         }
 

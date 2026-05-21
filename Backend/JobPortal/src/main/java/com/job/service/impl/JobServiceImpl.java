@@ -166,7 +166,7 @@ public class JobServiceImpl implements IJobService {
         dto.setWorkMode(job.getWorkMode());
         dto.setRequiredSkills(job.getRequiredSkills());
         dto.setResponsibilities(job.getResponsibilities());
-        dto.setProfilePicture(job.getEmployer().getProfilePictureFileName());
+        dto.setProfilePicture(job.getEmployer().getProfilePictureUrl());
         dto.setScreeningQuestions(job.getScreeningQuestions());
         return dto;
     }

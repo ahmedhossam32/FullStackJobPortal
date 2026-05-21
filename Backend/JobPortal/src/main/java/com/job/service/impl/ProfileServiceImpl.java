@@ -14,56 +14,30 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements IProfileService {
 
     private final UserRepository userRepository;
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public String uploadResume(MultipartFile file, JobSeeker jobSeeker) {
         log.info("Uploading resume for user: {}, file: {}", jobSeeker.getUsername(), file.getOriginalFilename());
-        try {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            String uploadDir = System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "resumes" + File.separator;
-            File dest = new File(uploadDir + fileName);
-
-            dest.getParentFile().mkdirs(); // Create dir if missing
-            file.transferTo(dest);
-
-            jobSeeker.setResumeFileName(fileName);
-            userRepository.save(jobSeeker);
-
-            return "/uploads/resumes/" + fileName;
-        } catch (IOException e) {
-            log.error("Resume upload failed for user: {}: {}", jobSeeker.getUsername(), e.getMessage());
-            throw new BadRequestException("Resume upload failed", e);
-        }
+        String url = cloudinaryService.uploadResume(file);
+        jobSeeker.setResumeUrl(url);
+        userRepository.save(jobSeeker);
+        return url;
     }
 
     @Override
     public String uploadProfilePicture(MultipartFile file, User user) {
         log.info("Uploading profile picture for user: {}, file: {}", user.getUsername(), file.getOriginalFilename());
-        try {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            String uploadDir = System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "profile-pictures" + File.separator;
-            File dest = new File(uploadDir + fileName);
-
-            dest.getParentFile().mkdirs();
-            file.transferTo(dest);
-
-            user.setProfilePictureFileName(fileName);
-            userRepository.save(user);
-            return "/uploads/profile-pictures/" + fileName;
-        } catch (IOException e) {
-            log.error("Profile picture upload failed for user: {}: {}", user.getUsername(), e.getMessage());
-            throw new BadRequestException("Profile picture upload failed", e);
-        }
+        String url = cloudinaryService.uploadImage(file);
+        user.setProfilePictureUrl(url);
+        userRepository.save(user);
+        return url;
     }
 
     @Override
@@ -84,8 +58,8 @@ public class ProfileServiceImpl implements IProfileService {
             dto.setEmail(user.getEmail());
             dto.setName(user.getName());
             dto.setRole(user.getRole().name());
-            dto.setProfilePicture(user.getProfilePictureFileName());
-            dto.setResume(jobSeeker.getResumeFileName());
+            dto.setProfilePicture(user.getProfilePictureUrl());
+            dto.setResume(jobSeeker.getResumeUrl());
             dto.setResumeOriginalName(jobSeeker.getResumeOriginalName());
             dto.setDob(jobSeeker.getDob());
             return dto;
@@ -99,7 +73,7 @@ public class ProfileServiceImpl implements IProfileService {
             dto.setRole(employer.getRole().name());
             dto.setCompanyName(employer.getCompanyName());
             dto.setIndustry(employer.getIndustry());
-            dto.setProfilePicture(employer.getProfilePictureFileName());
+            dto.setProfilePicture(employer.getProfilePictureUrl());
             return dto;
         }
 

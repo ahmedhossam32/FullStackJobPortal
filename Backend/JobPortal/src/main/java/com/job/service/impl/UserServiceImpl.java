@@ -18,15 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -65,11 +58,8 @@ public class UserServiceImpl implements IUserService {
         jobSeeker.setDob(dto.getDob());
         jobSeeker.setRole(Role.JOB_SEEKER);
         jobSeeker.setEmail(dto.getEmail());
-
-        // Skip resume and profile picture
-        jobSeeker.setResumeFileName(null);
-        jobSeeker.setProfilePictureFileName(null);
-
+        jobSeeker.setResumeUrl(null);
+        jobSeeker.setProfilePictureUrl(null);
         return jobSeekerRepository.save(jobSeeker);
     }
 
@@ -87,7 +77,7 @@ public class UserServiceImpl implements IUserService {
         employer.setUsername(dto.getUsername());
         employer.setPassword(passwordEncoder.encode(dto.getPassword()));
         employer.setCompanyName(dto.getCompanyName());
-        employer.setProfilePictureFileName(dto.getProfilePictureFileName());
+        employer.setProfilePictureUrl(null);
         employer.setRole(Role.EMPLOYER);
         employer.setEmail(dto.getEmail());
         employer.setIndustry(dto.getIndustry());
@@ -114,44 +104,5 @@ public class UserServiceImpl implements IUserService {
 
         User user = userOpt.get();
         return passwordEncoder.matches(rawPassword, user.getPassword());
-    }
-
-    public JobSeeker registerJobSeeker(JobSeekerRegisterRequestDTO dto, MultipartFile resume, MultipartFile profilePicture) throws IOException {
-        JobSeeker jobSeeker = new JobSeeker();
-        jobSeeker.setName(dto.getName());
-        jobSeeker.setUsername(dto.getUsername());
-        jobSeeker.setPassword(passwordEncoder.encode(dto.getPassword()));
-        jobSeeker.setDob(dto.getDob());
-        jobSeeker.setRole(Role.JOB_SEEKER);
-        jobSeeker.setEmail(dto.getEmail());
-
-        if (resume != null && !resume.isEmpty()) {
-            String originalFilename = resume.getOriginalFilename();
-            String resumeName = saveFile(resume, "uploads/resumes/");
-            jobSeeker.setResumeFileName(resumeName);
-            jobSeeker.setResumeOriginalName(originalFilename);
-        }
-
-        if (profilePicture != null && !profilePicture.isEmpty()) {
-            String pictureName = saveFile(profilePicture, "uploads/profile-pictures/");
-            jobSeeker.setProfilePictureFileName(pictureName);
-        }
-
-        return jobSeekerRepository.save(jobSeeker);
-    }
-
-    private String saveFile(MultipartFile file, String uploadDir) throws IOException {
-        String originalFilename = file.getOriginalFilename();
-        String uniqueFilename = UUID.randomUUID() + "_" + originalFilename;
-
-        Path uploadPath = Paths.get(uploadDir);
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
-
-        Path filePath = uploadPath.resolve(uniqueFilename);
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-        return uniqueFilename;
     }
 }

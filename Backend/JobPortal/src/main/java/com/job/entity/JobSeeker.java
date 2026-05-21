@@ -18,7 +18,8 @@ import java.util.Set;
 @AllArgsConstructor
 public class JobSeeker extends User {
 
-    private String resumeFileName;
+    @Column(name = "resume_url")
+    private String resumeUrl;
     private String resumeOriginalName;
     private LocalDate dob;
 

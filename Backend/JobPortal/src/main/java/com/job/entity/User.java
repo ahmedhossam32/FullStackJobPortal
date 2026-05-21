@@ -23,7 +23,8 @@ public abstract class User {
     @Column(unique = true, nullable = false)
     private String username;
     private String password;
-    private String profilePictureFileName;
+    @Column(name = "profile_picture_url")
+    private String profilePictureUrl;
     @Column(unique = true, nullable = false)
     private String email;
 
