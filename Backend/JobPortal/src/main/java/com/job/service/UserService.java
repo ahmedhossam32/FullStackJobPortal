@@ -1,6 +1,11 @@
 package com.job.service;
 
-import com.job.dto.*;
+import com.job.dto.request.EmployerRegisterRequestDTO;
+import com.job.dto.request.JobSeekerRegisterRequestDTO;
+import com.job.dto.response.AuthResponseDTO;
+import com.job.dto.response.EmployerProfileDTO;
+import com.job.dto.response.JobResponseDTO;
+import com.job.dto.response.JobSeekerProfileDTO;
 import com.job.entity.Employer;
 import com.job.entity.Job;
 import com.job.entity.JobSeeker;
@@ -114,6 +119,7 @@ public class UserService {
         User user = userOpt.get();
         return passwordEncoder.matches(rawPassword, user.getPassword());
     }
+
     public User getUserByUsername(@NotBlank(message = "Username is required") String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
@@ -257,36 +263,16 @@ public class UserService {
         userRepository.save(currentUser);
     }
 
-    public LoginEmployerResponseDTO buildEmployerResponse(Employer employer, String token) {
-        LoginEmployerResponseDTO response = new LoginEmployerResponseDTO();
+    public AuthResponseDTO buildAuthResponse(User user, String token) {
+        AuthResponseDTO response = new AuthResponseDTO();
         response.setToken(token);
-        response.setUsername(employer.getUsername());
-        response.setName(employer.getName());
-        response.setEmail(employer.getEmail());
-        response.setRole(employer.getRole().name());
-        response.setCompanyName(employer.getCompanyName());
-        response.setIndustry(employer.getIndustry());
-        response.setProfilePicture(employer.getProfilePictureFileName());
-        return response;
-    }
-
-    public LoginResponseDTO buildJobSeekerResponse(JobSeeker jobSeeker, String token) {
-        LoginResponseDTO response = new LoginResponseDTO();
-        response.setToken(token);
-        response.setUsername(jobSeeker.getUsername());
-        response.setName(jobSeeker.getName());
-        response.setDob(jobSeeker.getDob());
-        response.setEmail(jobSeeker.getEmail());
-        response.setRole(jobSeeker.getRole().name());
-        response.setProfilePicture(jobSeeker.getProfilePictureFileName());
-        response.setResume(jobSeeker.getResumeFileName());
-        response.setResumeOriginalName(jobSeeker.getResumeOriginalName());
+        response.setRole(user.getRole().name());
         return response;
     }
 
     public Object getCurrentUserDto(User user) {
         if (user.getRole() == Role.JOB_SEEKER && user instanceof JobSeeker jobSeeker) {
-            LoginResponseDTO dto = new LoginResponseDTO();
+            JobSeekerProfileDTO dto = new JobSeekerProfileDTO();
             dto.setUsername(user.getUsername());
             dto.setEmail(user.getEmail());
             dto.setName(user.getName());
@@ -299,7 +285,7 @@ public class UserService {
         }
 
         if (user.getRole() == Role.EMPLOYER && user instanceof Employer employer) {
-            LoginEmployerResponseDTO dto = new LoginEmployerResponseDTO();
+            EmployerProfileDTO dto = new EmployerProfileDTO();
             dto.setUsername(employer.getUsername());
             dto.setEmail(employer.getEmail());
             dto.setName(employer.getName());

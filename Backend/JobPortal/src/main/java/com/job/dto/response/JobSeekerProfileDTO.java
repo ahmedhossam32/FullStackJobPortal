@@ -1,19 +1,17 @@
-package com.job.dto;
+package com.job.dto.response;
 
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
-public class LoginResponseDTO {
-    private String token;
+public class JobSeekerProfileDTO {
     private String username;
     private String name;
-    private LocalDate dob;
     private String email;
-    private String role;
+    private LocalDate dob;
     private String profilePicture;
     private String resume;
     private String resumeOriginalName;
-
+    private String role;
 }

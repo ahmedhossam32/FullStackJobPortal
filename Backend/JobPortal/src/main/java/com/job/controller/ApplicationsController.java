@@ -1,6 +1,9 @@
 package com.job.controller;
 
-import com.job.dto.*;
+import com.job.dto.request.ApplicationRequestDTO;
+import com.job.dto.request.ApplicationStatusUpdateDTO;
+import com.job.dto.response.ApplicationResponseDTO;
+import com.job.dto.response.ApplicationViewForEmployerDTO;
 import com.job.entity.Employer;
 import com.job.entity.Job;
 import com.job.entity.JobSeeker;

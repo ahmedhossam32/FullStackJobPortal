@@ -1,7 +1,7 @@
 package com.job.controller;
 
-import com.job.dto.JobRequestDTO;
-import com.job.dto.JobResponseDTO;
+import com.job.dto.request.JobRequestDTO;
+import com.job.dto.response.JobResponseDTO;
 import com.job.entity.Employer;
 import com.job.entity.Job;
 import com.job.enums.Role;
@@ -25,7 +25,7 @@ public class JobController {
     private final JobService jobService;
 
     @PostMapping
-    public ResponseEntity<?> createJob(@RequestBody JobRequestDTO dto,
+    public ResponseEntity<?> createJob(@RequestBody @Valid JobRequestDTO dto,
                                        @RequestAttribute("user") Employer employer) {
         System.out.println("CREATING JOB METHOD CALLED ");
 
@@ -66,7 +66,7 @@ public class JobController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateJob(
             @PathVariable Long id,
-            @RequestBody JobRequestDTO jobRequestDTO,
+            @RequestBody @Valid JobRequestDTO jobRequestDTO,
             @RequestAttribute("user") User user) {
 
         if (user.getRole() != Role.EMPLOYER) {

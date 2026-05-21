@@ -1,4 +1,4 @@
-package com.job.dto;
+package com.job.dto.response;
 
 import com.job.enums.ApplicationStatus;
 import lombok.Getter;
@@ -11,19 +11,15 @@ import java.util.Map;
 @Setter
 public class ApplicationResponseDTO {
     private Long applicationId;
-
     private String username;
     private String resumeUrl;
-
     private ApplicationStatus status;
     private LocalDateTime appliedAt;
-
     private String jobTitle;
     private String jobDescription;
-    private String jobType;        // e.g., FULL_TIME
-    private String workMode;       // e.g., REMOTE
+    private String jobType;
+    private String workMode;
     private String location;
-
     private String companyName;
     private String companyLogoUrl;
     private Map<String, String> screeningAnswers;

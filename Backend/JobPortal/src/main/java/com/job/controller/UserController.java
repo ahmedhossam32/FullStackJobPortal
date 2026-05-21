@@ -1,7 +1,6 @@
 package com.job.controller;
 
-import com.job.dto.JobResponseDTO;
-import com.job.dto.LoginResponseDTO;
+import com.job.dto.response.JobResponseDTO;
 import com.job.entity.Job;
 import com.job.entity.JobSeeker;
 import com.job.entity.User;
@@ -54,6 +53,7 @@ public class UserController
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
+
     @PutMapping("/jobseeker/update-profile")
     public ResponseEntity<String> updateProfile(
             @RequestBody JobSeeker updatedInfo,

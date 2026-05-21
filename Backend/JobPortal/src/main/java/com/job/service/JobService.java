@@ -1,8 +1,8 @@
 package com.job.service;
 
 import com.job.designpatterns.strategy.*;
-import com.job.dto.JobRequestDTO;
-import com.job.dto.JobResponseDTO;
+import com.job.dto.request.JobRequestDTO;
+import com.job.dto.response.JobResponseDTO;
 import com.job.entity.Employer;
 import com.job.entity.Job;
 import com.job.enums.JobType;

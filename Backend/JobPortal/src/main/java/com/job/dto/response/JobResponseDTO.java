@@ -1,4 +1,4 @@
-package com.job.dto;
+package com.job.dto.response;
 
 import com.job.enums.JobType;
 import com.job.enums.WorkMode;
@@ -18,10 +18,8 @@ public class JobResponseDTO {
     private LocalDateTime postedAt;
     private String profilePicture;
     private String companyName;
-
     private JobType type;
     private WorkMode workMode;
-
     private List<String> responsibilities;
     private List<String> requiredSkills;
     private List<String> screeningQuestions;

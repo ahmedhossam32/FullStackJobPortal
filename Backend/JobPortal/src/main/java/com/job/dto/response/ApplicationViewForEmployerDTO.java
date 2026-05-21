@@ -1,4 +1,4 @@
-package com.job.dto;
+package com.job.dto.response;
 
 import com.job.enums.ApplicationStatus;
 import lombok.Getter;
@@ -16,13 +16,9 @@ public class ApplicationViewForEmployerDTO {
     private LocalDate applicantDOB;
     private String applicantName;
     private String applicantProfilePicture;
-
-
     private String resumeUrl;
     private String coverLetter;
-
     private ApplicationStatus status;
     private LocalDateTime appliedAt;
-
     private String jobTitle;
 }

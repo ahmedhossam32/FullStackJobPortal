@@ -1,9 +1,9 @@
 package com.job.service;
 
 import com.job.designpatterns.Observer.ApplicationObserver;
-import com.job.dto.ApplicationRequestDTO;
-import com.job.dto.ApplicationResponseDTO;
-import com.job.dto.ApplicationViewForEmployerDTO;
+import com.job.dto.request.ApplicationRequestDTO;
+import com.job.dto.response.ApplicationResponseDTO;
+import com.job.dto.response.ApplicationViewForEmployerDTO;
 import com.job.entity.Application;
 import com.job.entity.Employer;
 import com.job.entity.Job;

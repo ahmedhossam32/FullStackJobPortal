@@ -1,6 +1,6 @@
 package com.job.service;
 
-import com.job.dto.NotificationDTO;
+import com.job.dto.response.NotificationDTO;
 import com.job.entity.JobSeeker;
 import com.job.entity.Notification;
 import com.job.entity.User;
