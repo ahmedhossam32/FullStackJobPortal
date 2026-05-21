@@ -1,19 +1,15 @@
 package com.job.controller;
 
 import com.job.dto.response.JobResponseDTO;
-import com.job.entity.Job;
 import com.job.entity.JobSeeker;
 import com.job.entity.User;
-import com.job.enums.Role;
 import com.job.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController
@@ -43,15 +39,10 @@ public class UserController
         return ResponseEntity.ok("Profile picture uploaded successfully: " + profileUrl);
     }
 
-
     @PostMapping("/save-job/{jobId}")
     public ResponseEntity<String> saveJob(@RequestAttribute("user") User user, @PathVariable Long jobId) {
-        try {
-            userService.saveJob(user, jobId);
-            return ResponseEntity.ok("Job saved successfully.");
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        }
+        userService.saveJob(user, jobId);
+        return ResponseEntity.ok("Job saved successfully.");
     }
 
     @PutMapping("/jobseeker/update-profile")
@@ -65,14 +56,9 @@ public class UserController
 
     @DeleteMapping("/unsave-job/{jobId}")
     public ResponseEntity<String> unsaveJob(@RequestAttribute("user") User user, @PathVariable Long jobId) {
-        try {
-            userService.unsaveJob(user, jobId);
-            return ResponseEntity.ok("Job removed from saved list.");
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        userService.unsaveJob(user, jobId);
+        return ResponseEntity.ok("Job removed from saved list.");
     }
-
 
     @GetMapping("/saved-jobs")
     public ResponseEntity<List<JobResponseDTO>> getSavedJobs(@RequestAttribute("user") User user) {

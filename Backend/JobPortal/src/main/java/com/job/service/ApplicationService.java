@@ -9,6 +9,10 @@ import com.job.entity.Employer;
 import com.job.entity.Job;
 import com.job.entity.JobSeeker;
 import com.job.enums.ApplicationStatus;
+import com.job.exception.BadRequestException;
+import com.job.exception.DuplicateResourceException;
+import com.job.exception.ResourceNotFoundException;
+import com.job.exception.UnauthorizedException;
 import com.job.repository.ApplicationRepository;
 import com.job.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,21 +32,21 @@ public class ApplicationService {
 
     public ApplicationResponseDTO applyToJob(ApplicationRequestDTO dto, JobSeeker jobSeeker) {
         if (jobSeeker.getResumeFileName() == null || jobSeeker.getResumeFileName().isBlank()) {
-            throw new RuntimeException("You must upload a resume before applying to a job.");
+            throw new BadRequestException("You must upload a resume before applying to a job.");
         }
 
         Job job = jobRepository.findById(dto.getJobId())
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
         boolean alreadyApplied = applicationRepository.existsByJobAndJobSeeker(job, jobSeeker);
         if (alreadyApplied) {
-            throw new RuntimeException("You have already applied for this job");
+            throw new DuplicateResourceException("You have already applied for this job");
         }
 
         List<String> screeningQs = job.getScreeningQuestions();
         if (screeningQs != null && !screeningQs.isEmpty()) {
             if (dto.getScreeningAnswers() == null || dto.getScreeningAnswers().size() != screeningQs.size()) {
-                throw new RuntimeException("You must answer all required screening questions.");
+                throw new BadRequestException("You must answer all required screening questions.");
             }
         }
 
@@ -110,10 +114,10 @@ public class ApplicationService {
 
     public ApplicationResponseDTO getApplicationById(Long id, JobSeeker requester) {
         Application app = applicationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         if (!app.getJobSeeker().getId().equals(requester.getId())) {
-            throw new RuntimeException("Unauthorized access to application");
+            throw new UnauthorizedException("Unauthorized access to application");
         }
 
         return mapToDTO(app);
@@ -121,10 +125,10 @@ public class ApplicationService {
 
     public void withdrawApplication(Long id, JobSeeker requester) {
         Application app = applicationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         if (!app.getJobSeeker().getId().equals(requester.getId())) {
-            throw new RuntimeException("Unauthorized to withdraw this application");
+            throw new UnauthorizedException("Unauthorized to withdraw this application");
         }
 
         applicationRepository.delete(app);
@@ -132,10 +136,10 @@ public class ApplicationService {
 
     public List<ApplicationViewForEmployerDTO> getApplicationsForJob(Long jobId, Employer employer) {
         Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
         if (!job.getEmployer().getId().equals(employer.getId())) {
-            throw new RuntimeException("Unauthorized to view applications for this job");
+            throw new UnauthorizedException("Unauthorized to view applications for this job");
         }
 
         List<Application> applications = applicationRepository.findByJob(job);
@@ -147,10 +151,10 @@ public class ApplicationService {
 
     public ApplicationViewForEmployerDTO getApplicationViewForEmployer(Long id, Employer employer) {
         Application app = applicationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         if (!app.getJob().getEmployer().getId().equals(employer.getId())) {
-            throw new RuntimeException("Unauthorized to view this application");
+            throw new UnauthorizedException("Unauthorized to view this application");
         }
 
         return mapToEmployerDTO(app);
@@ -179,10 +183,10 @@ public class ApplicationService {
 
     public void updateApplicationStatus(Long applicationId, ApplicationStatus newStatus, Employer employer) {
         Application app = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         if (!app.getJob().getEmployer().getId().equals(employer.getId())) {
-            throw new RuntimeException("Unauthorized to update this application");
+            throw new UnauthorizedException("Unauthorized to update this application");
         }
 
         app.setStatus(newStatus);
@@ -198,7 +202,7 @@ private void notifyObservers(JobSeeker jobSeeker, Application application) {
 
     public boolean hasUserAppliedToJob(Long jobId, JobSeeker jobSeeker) {
         Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
         return applicationRepository.existsByJobAndJobSeeker(job, jobSeeker);
     }

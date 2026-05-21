@@ -4,6 +4,7 @@ import com.job.dto.response.NotificationDTO;
 import com.job.entity.JobSeeker;
 import com.job.entity.Notification;
 import com.job.entity.User;
+import com.job.exception.ResourceNotFoundException;
 import com.job.repository.NotificationRepository;
 import com.job.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -33,12 +34,10 @@ public class NotificationController {
         return ResponseEntity.ok("All notifications deleted successfully.");
     }
 
-
-
     @PutMapping("/{id}/read")
     public ResponseEntity<Void> markAsRead(@PathVariable Long id) {
         Notification notif = notificationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
         notif.setSeen(true);
         notificationRepository.save(notif);
         return ResponseEntity.ok().build();

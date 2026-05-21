@@ -8,6 +8,8 @@ import com.job.entity.Job;
 import com.job.enums.JobType;
 import com.job.enums.SortType;
 import com.job.enums.WorkMode;
+import com.job.exception.ResourceNotFoundException;
+import com.job.exception.UnauthorizedException;
 import com.job.repository.EmployerRepository;
 import com.job.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
@@ -81,16 +83,16 @@ public class JobService {
 
     public JobResponseDTO getJobById(Long id) {
         Job job = jobRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
         return mapToDTO(job);
     }
 
     public JobResponseDTO updateJob(Long id, JobRequestDTO dto, Employer employer) {
         Job job = jobRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
         if (!job.getEmployer().getId().equals(employer.getId())) {
-            throw new RuntimeException("You are not authorized to update this job");
+            throw new UnauthorizedException("You are not authorized to update this job");
         }
 
         job.setTitle(dto.getTitle());
@@ -126,10 +128,10 @@ public class JobService {
 
     public void deleteJob(Long jobId, Employer employer) {
         Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
         if (!job.getEmployer().getId().equals(employer.getId())) {
-            throw new RuntimeException("You are not authorized to delete this job");
+            throw new UnauthorizedException("You are not authorized to delete this job");
         }
 
         jobRepository.delete(job);

@@ -11,13 +11,15 @@ import com.job.entity.Job;
 import com.job.entity.JobSeeker;
 import com.job.enums.Role;
 import com.job.entity.User;
+import com.job.exception.BadRequestException;
+import com.job.exception.DuplicateResourceException;
+import com.job.exception.ResourceNotFoundException;
 import com.job.repository.JobRepository;
 import com.job.repository.UserRepository;
 import com.job.repository.EmployerRepository;
 import com.job.repository.JobSeekerRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +34,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -47,7 +48,7 @@ public class UserService {
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
     }
 
     public boolean usernameExists(String username) {
@@ -122,7 +123,7 @@ public class UserService {
 
     public User getUserByUsername(@NotBlank(message = "Username is required") String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
     }
 
     public String uploadResume(MultipartFile file, JobSeeker jobSeeker) {
@@ -139,7 +140,7 @@ public class UserService {
 
             return "/uploads/resumes/" + fileName;
         } catch (IOException e) {
-            throw new RuntimeException("Resume upload failed", e);
+            throw new BadRequestException("Resume upload failed", e);
         }
     }
 
@@ -159,7 +160,7 @@ public class UserService {
         return jobSeekerRepository.save(jobSeeker);
     }
 
-    public String uploadProfilePicture(MultipartFile file, User jobSeeker) {
+    public String uploadProfilePicture(MultipartFile file, User user) {
         try {
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             String uploadDir = System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "profile-pictures" + File.separator;
@@ -168,29 +169,29 @@ public class UserService {
             dest.getParentFile().mkdirs();
             file.transferTo(dest);
 
-            jobSeeker.setProfilePictureFileName(fileName);
-            userRepository.save(jobSeeker);
+            user.setProfilePictureFileName(fileName);
+            userRepository.save(user);
             return "/uploads/profile-pictures/" + fileName;
         } catch (IOException e) {
-            throw new RuntimeException("Profile picture upload failed", e);
+            throw new BadRequestException("Profile picture upload failed", e);
         }
     }
 
     @Transactional
     public void saveJob(User user, Long jobId) {
         if (!(user instanceof JobSeeker)) {
-            throw new RuntimeException("Only job seekers can save jobs.");
+            throw new BadRequestException("Only job seekers can save jobs.");
         }
 
         Long jobSeekerId = user.getId();
         JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
-                .orElseThrow(() -> new RuntimeException("Job seeker not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
 
         Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
         if (jobSeeker.getSavedJobs().contains(job)) {
-            throw new IllegalStateException("You already saved this job.");
+            throw new DuplicateResourceException("You already saved this job.");
         }
 
         jobSeeker.getSavedJobs().add(job);
@@ -202,18 +203,18 @@ public class UserService {
     @Transactional
     public void unsaveJob(User user, Long jobId) {
         if (!(user instanceof JobSeeker)) {
-            throw new RuntimeException("Only job seekers can unsave jobs.");
+            throw new BadRequestException("Only job seekers can unsave jobs.");
         }
 
         Long jobSeekerId = user.getId();
         JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
-                .orElseThrow(() -> new RuntimeException("Job seeker not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
 
         Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
         if (!jobSeeker.getSavedJobs().contains(job)) {
-            throw new IllegalStateException("This job is not in your saved list.");
+            throw new ResourceNotFoundException("This job is not in your saved list.");
         }
 
         jobSeeker.getSavedJobs().remove(job);
@@ -224,13 +225,13 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<JobResponseDTO> getSavedJobs(User user) {
         if (!(user instanceof JobSeeker)) {
-            throw new RuntimeException("Only job seekers can view saved jobs.");
+            throw new BadRequestException("Only job seekers can view saved jobs.");
         }
 
         Long jobSeekerId = user.getId();
 
         JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
-                .orElseThrow(() -> new RuntimeException("Job seeker not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
 
         return jobSeeker.getSavedJobs().stream()
                 .map(this::mapToDTO)
@@ -296,7 +297,7 @@ public class UserService {
             return dto;
         }
 
-        throw new RuntimeException("Unsupported user role");
+        throw new BadRequestException("Unsupported user role");
     }
 
 

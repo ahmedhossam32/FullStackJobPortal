@@ -10,13 +10,9 @@ import com.job.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 
 @RestController
@@ -30,13 +26,8 @@ public class AuthController
 
     @PostMapping("/signup/jobseeker")
     public ResponseEntity<String> signUpJobSeeker(@RequestBody @Valid JobSeekerRegisterRequestDTO dto) {
-        try {
-            userService.registerJobSeekerWithoutFiles(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Job seeker signed up successfully!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
-        }
+        userService.registerJobSeekerWithoutFiles(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Job seeker signed up successfully!");
     }
 
     @PostMapping("/signup/employer")
