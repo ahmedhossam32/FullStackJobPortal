@@ -2,14 +2,20 @@ package com.job.repository;
 
 import com.job.entity.Employer;
 import com.job.entity.Job;
+import com.job.enums.JobType;
+import com.job.enums.WorkMode;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface JobRepository extends JpaRepository<Job,Long>
-{
+public interface JobRepository extends JpaRepository<Job, Long> {
 
     List<Job> findByEmployer(Employer employer);
+    List<Job> findAllByOrderByPostedAtDesc();
+    List<Job> findByTitleContainingIgnoreCase(String keyword);
+    List<Job> findByType(JobType type);
+    List<Job> findByLocationContainingIgnoreCase(String location);
+    List<Job> findByWorkMode(WorkMode workMode);
 }

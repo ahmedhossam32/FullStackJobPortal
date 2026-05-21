@@ -12,6 +12,8 @@ public interface IJobService {
     List<JobResponseDTO> getAllJobsSortedByDate();
     List<JobResponseDTO> searchByTitle(String keyword);
     List<JobResponseDTO> searchByType(String type);
+    List<JobResponseDTO> searchByLocation(String location);
+    List<JobResponseDTO> searchByWorkMode(String workMode);
     JobResponseDTO getJobById(Long id);
     JobResponseDTO updateJob(Long id, JobRequestDTO dto, Employer employer);
     void deleteJob(Long jobId, Employer employer);

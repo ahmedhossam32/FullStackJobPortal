@@ -59,6 +59,18 @@ public class JobController {
         return ResponseEntity.ok(jobs);
     }
 
+    @GetMapping("/search/location")
+    public ResponseEntity<List<JobResponseDTO>> searchByLocation(@RequestParam String location) {
+        List<JobResponseDTO> jobs = jobService.searchByLocation(location);
+        return ResponseEntity.ok(jobs);
+    }
+
+    @GetMapping("/search/workmode")
+    public ResponseEntity<List<JobResponseDTO>> searchByWorkMode(@RequestParam String workMode) {
+        List<JobResponseDTO> jobs = jobService.searchByWorkMode(workMode);
+        return ResponseEntity.ok(jobs);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateJob(
             @PathVariable Long id,

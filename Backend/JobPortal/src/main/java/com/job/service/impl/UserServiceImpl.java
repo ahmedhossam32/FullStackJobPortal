@@ -7,6 +7,7 @@ import com.job.entity.Employer;
 import com.job.entity.JobSeeker;
 import com.job.entity.User;
 import com.job.enums.Role;
+import com.job.exception.DuplicateResourceException;
 import com.job.exception.ResourceNotFoundException;
 import com.job.repository.EmployerRepository;
 import com.job.repository.JobSeekerRepository;
@@ -50,6 +51,12 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public JobSeeker registerJobSeekerWithoutFiles(JobSeekerRegisterRequestDTO dto) {
+        if (userRepository.existsByUsername(dto.getUsername())) {
+            throw new DuplicateResourceException("Username already taken");
+        }
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new DuplicateResourceException("Email already registered");
+        }
         log.info("Registering new job seeker: {}", dto.getUsername());
         JobSeeker jobSeeker = new JobSeeker();
         jobSeeker.setName(dto.getName());
@@ -68,6 +75,12 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public Employer registerEmployer(EmployerRegisterRequestDTO dto) {
+        if (userRepository.existsByUsername(dto.getUsername())) {
+            throw new DuplicateResourceException("Username already taken");
+        }
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new DuplicateResourceException("Email already registered");
+        }
         log.info("Registering new employer: {}", dto.getUsername());
         Employer employer = new Employer();
         employer.setName(dto.getName());

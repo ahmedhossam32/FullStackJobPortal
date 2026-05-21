@@ -1,15 +1,14 @@
 package com.job.service.impl;
 
-import com.job.designpatterns.strategy.*;
 import com.job.dto.request.JobRequestDTO;
 import com.job.dto.response.JobResponseDTO;
 import com.job.entity.Employer;
 import com.job.entity.Job;
 import com.job.enums.JobType;
 import com.job.enums.WorkMode;
+import com.job.exception.BadRequestException;
 import com.job.exception.ResourceNotFoundException;
 import com.job.exception.UnauthorizedException;
-import com.job.repository.EmployerRepository;
 import com.job.repository.JobRepository;
 import com.job.service.interfaces.IJobService;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +24,6 @@ import java.util.List;
 public class JobServiceImpl implements IJobService {
 
     private final JobRepository jobRepository;
-    private final JobSortContext jobSortContext;
-    private final EmployerRepository employerRepository;
 
     @Override
     public Job createJob(JobRequestDTO dto, Employer employer) {
@@ -49,39 +46,48 @@ public class JobServiceImpl implements IJobService {
 
     @Override
     public List<JobResponseDTO> getAllJobsSortedByDate() {
-        List<Job> jobs = jobRepository.findAll();
-
-        JobSorter sorter = new JobSorter();
-        sorter.setStrategy(new SortByDateStrategy());
-
-        List<Job> sorted = sorter.sortJobs(jobs);
-        return sorted.stream().map(this::mapToDTO).toList();
+        return jobRepository.findAllByOrderByPostedAtDesc().stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
     @Override
     public List<JobResponseDTO> searchByTitle(String keyword) {
-        List<Job> jobs = jobRepository.findAll();
-
-        JobSorter sorter = new JobSorter();
-        sorter.setStrategy(new SortByTitleStrategy(keyword));
-
-        List<Job> filtered = sorter.sortJobs(jobs);
-        return filtered.stream().map(this::mapToDTO).toList();
+        return jobRepository.findByTitleContainingIgnoreCase(keyword).stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
     @Override
     public List<JobResponseDTO> searchByType(String type) {
-        List<Job> jobs = jobRepository.findAll();
-
         try {
-            JobSorter sorter = new JobSorter();
-            sorter.setStrategy(new SortByTypeStrategy(type));
-
-            List<Job> filtered = sorter.sortJobs(jobs);
-            return filtered.stream().map(this::mapToDTO).toList();
+            JobType jobType = JobType.valueOf(type.toUpperCase());
+            return jobRepository.findByType(jobType).stream()
+                    .map(this::mapToDTO)
+                    .toList();
         } catch (IllegalArgumentException e) {
             log.warn("Invalid job type provided: {}", type);
-            return List.of(); // return empty list on bad type input
+            throw new BadRequestException("Invalid job type: " + type);
+        }
+    }
+
+    @Override
+    public List<JobResponseDTO> searchByLocation(String location) {
+        return jobRepository.findByLocationContainingIgnoreCase(location).stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+
+    @Override
+    public List<JobResponseDTO> searchByWorkMode(String workMode) {
+        try {
+            WorkMode mode = WorkMode.valueOf(workMode.toUpperCase());
+            return jobRepository.findByWorkMode(mode).stream()
+                    .map(this::mapToDTO)
+                    .toList();
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid work mode provided: {}", workMode);
+            throw new BadRequestException("Invalid work mode: " + workMode);
         }
     }
 
@@ -129,9 +135,7 @@ public class JobServiceImpl implements IJobService {
 
     @Override
     public List<JobResponseDTO> getJobsByEmployer(Employer employer) {
-        List<Job> jobs = jobRepository.findByEmployer(employer);
-
-        return jobs.stream()
+        return jobRepository.findByEmployer(employer).stream()
                 .map(this::mapToDTO)
                 .toList();
     }
