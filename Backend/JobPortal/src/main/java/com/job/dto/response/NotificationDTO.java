@@ -11,4 +11,5 @@ public class NotificationDTO {
     private LocalDateTime createdAt;
     private boolean seen;
     private String companyLogoUrl;
+    private Long applicationId;
 }

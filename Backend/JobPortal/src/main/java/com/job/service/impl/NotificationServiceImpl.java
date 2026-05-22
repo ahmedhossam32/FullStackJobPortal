@@ -1,6 +1,7 @@
 package com.job.service.impl;
 
 import com.job.dto.response.NotificationDTO;
+import com.job.entity.Application;
 import com.job.entity.JobSeeker;
 import com.job.entity.Notification;
 import com.job.exception.ResourceNotFoundException;
@@ -36,13 +37,15 @@ public class NotificationServiceImpl implements INotificationService {
         dto.setCreatedAt(notification.getCreatedAt());
         dto.setSeen(notification.isSeen());
 
-        if (notification.getApplication() != null &&
-                notification.getApplication().getJob() != null &&
-                notification.getApplication().getJob().getEmployer() != null) {
+        if (notification.getApplication() != null) {
+            dto.setApplicationId(notification.getApplication().getId());
 
-            String logoUrl = notification.getApplication().getJob().getEmployer().getProfilePictureUrl();
-            if (logoUrl != null) {
-                dto.setCompanyLogoUrl(logoUrl);
+            Application app = notification.getApplication();
+            if (app.getJob() != null && app.getJob().getEmployer() != null) {
+                String logoUrl = app.getJob().getEmployer().getProfilePictureUrl();
+                if (logoUrl != null) {
+                    dto.setCompanyLogoUrl(logoUrl);
+                }
             }
         }
 
@@ -52,7 +55,6 @@ public class NotificationServiceImpl implements INotificationService {
     @Override
     @Transactional
     public void deleteAllNotificationsForUser(JobSeeker jobSeeker) {
-        log.info("Deleting all notifications for user: {}", jobSeeker.getUsername());
         notificationRepository.deleteAllByRecipient(jobSeeker);
     }
 
