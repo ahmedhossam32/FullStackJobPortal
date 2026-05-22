@@ -27,8 +27,9 @@ public class UserController {
     @PostMapping("/jobseeker/upload-resume")
     public ResponseEntity<String> uploadResume(
             @RequestParam("file") MultipartFile file,
-            @RequestAttribute("user") JobSeeker jobSeeker
+            @RequestAttribute("user") User user
     ) {
+        JobSeeker jobSeeker = (JobSeeker) user;
         String resumeUrl = profileService.uploadResume(file, jobSeeker);
         return ResponseEntity.ok("Resume uploaded successfully: " + resumeUrl);
     }
@@ -44,7 +45,8 @@ public class UserController {
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @PostMapping("/save-job/{jobId}")
-    public ResponseEntity<String> saveJob(@RequestAttribute("user") JobSeeker jobSeeker, @PathVariable Long jobId) {
+    public ResponseEntity<String> saveJob(@RequestAttribute("user") User user, @PathVariable Long jobId) {
+        JobSeeker jobSeeker = (JobSeeker) user;
         savedJobService.saveJob(jobSeeker, jobId);
         return ResponseEntity.ok("Job saved successfully.");
     }
@@ -53,22 +55,25 @@ public class UserController {
     @PutMapping("/jobseeker/update-profile")
     public ResponseEntity<String> updateProfile(
             @RequestBody @Valid UpdateProfileRequestDTO updatedInfo,
-            @RequestAttribute("user") JobSeeker currentUser
+            @RequestAttribute("user") User user
     ) {
+        JobSeeker currentUser = (JobSeeker) user;
         profileService.updateJobSeekerProfile(currentUser, updatedInfo);
         return ResponseEntity.ok("Profile updated successfully");
     }
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @DeleteMapping("/unsave-job/{jobId}")
-    public ResponseEntity<String> unsaveJob(@RequestAttribute("user") JobSeeker jobSeeker, @PathVariable Long jobId) {
+    public ResponseEntity<String> unsaveJob(@RequestAttribute("user") User user, @PathVariable Long jobId) {
+        JobSeeker jobSeeker = (JobSeeker) user;
         savedJobService.unsaveJob(jobSeeker, jobId);
         return ResponseEntity.ok("Job removed from saved list.");
     }
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping("/saved-jobs")
-    public ResponseEntity<List<JobResponseDTO>> getSavedJobs(@RequestAttribute("user") JobSeeker jobSeeker) {
+    public ResponseEntity<List<JobResponseDTO>> getSavedJobs(@RequestAttribute("user") User user) {
+        JobSeeker jobSeeker = (JobSeeker) user;
         return ResponseEntity.ok(savedJobService.getSavedJobs(jobSeeker));
     }
 
