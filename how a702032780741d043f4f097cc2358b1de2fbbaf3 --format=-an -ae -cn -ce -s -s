@@ -1,0 +1,31 @@
+a702032780741d043f4f097cc2358b1de2fbbaf3 refactor: expand ApplicationStatus enum, fix JobType trailing comma, drop H2, disable open-in-view
+1f0045f9c55c8f38514d5bf101ba4daff9680bfd security: remove application.properties from tracking
+668009818a019f0c4cff6121b2662529cadf4aa4 app properties git  ignore
+106f957f0527065a1aa84eff961f9d1c1e1e510e added another enums for jobapp
+fe3a1e06828ecd064d16f48bd72af994c07bd121 refactor: exception handling contrs
+e1df23eb74ffc1638e8def8d0069179d623ddf07 refactor: code review fixes - entities and DTOs
+b3ca86654b3f1bdb94782fea73fa638243bae642 refactor: code review fixes - profile and file upload feature
+eded104d2c4459ecb503c89df1d55bf382e8f31f refactor: code review fixes - notification feature
+54db71262cc9128ce522806ffa123fa3ba5f017b refactor: code review fixes - auth, job, and application features
+231fbfe7bdd2be759844a37632273ed1a7143d3a fixed error
+49f393efb6a52ea144922ef79385fc02f065cf76 feat: integrate Cloudinary for file uploads, remove local file storage
+ec9852e1ba93ed05037bfc7d7435cd267ab91116 refactor: replace manual role checks with @PreAuthorize, enable method security
+b55eb0a0126375d4579e5eaff1fbb9749c22de8a feat: add pagination to jobs and applications endpoints
+fdda5b2051587b136f84cba57a517f243aa0c6b3 refactor: remove unused strategy pattern, keep Observer, enable async notifications
+bcb4880014fb9e9b8f2bf49aab558800f5bfb956 refactor: move job search to DB level, add email validation, fix repositories
+c59486b4b191b915743fec5147c5d40e72bce872 refactor: security cleanup - externalize JWT config, add Slf4j logging, move SecurityConfig to config package
+eb3af93209cd2361f9f4252ef74ea94b37e14356 fix: notification logic - add ownership check, unread endpoints, fix repository
+3485cce2305890052aa5a46ffd266441e209154b refactor: add service interfaces and split UserService into focused services
+439154ef08af2b37b7c0b2a61365d8627e63274d refactor: add custom exceptions and global error handler
+eeb81168dd4208ddbf381b96ead385e1b559eb33 refactor: restructure DTOs into request/response packages with validation
+7f06ddc990dfd01618fcf6ab77a3ad0083bb6c84 Update README.md
+5e6f90830301e0fbdccbb7b8284735ee537a7e22 Update README.md
+a6a4e968ab0d20d5180b79af7abedf985b8824ca Create README.md
+f26ab5eb71fa7a3b954c694f1e815d1526478020 Update README.md
+cf614043fe64783c272c15b77993decd80f281c4 Create Full_Walkthrough.md
+40d62f04be75bdb72dfab7516c6faf3bff96ca2a Update README.md
+3a45d1a68c0c74d33025edc6e0c70fe5b8dbf6e0 Update README.md
+c32b2cf126eb82862112d9f674a78c9a4d95f674 Update README.md
+89e5202fb0261e418a7e77e1273a09abc65eebc6 Create README.md
+c51b2a1a6c59e6d5ff6d428c4151ce6cf226efba Create .gitattributes
+9ec2eac3dd24e79aef5b2508cd3ac18450543b31 Initial commit: FullStack Job Portal project
