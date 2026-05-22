@@ -13,6 +13,7 @@ import com.job.service.interfaces.IProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -24,6 +25,7 @@ public class ProfileServiceImpl implements IProfileService {
     private final CloudinaryService cloudinaryService;
 
     @Override
+    @Transactional
     public String uploadResume(MultipartFile file, JobSeeker jobSeeker) {
         if (file == null || file.isEmpty()) {
             throw new BadRequestException("File cannot be empty");
@@ -39,6 +41,7 @@ public class ProfileServiceImpl implements IProfileService {
     }
 
     @Override
+    @Transactional
     public String uploadProfilePicture(MultipartFile file, User user) {
         if (file == null || file.isEmpty()) {
             throw new BadRequestException("File cannot be empty");
@@ -58,6 +61,7 @@ public class ProfileServiceImpl implements IProfileService {
     }
 
     @Override
+    @Transactional
     public void updateJobSeekerProfile(JobSeeker currentUser, UpdateProfileRequestDTO updatedInfo) {
         log.info("Updating profile for job seeker: {}", currentUser.getUsername());
         currentUser.setName(updatedInfo.getName());
@@ -68,6 +72,7 @@ public class ProfileServiceImpl implements IProfileService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Object getCurrentUserDto(User user) {
         if (user.getRole() == Role.JOB_SEEKER && user instanceof JobSeeker jobSeeker) {
             JobSeekerProfileDTO dto = new JobSeekerProfileDTO();

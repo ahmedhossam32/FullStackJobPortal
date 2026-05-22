@@ -19,8 +19,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -31,6 +33,7 @@ public class JobServiceImpl implements IJobService {
     private final JobRepository jobRepository;
 
     @Override
+    @Transactional
     public Job createJob(JobRequestDTO dto, Employer employer) {
         log.info("Creating job '{}' for employer: {}", dto.getTitle(), employer.getUsername());
         Job job = new Job();
@@ -50,23 +53,26 @@ public class JobServiceImpl implements IJobService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponseDTO<JobResponseDTO> getAllJobsSortedByDate(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("postedAt").descending());
-        return toPageResponse(jobRepository.findAll(pageable));
+        return toPageResponse(jobRepository.findAllWithEmployer(pageable));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponseDTO<JobResponseDTO> searchByTitle(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return toPageResponse(jobRepository.findByTitleContainingIgnoreCase(keyword, pageable));
+        return toPageResponse(jobRepository.findByTitleContainingIgnoreCaseWithEmployer(keyword, pageable));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponseDTO<JobResponseDTO> searchByType(String type, int page, int size) {
         try {
             JobType jobType = JobType.valueOf(type.toUpperCase());
             Pageable pageable = PageRequest.of(page, size);
-            return toPageResponse(jobRepository.findByType(jobType, pageable));
+            return toPageResponse(jobRepository.findByTypeWithEmployer(jobType, pageable));
         } catch (IllegalArgumentException e) {
             log.warn("Invalid job type provided: {}", type);
             throw new BadRequestException("Invalid job type: " + type);
@@ -74,17 +80,19 @@ public class JobServiceImpl implements IJobService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponseDTO<JobResponseDTO> searchByLocation(String location, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return toPageResponse(jobRepository.findByLocationContainingIgnoreCase(location, pageable));
+        return toPageResponse(jobRepository.findByLocationContainingIgnoreCaseWithEmployer(location, pageable));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponseDTO<JobResponseDTO> searchByWorkMode(String workMode, int page, int size) {
         try {
             WorkMode mode = WorkMode.valueOf(workMode.toUpperCase());
             Pageable pageable = PageRequest.of(page, size);
-            return toPageResponse(jobRepository.findByWorkMode(mode, pageable));
+            return toPageResponse(jobRepository.findByWorkModeWithEmployer(mode, pageable));
         } catch (IllegalArgumentException e) {
             log.warn("Invalid work mode provided: {}", workMode);
             throw new BadRequestException("Invalid work mode: " + workMode);
@@ -92,16 +100,18 @@ public class JobServiceImpl implements IJobService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public JobResponseDTO getJobById(Long id) {
-        Job job = jobRepository.findById(id)
+        Job job = jobRepository.findByIdWithEmployer(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
         return mapToDTO(job);
     }
 
     @Override
+    @Transactional
     public JobResponseDTO updateJob(Long id, JobRequestDTO dto, Employer employer) {
         log.info("Updating job id: {} by employer: {}", id, employer.getUsername());
-        Job job = jobRepository.findById(id)
+        Job job = jobRepository.findByIdWithEmployer(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
         if (!job.getEmployer().getId().equals(employer.getId())) {
@@ -122,9 +132,10 @@ public class JobServiceImpl implements IJobService {
     }
 
     @Override
+    @Transactional
     public void deleteJob(Long jobId, Employer employer) {
         log.info("Deleting job id: {} by employer: {}", jobId, employer.getUsername());
-        Job job = jobRepository.findById(jobId)
+        Job job = jobRepository.findByIdWithEmployer(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
         if (!job.getEmployer().getId().equals(employer.getId())) {
@@ -135,8 +146,9 @@ public class JobServiceImpl implements IJobService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<JobResponseDTO> getJobsByEmployer(Employer employer) {
-        return jobRepository.findByEmployer(employer).stream()
+        return jobRepository.findByEmployerWithEmployer(employer).stream()
                 .map(this::mapToDTO)
                 .toList();
     }
@@ -165,11 +177,11 @@ public class JobServiceImpl implements IJobService {
         dto.setCompanyName(job.getEmployer().getCompanyName());
         dto.setType(job.getType());
         dto.setWorkMode(job.getWorkMode());
-        dto.setRequiredSkills(job.getRequiredSkills());
-        dto.setResponsibilities(job.getResponsibilities());
         dto.setProfilePicture(job.getEmployer().getProfilePictureUrl());
-        dto.setScreeningQuestions(job.getScreeningQuestions());
         dto.setEmployerId(job.getEmployer().getId());
+        dto.setResponsibilities(new ArrayList<>(job.getResponsibilities() != null ? job.getResponsibilities() : List.of()));
+        dto.setRequiredSkills(new ArrayList<>(job.getRequiredSkills() != null ? job.getRequiredSkills() : List.of()));
+        dto.setScreeningQuestions(new ArrayList<>(job.getScreeningQuestions() != null ? job.getScreeningQuestions() : List.of()));
         return dto;
     }
 }

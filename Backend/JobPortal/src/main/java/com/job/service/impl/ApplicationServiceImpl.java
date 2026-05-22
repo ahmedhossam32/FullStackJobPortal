@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     private final List<ApplicationObserver> observers;
 
     @Override
+    @Transactional
     public ApplicationResponseDTO applyToJob(ApplicationRequestDTO dto, JobSeeker jobSeeker) {
         log.info("Job seeker {} applying to job id: {}", jobSeeker.getUsername(), dto.getJobId());
         if (jobSeeker.getResumeUrl() == null || jobSeeker.getResumeUrl().isBlank()) {
@@ -68,6 +70,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ApplicationViewForEmployerDTO> getAllApplicationsForEmployer(Employer employer, ApplicationStatus status) {
         List<Application> applications;
 
@@ -83,6 +86,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponseDTO<ApplicationResponseDTO> getMyApplications(JobSeeker jobSeeker, int page, int size) {
         Page<Application> result = applicationRepository.findByJobSeeker(jobSeeker, PageRequest.of(page, size));
         List<ApplicationResponseDTO> content = result.getContent().stream()
@@ -93,6 +97,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ApplicationResponseDTO getApplicationById(Long id, JobSeeker requester) {
         Application app = applicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
@@ -105,6 +110,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     }
 
     @Override
+    @Transactional
     public void withdrawApplication(Long id, JobSeeker requester) {
         log.info("Job seeker {} withdrawing application id: {}", requester.getUsername(), id);
         Application app = applicationRepository.findById(id)
@@ -118,6 +124,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ApplicationViewForEmployerDTO> getApplicationsForJob(Long jobId, Employer employer) {
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
@@ -134,6 +141,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ApplicationViewForEmployerDTO getApplicationViewForEmployer(Long id, Employer employer) {
         Application app = applicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
@@ -146,6 +154,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     }
 
     @Override
+    @Transactional
     public void updateApplicationStatus(Long applicationId, ApplicationStatus newStatus, Employer employer) {
         log.info("Employer {} updating application id: {} to status: {}", employer.getUsername(), applicationId, newStatus);
         Application app = applicationRepository.findById(applicationId)
@@ -161,6 +170,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean hasUserAppliedToJob(Long jobId, JobSeeker jobSeeker) {
         return applicationRepository.existsByJobIdAndJobSeeker(jobId, jobSeeker);
     }

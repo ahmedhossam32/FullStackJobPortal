@@ -26,6 +26,8 @@ public class JobController {
 
     private final IJobService jobService;
 
+    // ── EMPLOYER-ONLY endpoints ────────────────────────────────────────────
+
     @PreAuthorize("hasRole('EMPLOYER')")
     @PostMapping
     public ResponseEntity<?> createJob(@RequestBody @Valid JobRequestDTO dto,
@@ -37,6 +39,38 @@ public class JobController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("message", "Job created successfully.", "jobId", createdJob.getId()));
     }
+
+    @PreAuthorize("hasRole('EMPLOYER')")
+    @GetMapping("/my")
+    public ResponseEntity<List<JobResponseDTO>> getMyJobs(@RequestAttribute("user") User user) {
+        Employer employer = (Employer) user;
+        return ResponseEntity.ok(jobService.getJobsByEmployer(employer));
+    }
+
+    @PreAuthorize("hasRole('EMPLOYER')")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateJob(
+            @PathVariable Long id,
+            @RequestBody @Valid JobRequestDTO jobRequestDTO,
+            @RequestAttribute("user") User user) {
+        Employer employer = (Employer) user;
+        log.info("Updating job id: {} by employer: {}", id, employer.getUsername());
+        JobResponseDTO updatedJob = jobService.updateJob(id, jobRequestDTO, employer);
+        return ResponseEntity.ok(updatedJob);
+    }
+
+    @PreAuthorize("hasRole('EMPLOYER')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteJob(
+            @PathVariable Long id,
+            @RequestAttribute("user") User user) {
+        Employer employer = (Employer) user;
+        log.info("Deleting job id: {} by employer: {}", id, employer.getUsername());
+        jobService.deleteJob(id, employer);
+        return ResponseEntity.ok("Job deleted successfully.");
+    }
+
+    // ── PUBLIC endpoints ───────────────────────────────────────────────────
 
     @GetMapping
     public ResponseEntity<PageResponseDTO<JobResponseDTO>> getAllJobs(
@@ -80,35 +114,5 @@ public class JobController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(jobService.searchByWorkMode(workMode, page, size));
-    }
-
-    @PreAuthorize("hasRole('EMPLOYER')")
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateJob(
-            @PathVariable Long id,
-            @RequestBody @Valid JobRequestDTO jobRequestDTO,
-            @RequestAttribute("user") User user) {
-        Employer employer = (Employer) user;
-        log.info("Updating job id: {} by employer: {}", id, employer.getUsername());
-        JobResponseDTO updatedJob = jobService.updateJob(id, jobRequestDTO, employer);
-        return ResponseEntity.ok(updatedJob);
-    }
-
-    @PreAuthorize("hasRole('EMPLOYER')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteJob(
-            @PathVariable Long id,
-            @RequestAttribute("user") User user) {
-        Employer employer = (Employer) user;
-        log.info("Deleting job id: {} by employer: {}", id, employer.getUsername());
-        jobService.deleteJob(id, employer);
-        return ResponseEntity.ok("Job deleted successfully.");
-    }
-
-    @PreAuthorize("hasRole('EMPLOYER')")
-    @GetMapping("/my")
-    public ResponseEntity<List<JobResponseDTO>> getMyJobs(@RequestAttribute("user") User user) {
-        Employer employer = (Employer) user;
-        return ResponseEntity.ok(jobService.getJobsByEmployer(employer));
     }
 }

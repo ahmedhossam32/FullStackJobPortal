@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Slf4j
@@ -42,6 +43,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    @Transactional
     public JobSeeker registerJobSeekerWithoutFiles(JobSeekerRegisterRequestDTO dto) {
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new DuplicateResourceException("Username already taken");
@@ -63,6 +65,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    @Transactional
     public Employer registerEmployer(EmployerRegisterRequestDTO dto) {
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new DuplicateResourceException("Username already taken");
@@ -84,12 +87,14 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User getUserByUsername(@NotBlank(message = "Username is required") String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AuthResponseDTO buildAuthResponse(User user, String token) {
         AuthResponseDTO response = new AuthResponseDTO();
         response.setToken(token);

@@ -8,7 +8,7 @@ import com.job.exception.ResourceNotFoundException;
 import com.job.exception.UnauthorizedException;
 import com.job.repository.NotificationRepository;
 import com.job.service.interfaces.INotificationService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +23,7 @@ public class NotificationServiceImpl implements INotificationService {
     private final NotificationRepository notificationRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<NotificationDTO> getNotificationsFor(JobSeeker jobSeeker) {
         return notificationRepository.findByRecipientOrderByCreatedAtDesc(jobSeeker).stream()
                 .map(this::mapToDTO)
@@ -59,6 +60,7 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
+    @Transactional
     public void markAsRead(Long notificationId, JobSeeker jobSeeker) {
         log.info("Marking notification id: {} as read for user: {}", notificationId, jobSeeker.getUsername());
         Notification notification = notificationRepository.findById(notificationId)
@@ -73,11 +75,13 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public int getUnreadCount(JobSeeker jobSeeker) {
         return notificationRepository.countByRecipientAndSeenFalse(jobSeeker);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<NotificationDTO> getUnreadNotifications(JobSeeker jobSeeker) {
         return notificationRepository.findByRecipientAndSeenFalseOrderByCreatedAtDesc(jobSeeker).stream()
                 .map(this::mapToDTO)

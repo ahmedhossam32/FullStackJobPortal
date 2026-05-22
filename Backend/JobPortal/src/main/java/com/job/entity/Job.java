@@ -42,13 +42,13 @@ public class Job {
     @ManyToOne(fetch = FetchType.LAZY)
     private Employer employer;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> responsibilities;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> requiredSkills;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> screeningQuestions;
 
 
