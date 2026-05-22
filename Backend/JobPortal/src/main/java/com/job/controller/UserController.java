@@ -1,12 +1,13 @@
 package com.job.controller;
 
+import com.job.dto.request.UpdateProfileRequestDTO;
 import com.job.dto.response.JobResponseDTO;
 import com.job.entity.JobSeeker;
 import com.job.entity.User;
 import com.job.service.interfaces.IProfileService;
 import com.job.service.interfaces.ISavedJobService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
@@ -29,7 +29,6 @@ public class UserController {
             @RequestParam("file") MultipartFile file,
             @RequestAttribute("user") JobSeeker jobSeeker
     ) {
-        log.info("Resume upload requested by: {}, file: {}", jobSeeker.getUsername(), file.getOriginalFilename());
         String resumeUrl = profileService.uploadResume(file, jobSeeker);
         return ResponseEntity.ok("Resume uploaded successfully: " + resumeUrl);
     }
@@ -39,7 +38,6 @@ public class UserController {
             @RequestParam("file") MultipartFile file,
             @RequestAttribute("user") User user
     ) {
-        log.info("Profile picture upload requested by: {}, file: {}", user.getUsername(), file.getOriginalFilename());
         String profileUrl = profileService.uploadProfilePicture(file, user);
         return ResponseEntity.ok("Profile picture uploaded successfully: " + profileUrl);
     }
@@ -54,7 +52,7 @@ public class UserController {
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @PutMapping("/jobseeker/update-profile")
     public ResponseEntity<String> updateProfile(
-            @RequestBody JobSeeker updatedInfo,
+            @RequestBody @Valid UpdateProfileRequestDTO updatedInfo,
             @RequestAttribute("user") JobSeeker currentUser
     ) {
         profileService.updateJobSeekerProfile(currentUser, updatedInfo);

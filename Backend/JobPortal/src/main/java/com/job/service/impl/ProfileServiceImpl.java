@@ -1,5 +1,6 @@
 package com.job.service.impl;
 
+import com.job.dto.request.UpdateProfileRequestDTO;
 import com.job.dto.response.EmployerProfileDTO;
 import com.job.dto.response.JobSeekerProfileDTO;
 import com.job.entity.Employer;
@@ -24,6 +25,12 @@ public class ProfileServiceImpl implements IProfileService {
 
     @Override
     public String uploadResume(MultipartFile file, JobSeeker jobSeeker) {
+        if (file == null || file.isEmpty()) {
+            throw new BadRequestException("File cannot be empty");
+        }
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new BadRequestException("File size must not exceed 5MB");
+        }
         log.info("Uploading resume for user: {}, file: {}", jobSeeker.getUsername(), file.getOriginalFilename());
         String url = cloudinaryService.uploadResume(file);
         jobSeeker.setResumeUrl(url);
@@ -33,6 +40,16 @@ public class ProfileServiceImpl implements IProfileService {
 
     @Override
     public String uploadProfilePicture(MultipartFile file, User user) {
+        if (file == null || file.isEmpty()) {
+            throw new BadRequestException("File cannot be empty");
+        }
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new BadRequestException("File size must not exceed 5MB");
+        }
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new BadRequestException("Only image files are allowed");
+        }
         log.info("Uploading profile picture for user: {}, file: {}", user.getUsername(), file.getOriginalFilename());
         String url = cloudinaryService.uploadImage(file);
         user.setProfilePictureUrl(url);
@@ -41,7 +58,7 @@ public class ProfileServiceImpl implements IProfileService {
     }
 
     @Override
-    public void updateJobSeekerProfile(JobSeeker currentUser, JobSeeker updatedInfo) {
+    public void updateJobSeekerProfile(JobSeeker currentUser, UpdateProfileRequestDTO updatedInfo) {
         log.info("Updating profile for job seeker: {}", currentUser.getUsername());
         currentUser.setName(updatedInfo.getName());
         currentUser.setUsername(updatedInfo.getUsername());
@@ -54,6 +71,7 @@ public class ProfileServiceImpl implements IProfileService {
     public Object getCurrentUserDto(User user) {
         if (user.getRole() == Role.JOB_SEEKER && user instanceof JobSeeker jobSeeker) {
             JobSeekerProfileDTO dto = new JobSeekerProfileDTO();
+            dto.setId(user.getId());
             dto.setUsername(user.getUsername());
             dto.setEmail(user.getEmail());
             dto.setName(user.getName());
@@ -67,6 +85,7 @@ public class ProfileServiceImpl implements IProfileService {
 
         if (user.getRole() == Role.EMPLOYER && user instanceof Employer employer) {
             EmployerProfileDTO dto = new EmployerProfileDTO();
+            dto.setId(employer.getId());
             dto.setUsername(employer.getUsername());
             dto.setEmail(employer.getEmail());
             dto.setName(employer.getName());

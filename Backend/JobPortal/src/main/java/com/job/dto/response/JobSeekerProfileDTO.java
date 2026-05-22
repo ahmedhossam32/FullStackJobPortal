@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 @Data
 public class JobSeekerProfileDTO {
+    private Long id;
     private String username;
     private String name;
     private String email;
