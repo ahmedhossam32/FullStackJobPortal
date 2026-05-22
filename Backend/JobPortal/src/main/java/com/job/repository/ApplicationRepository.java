@@ -15,10 +15,10 @@ import java.util.List;
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
 
-    List<Application> findByJobSeeker(JobSeeker jobSeeker);
     Page<Application> findByJobSeeker(JobSeeker jobSeeker, Pageable pageable);
 
     boolean existsByJobAndJobSeeker(Job job, JobSeeker jobSeeker);
+    boolean existsByJobIdAndJobSeeker(Long jobId, JobSeeker jobSeeker);
     List<Application> findByJob(Job job);
     List<Application> findByJob_Employer(Employer employer);
     List<Application> findByJob_EmployerAndStatus(Employer employer, ApplicationStatus status);

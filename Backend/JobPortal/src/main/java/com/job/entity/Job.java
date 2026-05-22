@@ -22,11 +22,13 @@ public class Job {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
-    @Column(length = 5000)
+    @Column(nullable = false, length = 5000)
     private String description;
 
+    @Column(nullable = false)
     private String location;
 
     @Enumerated(EnumType.STRING)
@@ -37,7 +39,7 @@ public class Job {
 
     private LocalDateTime postedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Employer employer;
 
     @ElementCollection

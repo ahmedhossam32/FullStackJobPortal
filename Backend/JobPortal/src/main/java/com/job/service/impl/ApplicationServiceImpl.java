@@ -23,7 +23,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -60,11 +59,8 @@ public class ApplicationServiceImpl implements IApplicationService {
         Application application = new Application();
         application.setJob(job);
         application.setJobSeeker(jobSeeker);
-        application.setResumeUrl(dto.getResumeUrl());
+        application.setResumeUrl(jobSeeker.getResumeUrl());
         application.setStatus(ApplicationStatus.PENDING);
-        application.setAppliedAt(LocalDateTime.now());
-
-        // TODO: Save screening answers to DB if needed in the future
 
         applicationRepository.save(application);
 
@@ -166,10 +162,7 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Override
     public boolean hasUserAppliedToJob(Long jobId, JobSeeker jobSeeker) {
-        Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
-
-        return applicationRepository.existsByJobAndJobSeeker(job, jobSeeker);
+        return applicationRepository.existsByJobIdAndJobSeeker(jobId, jobSeeker);
     }
 
     private ApplicationResponseDTO mapToDTO(Application application) {
@@ -181,9 +174,10 @@ public class ApplicationServiceImpl implements IApplicationService {
         dto.setAppliedAt(application.getAppliedAt());
 
         Job job = application.getJob();
+        dto.setJobId(job.getId());
         dto.setJobTitle(job.getTitle());
-        dto.setJobType(job.getType().toString());           // Assuming JobType is an enum
-        dto.setWorkMode(job.getWorkMode().toString());      // Assuming WorkMode is an enum
+        dto.setJobType(job.getType().toString());
+        dto.setWorkMode(job.getWorkMode().toString());
         dto.setLocation(job.getLocation());
         dto.setJobDescription(job.getDescription());
 

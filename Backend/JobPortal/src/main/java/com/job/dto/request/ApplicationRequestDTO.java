@@ -13,6 +13,5 @@ public class ApplicationRequestDTO {
     @NotNull(message = "Job ID is required")
     private Long jobId;
 
-    private String resumeUrl;
     private List<String> screeningAnswers;
 }

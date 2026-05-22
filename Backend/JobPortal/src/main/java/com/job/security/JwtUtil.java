@@ -46,17 +46,6 @@ public class JwtUtil {
         }
     }
 
-    public boolean isTokenValid(String token) {
-        try {
-            getClaims(token);
-            log.debug("Token is valid");
-            return true;
-        } catch (Exception e) {
-            log.error("Invalid token: {}", e.getMessage());
-            return false;
-        }
-    }
-
     private Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignKey())

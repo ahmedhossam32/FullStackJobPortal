@@ -44,7 +44,7 @@ public class AuthController {
         log.info("Sign-in attempt for username: {}", dto.getUsername());
         User user = userService.getUserByUsername(dto.getUsername());
 
-        if (user == null || !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             log.warn("Failed sign-in attempt for username: {}", dto.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

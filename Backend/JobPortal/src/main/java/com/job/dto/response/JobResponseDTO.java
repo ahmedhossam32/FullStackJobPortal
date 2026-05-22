@@ -23,4 +23,5 @@ public class JobResponseDTO {
     private List<String> responsibilities;
     private List<String> requiredSkills;
     private List<String> screeningQuestions;
+    private Long employerId;
 }

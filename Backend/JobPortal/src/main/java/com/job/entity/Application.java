@@ -20,18 +20,24 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private Job job;
 
     @Enumerated(EnumType.STRING)
-    private ApplicationStatus status=ApplicationStatus.PENDING;
+    private ApplicationStatus status = ApplicationStatus.PENDING;
 
+    @Column(nullable = false)
     private LocalDateTime appliedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private JobSeeker jobSeeker;
 
     private String resumeUrl;
 
-
+    @PrePersist
+    protected void onCreate() {
+        this.appliedAt = LocalDateTime.now();
+    }
 }

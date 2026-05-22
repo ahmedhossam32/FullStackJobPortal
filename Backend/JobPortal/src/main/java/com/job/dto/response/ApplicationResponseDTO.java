@@ -5,12 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @Getter
 @Setter
 public class ApplicationResponseDTO {
     private Long applicationId;
+    private Long jobId;
     private String username;
     private String resumeUrl;
     private ApplicationStatus status;
@@ -22,5 +22,4 @@ public class ApplicationResponseDTO {
     private String location;
     private String companyName;
     private String companyLogoUrl;
-    private Map<String, String> screeningAnswers;
 }

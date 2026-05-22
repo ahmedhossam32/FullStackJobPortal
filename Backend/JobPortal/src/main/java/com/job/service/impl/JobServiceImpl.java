@@ -115,6 +115,7 @@ public class JobServiceImpl implements IJobService {
         job.setWorkMode(dto.getWorkMode());
         job.setRequiredSkills(dto.getRequiredSkills());
         job.setResponsibilities(dto.getResponsibilities());
+        job.setScreeningQuestions(dto.getScreeningQuestions());
 
         Job updated = jobRepository.save(job);
         return mapToDTO(updated);
@@ -168,6 +169,7 @@ public class JobServiceImpl implements IJobService {
         dto.setResponsibilities(job.getResponsibilities());
         dto.setProfilePicture(job.getEmployer().getProfilePictureUrl());
         dto.setScreeningQuestions(job.getScreeningQuestions());
+        dto.setEmployerId(job.getEmployer().getId());
         return dto;
     }
 }

@@ -17,7 +17,6 @@ public class ApplicationViewForEmployerDTO {
     private String applicantName;
     private String applicantProfilePicture;
     private String resumeUrl;
-    private String coverLetter;
     private ApplicationStatus status;
     private LocalDateTime appliedAt;
     private String jobTitle;

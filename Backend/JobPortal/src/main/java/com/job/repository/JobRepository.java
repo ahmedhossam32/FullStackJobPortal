@@ -15,11 +15,6 @@ import java.util.List;
 public interface JobRepository extends JpaRepository<Job, Long> {
 
     List<Job> findByEmployer(Employer employer);
-    List<Job> findAllByOrderByPostedAtDesc();
-    List<Job> findByTitleContainingIgnoreCase(String keyword);
-    List<Job> findByType(JobType type);
-    List<Job> findByLocationContainingIgnoreCase(String location);
-    List<Job> findByWorkMode(WorkMode workMode);
 
     Page<Job> findAll(Pageable pageable);
     Page<Job> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);

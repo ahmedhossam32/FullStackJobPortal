@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -98,11 +97,4 @@ public class UserServiceImpl implements IUserService {
         return response;
     }
 
-    public boolean authenticate(String username, String rawPassword) {
-        Optional<User> userOpt = userRepository.findByUsername(username);
-        if (userOpt.isEmpty()) return false;
-
-        User user = userOpt.get();
-        return passwordEncoder.matches(rawPassword, user.getPassword());
-    }
 }
