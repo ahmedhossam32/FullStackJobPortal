@@ -44,8 +44,8 @@ public class UserController {
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @PostMapping("/save-job/{jobId}")
-    public ResponseEntity<String> saveJob(@RequestAttribute("user") User user, @PathVariable Long jobId) {
-        savedJobService.saveJob(user, jobId);
+    public ResponseEntity<String> saveJob(@RequestAttribute("user") JobSeeker jobSeeker, @PathVariable Long jobId) {
+        savedJobService.saveJob(jobSeeker, jobId);
         return ResponseEntity.ok("Job saved successfully.");
     }
 
@@ -61,15 +61,15 @@ public class UserController {
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @DeleteMapping("/unsave-job/{jobId}")
-    public ResponseEntity<String> unsaveJob(@RequestAttribute("user") User user, @PathVariable Long jobId) {
-        savedJobService.unsaveJob(user, jobId);
+    public ResponseEntity<String> unsaveJob(@RequestAttribute("user") JobSeeker jobSeeker, @PathVariable Long jobId) {
+        savedJobService.unsaveJob(jobSeeker, jobId);
         return ResponseEntity.ok("Job removed from saved list.");
     }
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping("/saved-jobs")
-    public ResponseEntity<List<JobResponseDTO>> getSavedJobs(@RequestAttribute("user") User user) {
-        return ResponseEntity.ok(savedJobService.getSavedJobs(user));
+    public ResponseEntity<List<JobResponseDTO>> getSavedJobs(@RequestAttribute("user") JobSeeker jobSeeker) {
+        return ResponseEntity.ok(savedJobService.getSavedJobs(jobSeeker));
     }
 
     @GetMapping("/me")

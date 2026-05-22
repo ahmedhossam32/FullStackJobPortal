@@ -21,12 +21,13 @@ public class JobSeeker extends User {
     @Column(name = "resume_url")
     private String resumeUrl;
     private String resumeOriginalName;
+    @Column(nullable = false)
     private LocalDate dob;
 
-    @OneToMany(mappedBy = "jobSeeker")
+    @OneToMany(mappedBy = "jobSeeker", fetch = FetchType.LAZY)
     private List<Application> applications;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "saved_jobs",
             joinColumns = @JoinColumn(name = "job_seeker_id"),

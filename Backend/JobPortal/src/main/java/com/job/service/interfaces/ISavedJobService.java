@@ -1,12 +1,12 @@
 package com.job.service.interfaces;
 
 import com.job.dto.response.JobResponseDTO;
-import com.job.entity.User;
+import com.job.entity.JobSeeker;
 
 import java.util.List;
 
 public interface ISavedJobService {
-    void saveJob(User user, Long jobId);
-    void unsaveJob(User user, Long jobId);
-    List<JobResponseDTO> getSavedJobs(User user);
+    void saveJob(JobSeeker jobSeeker, Long jobId);
+    void unsaveJob(JobSeeker jobSeeker, Long jobId);
+    List<JobResponseDTO> getSavedJobs(JobSeeker jobSeeker);
 }

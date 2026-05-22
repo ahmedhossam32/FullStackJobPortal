@@ -24,8 +24,6 @@ public class EmployerRegisterRequestDTO {
     @NotBlank(message = "Company name is required")
     private String companyName;
 
-    private String profilePictureFileName;
-
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
