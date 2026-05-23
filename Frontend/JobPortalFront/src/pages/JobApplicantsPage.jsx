@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 import { FaClock, FaEnvelope } from "react-icons/fa";
 import { toast } from "react-toastify";
 
+const openResume = (url) => {
+  if (!url) return;
+  window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(url)}`, '_blank');
+};
+
 
 export default function JobApplicantsPage() {
   const { jobId } = useParams();
@@ -42,7 +47,7 @@ export default function JobApplicantsPage() {
   }, [jobId, token]);
 
   const handleViewResume = (resumeUrl) => {
-    window.open(resumeUrl, "_blank");
+    openResume(resumeUrl);
   };
 
   return (

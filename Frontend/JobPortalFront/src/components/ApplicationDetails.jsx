@@ -2,6 +2,11 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
+const openResume = (url) => {
+  if (!url) return;
+  window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(url)}`, '_blank');
+};
+
 
 export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
   const navigate = useNavigate();
@@ -130,7 +135,7 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
               <span className="font-medium text-gray-900">My Resume</span>{" "}
               <button
                 type="button"
-                onClick={() => window.open(existingResume, "_blank")}
+                onClick={() => openResume(existingResume)}
                 className="text-blue-600 underline hover:text-blue-800"
               >
                 Preview

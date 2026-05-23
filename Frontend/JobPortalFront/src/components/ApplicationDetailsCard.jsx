@@ -1,5 +1,9 @@
 import PropTypes from "prop-types";
 
+const openResume = (url) => {
+  if (!url) return;
+  window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(url)}`, '_blank');
+};
 
 export default function ApplicationDetailsCard({ application }) {
   const formatDate = (dateString) => {
@@ -11,7 +15,7 @@ export default function ApplicationDetailsCard({ application }) {
 
   const handleResumeClick = (e) => {
     e.preventDefault();
-    window.open(application.resumeUrl, "_blank");
+    openResume(application.resumeUrl);
   };
 
   const getStatusStyle = (status) => {

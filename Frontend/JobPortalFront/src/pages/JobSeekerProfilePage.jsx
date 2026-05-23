@@ -3,6 +3,11 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
 
+const openResume = (url) => {
+  if (!url) return;
+  window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(url)}`, '_blank');
+};
+
 
 export default function JobSeekerProfilePage() {
   const [formData, setFormData] = useState({
@@ -122,7 +127,7 @@ export default function JobSeekerProfilePage() {
   };
 
   const handleResumePreview = () => {
-    window.open(formData.resume, "_blank");
+    openResume(formData.resume);
   };
 
   return (

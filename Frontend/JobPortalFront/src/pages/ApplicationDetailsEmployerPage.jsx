@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
+const openResume = (url) => {
+  if (!url) return;
+  window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(url)}`, '_blank');
+};
+
 
 export default function ApplicationDetailsEmployerPage() {
   const { id } = useParams();
@@ -32,7 +37,7 @@ export default function ApplicationDetailsEmployerPage() {
   }, [id, token]);
 
   const handleViewResume = () => {
-    window.open(application.resumeUrl, "_blank");
+    openResume(application.resumeUrl);
   };
 
   const handleStatusUpdate = async () => {

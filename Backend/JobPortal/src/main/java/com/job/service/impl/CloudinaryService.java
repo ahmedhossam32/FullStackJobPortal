@@ -46,24 +46,26 @@ public class CloudinaryService {
         }
     }
 
-    public String uploadResume(MultipartFile file) {
+    public String uploadResume(MultipartFile file) throws IOException {
         log.info("Uploading resume to Cloudinary: {}", file.getOriginalFilename());
         try {
-            @SuppressWarnings("unchecked")
             Map<String, Object> options = new HashMap<>();
-            options.put("resource_type", "raw");
             options.put("folder", "resumes");
-            options.put("format", "pdf");
-            options.put("flags", "attachment:false");
-            options.put("type", "upload");
+            options.put("resource_type", "raw");
             options.put("access_mode", "public");
-            Map<String, Object> result = cloudinary.uploader().upload(file.getBytes(), options);
+            options.put("use_filename", true);
+            options.put("unique_filename", true);
+
+            Map<String, Object> result = cloudinary.uploader().upload(
+                file.getBytes(), options
+            );
+
             String url = (String) result.get("secure_url");
-            log.info("Resume uploaded successfully to Cloudinary");
+            log.info("Resume uploaded successfully: {}", url);
             return url;
-        } catch (IOException e) {
-            log.error("Resume upload to Cloudinary failed: {}", e.getMessage());
-            throw new BadRequestException("Resume upload failed", e);
+        } catch (Exception e) {
+            log.error("Failed to upload resume to Cloudinary", e);
+            throw new IOException("Failed to upload resume", e);
         }
     }
 
