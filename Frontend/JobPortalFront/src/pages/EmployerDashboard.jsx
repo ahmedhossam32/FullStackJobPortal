@@ -82,7 +82,7 @@ export default function EmployerDashboard() {
       {/* Header */}
       <div className="flex flex-wrap items-center gap-4 mb-8">
         <img
-          src={user?.profilePictureUrl || "/default-logo.png"}
+          src={user?.profilePicture || "/default-logo.png"}
           alt="Company Logo"
           className="w-12 h-12 flex-shrink-0 object-contain border rounded-md"
         />

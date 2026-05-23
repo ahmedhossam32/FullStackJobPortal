@@ -19,7 +19,7 @@ export default function CreateJobPage() {
   const [inputField, setInputField] = useState("");
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
-  const logoUrl = user?.profilePictureUrl || "/default-logo.png";
+  const logoUrl = user?.profilePicture || "/default-logo.png";
   const companyName = user?.companyName || user?.name || "Your Company";
 
   const handleChange = (e) => {

@@ -194,7 +194,12 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
             : "bg-[#6B3F27] hover:bg-[#5C3421]"
         }`}
       >
-        {submitting ? "Submitting..." : "Submit Application"}
+        {submitting ? (
+          <span className="flex items-center gap-2">
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            Submitting...
+          </span>
+        ) : "Submit Application"}
       </button>
     </div>
   );

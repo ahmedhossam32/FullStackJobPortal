@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { AuthContext } from "../context/AuthContext";
 
 export default function JobSeekerProfilePage() {
   const [formData, setFormData] = useState({
@@ -13,8 +14,11 @@ export default function JobSeekerProfilePage() {
     resumeOriginalName: "",
   });
 
+  const { updateUser } = useContext(AuthContext);
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [resumeFile, setResumeFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -47,12 +51,20 @@ export default function JobSeekerProfilePage() {
 
   const handleFileChange = (e, type) => {
     const file = e.target.files[0];
-    if (type === "profilePic") setProfilePicFile(file);
-    else setResumeFile(file);
+    if (type === "profilePic") {
+      setProfilePicFile(file);
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
+    } else {
+      setResumeFile(file);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let hasError = false;
+    setLoading(true);
+
     try {
       await axios.put(
         "http://localhost:8080/user/jobseeker/update-profile",
@@ -66,28 +78,46 @@ export default function JobSeekerProfilePage() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+    } catch (err) {
+      console.error("Error updating profile info:", err);
+      toast.error(err.response?.data?.message || "Failed to update profile.");
+      hasError = true;
+    }
 
-      if (profilePicFile) {
+    if (profilePicFile) {
+      try {
         const picForm = new FormData();
         picForm.append("file", profilePicFile);
         await axios.post("http://localhost:8080/user/upload-profile-picture", picForm, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        const meRes = await axios.get("http://localhost:8080/user/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        updateUser(meRes.data);
+      } catch (err) {
+        console.error("Error uploading profile picture:", err);
+        toast.error(err.response?.data?.message || "Failed to upload profile picture.");
+        hasError = true;
       }
+    }
 
-      if (resumeFile) {
+    if (resumeFile) {
+      try {
         const resumeForm = new FormData();
         resumeForm.append("file", resumeFile);
         await axios.post("http://localhost:8080/user/jobseeker/upload-resume", resumeForm, {
           headers: { Authorization: `Bearer ${token}` },
         });
+      } catch (err) {
+        console.error("Error uploading resume:", err);
+        toast.error(err.response?.data?.message || "Failed to upload resume.");
+        hasError = true;
       }
-
-      toast.success("Profile updated successfully");
-    } catch (err) {
-      console.error("Error updating profile:", err);
-      toast.error("Failed to update profile.");
     }
+
+    if (!hasError) toast.success("Profile updated successfully");
+    setLoading(false);
   };
 
   const handleResumePreview = () => {
@@ -102,9 +132,9 @@ export default function JobSeekerProfilePage() {
         {/* Profile Picture */}
         <div className="flex justify-center md:justify-start md:flex-shrink-0">
           <div className="relative w-36 h-36 md:w-40 md:h-40 rounded-full overflow-hidden border border-gray-300 shadow-sm">
-            {formData.profilePicture ? (
+            {(previewUrl || formData.profilePicture) ? (
               <img
-                src={formData.profilePicture || "/default-avatar.png"}
+                src={previewUrl || formData.profilePicture || "/default-avatar.png"}
                 alt="Profile"
                 className="w-full h-full object-cover"
               />
@@ -203,9 +233,13 @@ export default function JobSeekerProfilePage() {
 
           <button
             type="submit"
-            className="w-full md:w-auto bg-[#6B3F27] hover:bg-[#5c3421] text-white px-6 py-3 min-h-[44px] rounded-md font-semibold mt-2"
+            disabled={loading}
+            className="w-full md:w-auto bg-[#6B3F27] hover:bg-[#5c3421] text-white px-6 py-3 min-h-[44px] rounded-md font-semibold mt-2 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Save Changes
+            {loading && (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            )}
+            {loading ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </form>

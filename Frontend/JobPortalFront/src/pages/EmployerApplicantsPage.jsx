@@ -10,7 +10,7 @@ export default function EmployerApplicantsPage() {
   const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem("user"));
-  const logoUrl = user?.profilePictureUrl || "/default-logo.png";
+  const logoUrl = user?.profilePicture || "/default-logo.png";
   const companyName = user?.companyName || user?.name || "Your Company";
 
   useEffect(() => {

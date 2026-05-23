@@ -66,13 +66,16 @@ export default function MyJobCard({ job, tab, onUnsave, onWithdraw, onRefresh })
     isSaved && (
       <div
         key={job.id}
-        className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 py-4 mb-4 rounded-lg border border-gray-200 bg-white hover:shadow-md transition-all gap-3 sm:gap-0"
+        className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 py-4 mb-4 rounded-lg border border-gray-200 bg-white hover:shadow-md transition-all gap-3 sm:gap-0 cursor-pointer"
       >
         {/* Left - Logo and Info */}
-        <div className="flex items-center gap-4 min-w-0 flex-1">
+        <div
+          className="flex items-center gap-4 min-w-0 flex-1"
+          onClick={() => navigate(`/jobs?jobId=${job.id}`)}
+        >
           <div className="w-12 h-12 flex-shrink-0 rounded-full bg-gray-100 border flex items-center justify-center overflow-hidden">
             <img
-              src={job.profilePictureUrl || "/default-logo.png"}
+              src={job.profilePicture || "/default-logo.png"}
               alt="Company Logo"
               className="w-full h-full object-contain"
             />

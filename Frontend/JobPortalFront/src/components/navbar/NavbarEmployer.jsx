@@ -20,7 +20,7 @@ export default function NavbarEmployer() {
     navigate("/");
   };
 
-  const profileImageUrl = user?.profilePictureUrl || defaultAvatar;
+  const profileImageUrl = user?.profilePicture || defaultAvatar;
 
   const closeMenu = () => setMenuOpen(false);
 

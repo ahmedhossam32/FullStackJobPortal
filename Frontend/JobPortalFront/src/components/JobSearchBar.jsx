@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { GoLocation } from 'react-icons/go';
+import { FaTimes } from 'react-icons/fa';
 import Select from 'react-select';
 
 const jobTypeOptions = [
@@ -17,9 +18,17 @@ export default function JobSearchBar({ onSearch }) {
   const [type, setType] = useState(jobTypeOptions[0]);
 
   const handleClick = () => {
-    const combinedTitle = `${title} ${location}`.trim();
-    onSearch({ title: combinedTitle, type: type.value });
+    onSearch({ title, location, type: type.value });
   };
+
+  const handleClear = () => {
+    setTitle('');
+    setLocation('');
+    setType(jobTypeOptions[0]);
+    onSearch({ title: '', location: '', type: '' });
+  };
+
+  const hasValue = title || location || type.value;
 
   return (
     <div className="flex justify-center my-8 z-10 relative">
@@ -77,6 +86,17 @@ export default function JobSearchBar({ onSearch }) {
             }}
           />
         </div>
+
+        {/* Clear button */}
+        {hasValue && (
+          <button
+            onClick={handleClear}
+            className="p-2 text-gray-400 hover:text-gray-600 transition self-center"
+            title="Clear search"
+          >
+            <FaTimes />
+          </button>
+        )}
 
         {/* Search button */}
         <button

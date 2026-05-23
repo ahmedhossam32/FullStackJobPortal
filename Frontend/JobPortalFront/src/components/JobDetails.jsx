@@ -3,6 +3,7 @@ import {
   FaMapMarkerAlt,
   FaRegBookmark,
   FaBookmark,
+  FaArrowLeft,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -12,6 +13,7 @@ export default function JobDetails({ job }) {
   const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchStatuses = async () => {
@@ -74,6 +76,7 @@ export default function JobDetails({ job }) {
       : `http://localhost:8080/user/save-job/${job.id}`;
     const method = saved ? "DELETE" : "POST";
 
+    setSaving(true);
     try {
       const response = await fetch(endpoint, {
         method,
@@ -92,6 +95,8 @@ export default function JobDetails({ job }) {
     } catch (err) {
       console.error(err);
       successToast("An error occurred while saving the job.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -100,14 +105,29 @@ export default function JobDetails({ job }) {
 
   return (
     <div className="relative bg-white p-4 md:p-6 rounded-lg shadow-lg border border-gray-200 w-full">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1 mb-3"
+      >
+        <FaArrowLeft size={12} /> Back
+      </button>
+
       {/* Action Buttons */}
       <div className="flex flex-wrap justify-end gap-3 mb-3 md:absolute md:top-4 md:right-4 md:mb-0">
         <button
           onClick={toggleSave}
-          className="text-[#6B3F27] hover:text-[#5C3421] transition-colors duration-200"
+          disabled={saving}
+          className="text-[#6B3F27] hover:text-[#5C3421] transition-colors duration-200 disabled:opacity-50"
           title={saved ? "Unsave job" : "Save job"}
         >
-          {saved ? <FaBookmark size={20} /> : <FaRegBookmark size={20} />}
+          {saving ? (
+            <div className="w-4 h-4 border-2 border-[#6B3F27] border-t-transparent rounded-full animate-spin" />
+          ) : saved ? (
+            <FaBookmark size={20} />
+          ) : (
+            <FaRegBookmark size={20} />
+          )}
         </button>
 
         <button
@@ -128,7 +148,7 @@ export default function JobDetails({ job }) {
       <div className="flex items-center gap-4 mb-4">
         <div className="w-16 h-16 rounded border overflow-hidden bg-gray-100">
           <img
-            src={job.profilePictureUrl || "/default-logo.png"}
+            src={job.profilePicture || "/default-logo.png"}
             alt={job.companyName || "Company Logo"}
             className="w-full h-full object-contain"
           />

@@ -13,7 +13,7 @@ export default function JobCard({ job, isSelected, onSelect }) {
       {/* Logo */}
       <div className="w-16 h-16 flex-shrink-0 rounded-full overflow-hidden border border-gray-200 bg-gray-50 shadow-sm flex items-center justify-center">
         <img
-          src={job.profilePictureUrl || '/default-logo.png'}
+          src={job.profilePicture || '/default-logo.png'}
           alt={job.companyName}
           className="w-12 h-12 object-contain"
         />

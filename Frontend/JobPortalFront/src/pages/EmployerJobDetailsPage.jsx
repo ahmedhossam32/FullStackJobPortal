@@ -93,9 +93,9 @@ export default function EmployerJobDetailsPage() {
 
         {/* Header */}
         <div className="flex flex-wrap items-center gap-4 mb-4">
-          {job.profilePictureUrl && (
+          {job.profilePicture && (
             <img
-              src={job.profilePictureUrl || "/default-logo.png"}
+              src={job.profilePicture || "/default-logo.png"}
               alt="Company Logo"
               className="w-12 h-12 object-contain rounded border"
             />

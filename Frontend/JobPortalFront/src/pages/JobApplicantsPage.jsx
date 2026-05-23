@@ -11,7 +11,7 @@ export default function JobApplicantsPage() {
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
 
-  const logoUrl = user?.profilePictureUrl || "/default-logo.png";
+  const logoUrl = user?.profilePicture || "/default-logo.png";
   const companyName = user?.companyName || user?.name || "Your Company";
 
   useEffect(() => {
