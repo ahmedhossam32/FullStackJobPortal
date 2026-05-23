@@ -47,8 +47,8 @@ export default function Navbar({ onOpenJobSeeker, onOpenEmployer }) {
             </div>
           ) : (
             <div className="hidden md:flex items-center gap-6">
-              <span className="cursor-pointer hover:text-[#6F4E37] transition" onClick={() => alert("Jobs page not yet implemented")}>Jobs</span>
-              <span className="cursor-pointer hover:text-[#6F4E37] transition" onClick={() => alert("Companies page not yet implemented")}>Companies</span>
+              <span className="cursor-pointer hover:text-[#6F4E37] transition" onClick={() => navigate('/jobs')}>Jobs</span>
+              <span className="cursor-pointer hover:text-[#6F4E37] transition">Companies</span>
               <span className="cursor-pointer hover:text-[#6F4E37] transition" onClick={onOpenEmployer}>For Employers</span>
               <span className="cursor-pointer hover:text-[#6F4E37] transition" onClick={onOpenJobSeeker}>For Professionals</span>
             </div>

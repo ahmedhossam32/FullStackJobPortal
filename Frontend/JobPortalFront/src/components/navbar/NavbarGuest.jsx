@@ -21,8 +21,8 @@ export default function NavbarGuest({ onOpenJobSeeker, onOpenEmployer }) {
             JobPort
           </span>
           <div className="hidden md:flex items-center gap-6">
-            <span className="hover:text-black cursor-pointer" onClick={() => alert("Jobs page not yet implemented")}>Jobs</span>
-            <span className="hover:text-black cursor-pointer" onClick={() => alert("Companies page not yet implemented")}>Companies</span>
+            <span className="hover:text-black cursor-pointer" onClick={() => navigate('/jobs')}>Jobs</span>
+            <span className="hover:text-black cursor-pointer">Companies</span>
             <span className="hover:text-black cursor-pointer" onClick={onOpenEmployer}>For Employers</span>
             <span className="hover:text-black cursor-pointer" onClick={onOpenJobSeeker}>For Professionals</span>
           </div>
@@ -71,8 +71,8 @@ export default function NavbarGuest({ onOpenJobSeeker, onOpenEmployer }) {
       {/* Mobile dropdown */}
       {menuOpen && (
         <div className="md:hidden mt-3 border-t pt-3 flex flex-col gap-4 text-sm font-medium text-gray-800">
-          <span className="cursor-pointer hover:text-black" onClick={() => { alert("Jobs page not yet implemented"); closeMenu(); }}>Jobs</span>
-          <span className="cursor-pointer hover:text-black" onClick={() => { alert("Companies page not yet implemented"); closeMenu(); }}>Companies</span>
+          <span className="cursor-pointer hover:text-black" onClick={() => { navigate('/jobs'); closeMenu(); }}>Jobs</span>
+          <span className="cursor-pointer hover:text-black" onClick={closeMenu}>Companies</span>
           <span className="cursor-pointer hover:text-black" onClick={() => { onOpenEmployer(); closeMenu(); }}>For Employers</span>
           <span className="cursor-pointer hover:text-black" onClick={() => { onOpenJobSeeker(); closeMenu(); }}>For Professionals</span>
         </div>
