@@ -59,9 +59,15 @@ export default function NotificationToastManager() {
           toast(<CustomNotificationToast notification={n} token={token} />, {
             autoClose: 5000,
             closeButton: false,
-            position:"top-right",
+            position: "top-right",
             hideProgressBar: true,
-            style: { background: "transparent", boxShadow: "none", padding: 0 },
+            style: {
+              background: "transparent",
+              boxShadow: "none",
+              padding: 0,
+              maxWidth: "100vw",
+              width: "auto",
+            },
           });
 
           setTimeout(showNext, 5500);

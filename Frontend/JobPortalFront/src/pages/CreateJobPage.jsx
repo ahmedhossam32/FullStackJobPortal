@@ -40,23 +40,36 @@ export default function CreateJobPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white py-10 px-6">
-      <div className="flex items-center gap-4 mb-6">
+    <div className="min-h-screen bg-white py-10 px-4 sm:px-6 overflow-x-hidden">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
         <img
           src={logoUrl}
           alt="Company Logo"
           className="w-14 h-14 object-contain rounded border"
         />
         <div>
-          <h1 className="text-2xl font-bold text-[#6B3F27]">{companyName}</h1>
-          <p className="text-gray-500 text-sm">You're now creating a new job post.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#6B3F27]">{companyName}</h1>
+          <p className="text-gray-500 text-sm sm:text-base">You're now creating a new job post.</p>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto bg-white border border-gray-200 rounded-2xl shadow-md p-8">
+      <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-2xl shadow-md p-6 sm:p-8">
+        <div className="mb-6">
+          <div className="flex items-center justify-between gap-3 text-sm sm:text-base text-gray-600 mb-2">
+            <span>Step {step} of 5</span>
+            <span className="font-medium">Progress</span>
+          </div>
+          <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-[#6B3F27] transition-all duration-300"
+              style={{ width: `${(step / 5) * 100}%` }}
+            />
+          </div>
+        </div>
+
         {step === 1 && (
           <>
-            <h2 className="text-xl font-bold text-[#6B3F27] mb-4">Step 1: Job Basics</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#6B3F27] mb-4">Step 1: Job Basics</h2>
             <label className="block mb-1 font-medium">Job Title</label>
             <input
               name="title"
@@ -118,17 +131,17 @@ export default function CreateJobPage() {
 
         {step === 3 && (
           <>
-            <h2 className="text-xl font-bold text-[#6B3F27] mb-4">Step 3: Responsibilities</h2>
-            <div className="flex gap-2 mb-2">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#6B3F27] mb-4">Step 3: Responsibilities</h2>
+            <div className="flex flex-col sm:flex-row gap-2 mb-2">
               <input
                 value={inputField}
                 onChange={(e) => setInputField(e.target.value)}
-                className="flex-1 border p-2 rounded"
+                className="w-full flex-1 border p-2 rounded"
                 placeholder="e.g. Build UI components"
               />
               <button
                 onClick={() => handleListInput("responsibilities")}
-                className="bg-[#6B3F27] text-white px-4 py-1 rounded"
+                className="w-full sm:w-auto bg-[#6B3F27] text-white px-4 py-2 rounded"
               >
                 Add
               </button>
@@ -152,17 +165,17 @@ export default function CreateJobPage() {
 
         {step === 4 && (
           <>
-            <h2 className="text-xl font-bold text-[#6B3F27] mb-4">Step 4: Required Skills</h2>
-            <div className="flex gap-2 mb-2">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#6B3F27] mb-4">Step 4: Required Skills</h2>
+            <div className="flex flex-col sm:flex-row gap-2 mb-2">
               <input
                 value={inputField}
                 onChange={(e) => setInputField(e.target.value)}
-                className="flex-1 border p-2 rounded"
+                className="w-full flex-1 border p-2 rounded"
                 placeholder="e.g. React, JavaScript"
               />
               <button
                 onClick={() => handleListInput("requiredSkills")}
-                className="bg-[#6B3F27] text-white px-4 py-1 rounded"
+                className="w-full sm:w-auto bg-[#6B3F27] text-white px-4 py-2 rounded"
               >
                 Add
               </button>
@@ -186,17 +199,17 @@ export default function CreateJobPage() {
 
         {step === 5 && (
           <>
-            <h2 className="text-xl font-bold text-[#6B3F27] mb-4">Step 5: Screening Questions</h2>
-            <div className="flex gap-2 mb-2">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#6B3F27] mb-4">Step 5: Screening Questions</h2>
+            <div className="flex flex-col sm:flex-row gap-2 mb-2">
               <input
                 value={inputField}
                 onChange={(e) => setInputField(e.target.value)}
-                className="flex-1 border p-2 rounded"
+                className="w-full flex-1 border p-2 rounded"
                 placeholder="e.g. What is your expected salary?"
               />
               <button
                 onClick={() => handleListInput("screeningQuestions")}
-                className="bg-[#6B3F27] text-white px-4 py-1 rounded"
+                className="w-full sm:w-auto bg-[#6B3F27] text-white px-4 py-2 rounded"
               >
                 Add
               </button>
@@ -242,8 +255,8 @@ export default function CreateJobPage() {
                 setStep(step + 1);
               }}
 
- className="px-4 py-2 bg-[#6B3F27] text-white rounded hover:bg-[#5C3421]"
- >
+              className="px-4 py-2 bg-[#6B3F27] text-white rounded hover:bg-[#5C3421]"
+            >
               Next
             </button>
           ) : (

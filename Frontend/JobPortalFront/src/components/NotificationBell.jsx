@@ -64,7 +64,7 @@ export default function NotificationBell() {
       </div>
 
       {showDropdown && (
-        <div className="absolute right-0 mt-2 w-[400px] bg-white shadow-xl border rounded-xl z-50 max-h-[450px] overflow-y-auto">
+        <div className="absolute right-0 mt-2 w-[min(400px,calc(100vw-1rem))] max-w-full bg-white shadow-xl border rounded-xl z-50 max-h-[450px] overflow-y-auto">
           <div className="p-4 font-semibold text-gray-800 border-b text-base">
             Notifications
           </div>
@@ -83,7 +83,7 @@ export default function NotificationBell() {
                   <img
                     src={n.companyLogoUrl}
                     alt="Company Logo"
-        className="w-10 h-10 rounded-full object-contain border"
+                    className="w-10 h-10 rounded-full object-contain border"
                   />
                   <div className="flex-1">
                     <p className="text-sm text-gray-800 leading-snug">{n.message}</p>

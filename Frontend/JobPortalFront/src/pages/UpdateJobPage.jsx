@@ -71,23 +71,36 @@ export default function UpdateJobPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white  py-10 px-6">
-      <div className="flex items-center gap-4 mb-6">
+    <div className="min-h-screen bg-white py-10 px-4 sm:px-6 overflow-x-hidden">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
         <img
           src={logoUrl}
           alt="Company Logo"
           className="w-14 h-14 object-contain rounded border"
         />
         <div>
-          <h1 className="text-2xl font-bold text-[#6B3F27]">{companyName}</h1>
-          <p className="text-gray-600 text-sm mt-1">You're updating an existing job post.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#6B3F27]">{companyName}</h1>
+          <p className="text-gray-600 text-sm sm:text-base mt-1">You're updating an existing job post.</p>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+      <div className="w-full max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-gray-200">
+        <div className="mb-6">
+          <div className="flex items-center justify-between gap-3 text-sm sm:text-base text-gray-600 mb-2">
+            <span>Step {step} of 5</span>
+            <span className="font-medium">Progress</span>
+          </div>
+          <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-[#6B3F27] transition-all duration-300"
+              style={{ width: `${(step / 5) * 100}%` }}
+            />
+          </div>
+        </div>
+
         {step === 1 && (
           <>
-            <h2 className="text-xl font-semibold mb-4 text-[#6B3F27]">Step 1: Job Basics</h2>
+            <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-[#6B3F27]">Step 1: Job Basics</h2>
             <label className="block mb-2 font-medium">Job Title</label>
             <input
               name="title"
@@ -164,16 +177,16 @@ export default function UpdateJobPage() {
             step === stepNumber && (
               <div key={key}>
                 <h2 className="text-xl font-semibold mb-4 text-[#6B3F27]">{titles[key]}</h2>
-                <div className="flex gap-2 mb-2">
+                <div className="flex flex-col sm:flex-row gap-2 mb-2">
                   <input
                     value={inputField}
                     onChange={(e) => setInputField(e.target.value)}
-                    className="flex-1 border p-2 rounded"
+                    className="w-full flex-1 border p-2 rounded"
                     placeholder={placeholders[key]}
                   />
                   <button
                     onClick={() => handleListInput(key)}
-                    className="bg-[#6B3F27] text-white px-4 rounded"
+                    className="w-full sm:w-auto bg-[#6B3F27] text-white px-4 py-2 rounded"
                   >
                     Add
                   </button>
@@ -226,7 +239,7 @@ export default function UpdateJobPage() {
                 }
                 setStep(step + 1);
               }}
- className="px-4 py-2 bg-[#6B3F27] text-white rounded hover:bg-[#5C3421]"
+              className="px-4 py-2 bg-[#6B3F27] text-white rounded hover:bg-[#5C3421]"
             >
               Next
             </button>
@@ -261,7 +274,7 @@ export default function UpdateJobPage() {
                   Swal.fire("Error", err.message, "error");
                 }
               }}
- className="px-4 py-2 bg-[#6B3F27] text-white rounded hover:bg-[#5C3421]"
+              className="px-4 py-2 bg-[#6B3F27] text-white rounded hover:bg-[#5C3421]"
             >
               Update Job
             </button>
