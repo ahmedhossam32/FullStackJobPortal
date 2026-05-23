@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/navbar/Navbar';
 import Footer from '../components/Footer';
 import leftImage from '../pics/background3.png';
@@ -10,6 +11,8 @@ import communityIcon from '../pics/icons8-community-30.png';
 import incomeIcon from '../pics/icons8-money-24.png';
 
 export default function Home() {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-white text-black">
 
@@ -29,8 +32,8 @@ export default function Home() {
             Explore thousands of job opportunities and company reviews
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3">
-            <button className="w-full sm:w-auto px-5 py-3 min-h-[44px] bg-black text-white rounded">Find Jobs</button>
-            <button className="w-full sm:w-auto px-5 py-3 min-h-[44px] border rounded">Post a Job</button>
+            <button onClick={() => navigate('/jobs')} className="w-full sm:w-auto px-5 py-3 min-h-[44px] bg-black text-white rounded">Find Jobs</button>
+            <button onClick={() => navigate('/jobs')} className="w-full sm:w-auto px-5 py-3 min-h-[44px] border rounded">Post a Job</button>
           </div>
         </div>
 
