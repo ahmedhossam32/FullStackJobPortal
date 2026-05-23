@@ -33,7 +33,7 @@ export default function EmployerDashboard() {
         setApplications(data);
 
         const pendingCount = data.filter(app => app.status === "PENDING").length;
-        const acceptedCount = data.filter(app => app.status === "ACCEPTED").length;
+        const acceptedCount = data.filter(app => app.status === "OFFERED").length;
         const rejectedCount = data.filter(app => app.status === "REJECTED").length;
 
         setPending(pendingCount);
@@ -98,7 +98,7 @@ export default function EmployerDashboard() {
         <StatCard icon={<FaClock size={20} />} label="Pending" value={pending} />
         <StatCard
           icon={<FaCheckCircle size={20} />}
-          label="Accepted / Rejected"
+          label="Offered / Rejected"
           value={<span className="font-semibold">{accepted} / {rejected}</span>}
         />
       </div>
@@ -183,7 +183,7 @@ export default function EmployerDashboard() {
                 className={`px-3 py-1 rounded-full text-sm font-semibold border shadow-sm ${
                   a.status === "PENDING"
                     ? "bg-yellow-100 text-yellow-700 border-yellow-300"
-                    : a.status === "ACCEPTED"
+                    : a.status === "OFFERED"
                     ? "bg-green-100 text-green-700 border-green-300"
                     : "bg-red-100 text-red-600 border-red-300"
                 }`}
