@@ -128,11 +128,7 @@ export default function JobDetails({ job }) {
       <div className="flex items-center gap-4 mb-4">
         <div className="w-16 h-16 rounded border overflow-hidden bg-gray-100">
           <img
-            src={
-              job.profilePicture
-                ? `http://localhost:8080/files/profile-picture/${job.profilePicture}`
-                : "/default-logo.png"
-            }
+            src={job.profilePictureUrl || "/default-logo.png"}
             alt={job.companyName || "Company Logo"}
             className="w-full h-full object-contain"
           />

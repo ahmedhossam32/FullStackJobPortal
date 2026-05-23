@@ -41,7 +41,7 @@ export default function AppliedJobCard({ application, onWithdraw, onRefresh }) {
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 bg-gray-100 border rounded-full overflow-hidden flex items-center justify-center">
           <img
-            src={`http://localhost:8080/files/profile-picture/${application.companyLogoUrl}`}
+            src={application.companyLogoUrl || "/default-logo.png"}
             alt="Company Logo"
             className="w-full h-full object-contain"
           />

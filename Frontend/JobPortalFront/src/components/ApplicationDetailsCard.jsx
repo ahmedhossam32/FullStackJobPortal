@@ -8,23 +8,9 @@ export default function ApplicationDetailsCard({ application }) {
     });
   };
 
-  const handleResumeClick = async (e) => {
+  const handleResumeClick = (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
-    const resumeUrl = `http://localhost:8080/files/resume/${application.resumeUrl}`;
-
-    try {
-      const response = await fetch(resumeUrl, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) throw new Error("Failed to fetch resume.");
-      const blob = await response.blob();
-      const fileUrl = window.URL.createObjectURL(blob);
-      window.open(fileUrl, "_blank");
-    } catch (error) {
-      console.error("Resume fetch error:", error);
-      alert("Failed to open resume. You may not be authorized.");
-    }
+    window.open(application.resumeUrl, "_blank");
   };
 
   const getStatusStyle = (status) => {
@@ -44,7 +30,7 @@ export default function ApplicationDetailsCard({ application }) {
       <div className="flex items-center gap-5 mb-6">
         <div className="w-16 h-16 rounded border bg-white flex items-center justify-center overflow-hidden">
           <img
-            src={`http://localhost:8080/files/profile-picture/${application.companyLogoUrl}`}
+            src={application.companyLogoUrl || "/default-logo.png"}
             alt="Company Logo"
             className="object-contain w-full h-full"
           />

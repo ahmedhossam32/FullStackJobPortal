@@ -19,9 +19,7 @@ export default function NavbarEmployer() {
     navigate("/");
   };
 
-  const profileImageUrl = user?.profilePicture
-    ? `http://localhost:8080/files/profile-picture/${user.profilePicture}`
-    : defaultAvatar;
+  const profileImageUrl = user?.profilePictureUrl || defaultAvatar;
 
   return (
     <nav className="w-full px-6 py-4 flex justify-between items-center bg-white shadow-sm border-b sticky top-0 z-50">

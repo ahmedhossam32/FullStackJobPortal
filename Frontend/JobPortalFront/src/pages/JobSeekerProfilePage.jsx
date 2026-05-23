@@ -29,8 +29,8 @@ export default function JobSeekerProfilePage() {
           username: data.username || "",
           email: data.email || "",
           dob: data.dob || "",
-          profilePicture: data.profilePicture || "",
-          resume: data.resume || "",
+          profilePicture: data.profilePictureUrl || "",
+          resume: data.resumeUrl || "",
           resumeOriginalName: data.resumeOriginalName || "",
         });
       })
@@ -90,21 +90,8 @@ export default function JobSeekerProfilePage() {
     }
   };
 
-  const handleResumePreview = async () => {
-    try {
-      const res = await axios.get(
-        `http://localhost:8080/files/resume/${formData.resume}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          responseType: "blob",
-        }
-      );
-      const fileURL = URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
-      window.open(fileURL);
-    } catch (error) {
-      toast.error("Failed to preview resume");
-      console.error("Resume preview error:", error);
-    }
+  const handleResumePreview = () => {
+    window.open(formData.resume, "_blank");
   };
 
   return (
@@ -116,7 +103,7 @@ export default function JobSeekerProfilePage() {
         <div className="relative w-40 h-40 rounded-full overflow-hidden border border-gray-300 shadow-sm">
           {formData.profilePicture ? (
             <img
-              src={`http://localhost:8080/files/profile-picture/${formData.profilePicture}`}
+              src={formData.profilePicture || "/default-avatar.png"}
               alt="Profile"
               className="w-full h-full object-cover"
             />

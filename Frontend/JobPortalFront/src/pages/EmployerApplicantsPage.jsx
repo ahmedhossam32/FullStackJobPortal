@@ -10,9 +10,7 @@ export default function EmployerApplicantsPage() {
   const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem("user"));
-  const logoUrl = user?.profilePicture
-    ? `http://localhost:8080/files/profile-picture/${user.profilePicture}`
-    : "/default-logo.png";
+  const logoUrl = user?.profilePictureUrl || "/default-logo.png";
   const companyName = user?.companyName || user?.name || "Your Company";
 
   useEffect(() => {
@@ -70,7 +68,7 @@ export default function EmployerApplicantsPage() {
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <img
-                  src={`http://localhost:8080/files/profile-picture/${a.applicantProfilePicture}`}
+                  src={a.applicantProfilePicture || "/default-avatar.png"}
                   alt="Applicant"
                   className="w-10 h-10 rounded-full object-cover border"
                 />

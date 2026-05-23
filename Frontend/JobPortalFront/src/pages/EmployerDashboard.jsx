@@ -82,7 +82,7 @@ export default function EmployerDashboard() {
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <img
-          src={`http://localhost:8080/files/profile-picture/${user?.profilePicture}`}
+          src={user?.profilePictureUrl || "/default-logo.png"}
           alt="Company Logo"
           className="w-12 h-12 object-contain border rounded-md"
         />
@@ -151,7 +151,7 @@ export default function EmployerDashboard() {
               {/* Left Side */}
               <div className="flex items-center gap-4">
                 <img
-                  src={`http://localhost:8080/files/profile-picture/${a.applicantProfilePicture}`}
+                  src={a.applicantProfilePicture || "/default-avatar.png"}
                   alt="Applicant"
                   className="w-11 h-11 rounded-full object-cover border"
                 />

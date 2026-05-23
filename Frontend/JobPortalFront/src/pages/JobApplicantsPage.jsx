@@ -11,9 +11,7 @@ export default function JobApplicantsPage() {
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
 
-  const logoUrl = user?.profilePicture
-    ? `http://localhost:8080/files/profile-picture/${user.profilePicture}`
-    : "/default-logo.png";
+  const logoUrl = user?.profilePictureUrl || "/default-logo.png";
   const companyName = user?.companyName || user?.name || "Your Company";
 
   useEffect(() => {
@@ -42,23 +40,8 @@ export default function JobApplicantsPage() {
     fetchApplicantsAndTitle();
   }, [jobId, token]);
 
-  const handleViewResume = async (filename) => {
-    try {
-      const res = await fetch(`http://localhost:8080/files/resume/${filename}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error("Failed to fetch resume");
-
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      window.open(url, "_blank");
-    } catch (error) {
-      console.error("Error opening resume:", error);
-      toast.error("Unable to view resume");
-    }
+  const handleViewResume = (resumeUrl) => {
+    window.open(resumeUrl, "_blank");
   };
 
   return (
@@ -95,7 +78,7 @@ export default function JobApplicantsPage() {
               {/* Left: profile and info */}
               <div className="flex items-start gap-4">
                 <img
-                  src={`http://localhost:8080/files/profile-picture/${app.applicantProfilePicture}`}
+                  src={app.applicantProfilePicture || "/default-avatar.png"}
                   alt="Applicant"
                   className="w-12 h-12 rounded-full object-cover border"
                 />

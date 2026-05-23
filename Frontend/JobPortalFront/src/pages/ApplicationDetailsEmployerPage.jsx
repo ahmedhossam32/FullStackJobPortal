@@ -30,21 +30,8 @@ export default function ApplicationDetailsEmployerPage() {
     fetchApplication();
   }, [id, token]);
 
-  const handleViewResume = async () => {
-    try {
-      const res = await fetch(`http://localhost:8080/files/resume/${application.resumeUrl}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!res.ok) throw new Error("Failed to fetch resume");
-
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      window.open(url, "_blank");
-    } catch (err) {
-      console.error(err);
-      toast.error("Unable to view resume");
-    }
+  const handleViewResume = () => {
+    window.open(application.resumeUrl, "_blank");
   };
 
   const handleStatusUpdate = async () => {
@@ -85,7 +72,7 @@ export default function ApplicationDetailsEmployerPage() {
         {/* Left: Profile Picture */}
         <div className="flex-shrink-0">
           <img
-            src={`http://localhost:8080/files/profile-picture/${application.applicantProfilePicture}`}
+            src={application.applicantProfilePicture || "/default-avatar.png"}
             alt="Profile"
             className="w-32 h-32 object-cover rounded-full border"
           />

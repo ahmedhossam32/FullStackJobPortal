@@ -22,9 +22,7 @@ export default function UpdateJobPage() {
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
 
-  const logoUrl = user?.profilePicture
-    ? `http://localhost:8080/files/profile-picture/${user.profilePicture}`
-    : "/default-logo.png";
+  const logoUrl = user?.profilePictureUrl || "/default-logo.png";
   const companyName = user?.companyName || user?.name || "Your Company";
 
   useEffect(() => {

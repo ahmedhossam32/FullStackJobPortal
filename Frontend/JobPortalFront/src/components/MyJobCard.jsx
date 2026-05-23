@@ -72,7 +72,7 @@ export default function MyJobCard({ job, tab, onUnsave, onWithdraw, onRefresh })
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-gray-100 border flex items-center justify-center overflow-hidden">
             <img
-              src={`http://localhost:8080/files/profile-picture/${job.profilePicture}`}
+              src={job.profilePictureUrl || "/default-logo.png"}
               alt="Company Logo"
               className="w-full h-full object-contain"
             />
