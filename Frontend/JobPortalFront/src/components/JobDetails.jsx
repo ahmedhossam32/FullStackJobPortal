@@ -8,6 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { successToast, infoToast } from "../utils/toastUtils";
+import API_URL from "../api/config";
 
 export default function JobDetails({ job }) {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export default function JobDetails({ job }) {
       if (!token || !job) return;
 
       try {
-        const res = await fetch("http://localhost:8080/user/saved-jobs", {
+        const res = await fetch(`${API_URL}/user/saved-jobs`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -34,7 +35,7 @@ export default function JobDetails({ job }) {
         }
 
         const appliedRes = await fetch(
-          `http://localhost:8080/applications/has-applied/${job.id}`,
+          `${API_URL}/applications/has-applied/${job.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -72,8 +73,8 @@ export default function JobDetails({ job }) {
     }
 
     const endpoint = saved
-      ? `http://localhost:8080/user/unsave-job/${job.id}`
-      : `http://localhost:8080/user/save-job/${job.id}`;
+      ? `${API_URL}/user/unsave-job/${job.id}`
+      : `${API_URL}/user/save-job/${job.id}`;
     const method = saved ? "DELETE" : "POST";
 
     setSaving(true);

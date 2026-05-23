@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import API_URL from "../api/config";
 
 const openResume = (url) => {
   if (!url) return;
@@ -18,7 +19,7 @@ export default function ApplicationDetailsEmployerPage() {
   useEffect(() => {
     async function fetchApplication() {
       try {
-        const res = await fetch(`http://localhost:8080/applications/employer/${id}`, {
+        const res = await fetch(`${API_URL}/applications/employer/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -43,7 +44,7 @@ export default function ApplicationDetailsEmployerPage() {
   const handleStatusUpdate = async () => {
     try {
       setIsUpdating(true);
-      const res = await fetch(`http://localhost:8080/applications/${id}/status`, {
+      const res = await fetch(`${API_URL}/applications/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

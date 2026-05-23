@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
 import CustomNotificationToast from "./CustomNotificationToast";
+import API_URL from "../api/config";
 
 export default function NotificationToastManager() {
   const { user } = useContext(AuthContext);
@@ -27,7 +28,7 @@ export default function NotificationToastManager() {
     const showToasts = async () => {
       try {
         console.log("📡 Fetching notifications...");
-        const res = await axios.get("http://localhost:8080/notifications", {
+        const res = await axios.get(`${API_URL}/notifications`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

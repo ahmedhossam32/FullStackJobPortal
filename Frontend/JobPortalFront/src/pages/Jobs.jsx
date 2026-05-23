@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import JobDetails from "../components/JobDetails";
 import JobSearchBar from "../components/JobSearchBar";
 import PaginatedJobList from "../components/PaginatedJobList";
+import API_URL from "../api/config";
 
 export default function Jobs() {
   const [searchParams] = useSearchParams();
@@ -23,7 +24,7 @@ export default function Jobs() {
     setLoading(true);
     try {
       const res = await fetch(
-        `http://localhost:8080/jobs?page=${page}&size=${size}`,
+        `${API_URL}/jobs?page=${page}&size=${size}`,
         { headers: { "Content-Type": "application/json" } }
       );
 
@@ -45,7 +46,7 @@ export default function Jobs() {
         if (found) {
           setSelectedJob(found);
         } else {
-          const jobRes = await fetch(`http://localhost:8080/jobs/${targetJobId}`, {
+          const jobRes = await fetch(`${API_URL}/jobs/${targetJobId}`, {
             headers: { "Content-Type": "application/json" },
           });
           if (jobRes.ok) {
@@ -79,7 +80,7 @@ export default function Jobs() {
 
       if (title.trim()) {
         const res = await fetch(
-          `http://localhost:8080/jobs/search/title?keyword=${encodeURIComponent(title)}&page=0&size=10`,
+          `${API_URL}/jobs/search/title?keyword=${encodeURIComponent(title)}&page=0&size=10`,
           { headers: { "Content-Type": "application/json" } }
         );
         if (res.ok) {
@@ -90,7 +91,7 @@ export default function Jobs() {
 
       if (location.trim()) {
         const res = await fetch(
-          `http://localhost:8080/jobs/search/location?location=${encodeURIComponent(location)}&page=0&size=10`,
+          `${API_URL}/jobs/search/location?location=${encodeURIComponent(location)}&page=0&size=10`,
           { headers: { "Content-Type": "application/json" } }
         );
         if (res.ok) {
@@ -101,7 +102,7 @@ export default function Jobs() {
 
       if (type.trim()) {
         const res = await fetch(
-          `http://localhost:8080/jobs/search/type?type=${encodeURIComponent(type)}&page=0&size=10`,
+          `${API_URL}/jobs/search/type?type=${encodeURIComponent(type)}&page=0&size=10`,
           { headers: { "Content-Type": "application/json" } }
         );
         if (res.ok) {

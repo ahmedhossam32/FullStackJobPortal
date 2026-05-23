@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import API_URL from '../api/config';
 
 export default function EmployerModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('signin');
@@ -42,7 +43,7 @@ export default function EmployerModal({ isOpen, onClose }) {
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8080/auth/signup/employer", {
+      const res = await fetch(`${API_URL}/auth/signup/employer`, {
         method: "POST",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(signupData)
@@ -69,7 +70,7 @@ export default function EmployerModal({ isOpen, onClose }) {
     e.preventDefault();
     setSigningIn(true);
     try {
-      const loginRes = await fetch("http://localhost:8080/auth/signin", {
+      const loginRes = await fetch(`${API_URL}/auth/signin`, {
         method: "POST",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(signinData)
@@ -91,7 +92,7 @@ export default function EmployerModal({ isOpen, onClose }) {
       if (profilePic) {
         const picForm = new FormData();
         picForm.append('file', profilePic);
-        const picRes = await fetch("http://localhost:8080/user/upload-profile-picture", {
+        const picRes = await fetch(`${API_URL}/user/upload-profile-picture`, {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
           body: picForm
@@ -103,7 +104,7 @@ export default function EmployerModal({ isOpen, onClose }) {
         }
       }
 
-      const meRes = await fetch("http://localhost:8080/user/me", {
+      const meRes = await fetch(`${API_URL}/user/me`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
       });

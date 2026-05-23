@@ -4,6 +4,7 @@ import axios from "axios";
 import MyJobCard from "../components/MyJobCard";
 import AppliedJobCard from "../components/AppliedJobCard";
 import InterviewCard from "../components/InterviewCard";
+import API_URL from "../api/config";
 
 export default function MyJobsPage() {
   const [searchParams] = useSearchParams();
@@ -22,10 +23,10 @@ export default function MyJobsPage() {
   const refreshAllTabs = async () => {
     try {
       const [savedRes, appliedRes] = await Promise.all([
-        axios.get("http://localhost:8080/user/saved-jobs", {
+        axios.get(`${API_URL}/user/saved-jobs`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get("http://localhost:8080/applications/my", {
+        axios.get(`${API_URL}/applications/my`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -49,7 +50,7 @@ export default function MyJobsPage() {
 
   const handleUnsave = async (jobId) => {
     try {
-      await axios.delete(`http://localhost:8080/user/unsave-job/${jobId}`, {
+      await axios.delete(`${API_URL}/user/unsave-job/${jobId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSavedJobs((prev) => prev.filter((job) => job.id !== jobId));
@@ -60,7 +61,7 @@ export default function MyJobsPage() {
 
   const handleWithdraw = async (applicationId) => {
     try {
-      await axios.delete(`http://localhost:8080/applications/${applicationId}`, {
+      await axios.delete(`${API_URL}/applications/${applicationId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAppliedJobs((prev) =>

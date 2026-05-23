@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router-dom";
+import API_URL from "../api/config";
 
 export default function UpdateJobPage() {
   const { jobId } = useParams();
@@ -26,7 +27,7 @@ export default function UpdateJobPage() {
   const companyName = user?.companyName || user?.name || "Your Company";
 
   useEffect(() => {
-    fetch(`http://localhost:8080/jobs/${jobId}`, {
+    fetch(`${API_URL}/jobs/${jobId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -247,7 +248,7 @@ export default function UpdateJobPage() {
             <button
               onClick={async () => {
                 try {
-                  const res = await fetch(`http://localhost:8080/jobs/${jobId}`, {
+                  const res = await fetch(`${API_URL}/jobs/${jobId}`, {
                     method: "PUT",
                     headers: {
                       "Content-Type": "application/json",

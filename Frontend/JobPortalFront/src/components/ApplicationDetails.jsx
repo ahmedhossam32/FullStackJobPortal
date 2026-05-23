@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../api/config";
 
 const openResume = (url) => {
   if (!url) return;
@@ -24,7 +25,7 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
     const formData = new FormData();
     formData.append("file", uploadedFile);
 
-    const res = await fetch("http://localhost:8080/user/jobseeker/upload-resume", {
+    const res = await fetch(`${API_URL}/user/jobseeker/upload-resume`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -49,7 +50,7 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
         await uploadResume();
       }
 
-      const response = await fetch("http://localhost:8080/applications", {
+      const response = await fetch(`${API_URL}/applications`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -8,6 +8,7 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 import RecentJobCard from "../components/RecentJobCard";
+import API_URL from "../api/config";
 
 export default function EmployerDashboard() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ export default function EmployerDashboard() {
   useEffect(() => {
     async function fetchApplications() {
       try {
-        const res = await fetch("http://localhost:8080/applications/employer", {
+        const res = await fetch(`${API_URL}/applications/employer`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -54,7 +55,7 @@ export default function EmployerDashboard() {
   useEffect(() => {
     async function fetchJobs() {
       try {
-        const res = await fetch("http://localhost:8080/jobs/my", {
+        const res = await fetch(`${API_URL}/jobs/my`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

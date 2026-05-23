@@ -1,11 +1,12 @@
 import axios from "axios";
 import { IoMdClose } from "react-icons/io";
+import API_URL from "../api/config";
 
 export default function CustomNotificationToast({ notification, token }) {
   const handleMarkAsRead = async () => {
     try {
       await axios.put(
-        `http://localhost:8080/notifications/${notification.id}/read`,
+        `${API_URL}/notifications/${notification.id}/read`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

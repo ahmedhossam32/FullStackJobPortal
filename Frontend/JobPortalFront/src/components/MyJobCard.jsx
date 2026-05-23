@@ -3,6 +3,7 @@ import { FaBookmark, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { successToast, errorToast } from "../utils/toastUtils"; // ✅ updated import
+import API_URL from "../api/config";
 
 export default function MyJobCard({ job, tab, onUnsave, onWithdraw, onRefresh }) {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export default function MyJobCard({ job, tab, onUnsave, onWithdraw, onRefresh })
   useEffect(() => {
     if (tab === "saved") {
       axios
-        .get(`http://localhost:8080/applications/has-applied/${job.id}`, {
+        .get(`${API_URL}/applications/has-applied/${job.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => setIsApplied(res.data))
@@ -34,7 +35,7 @@ export default function MyJobCard({ job, tab, onUnsave, onWithdraw, onRefresh })
   const handleUnsave = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/user/unsave-job/${job.id}`,
+        `${API_URL}/user/unsave-job/${job.id}`,
         {
           method: "DELETE",
           headers: {

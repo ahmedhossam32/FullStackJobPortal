@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import Swal from 'sweetalert2';
+import API_URL from "../api/config";
 
 export default function EmployerJobDetailsPage() {
   const { jobId } = useParams();
@@ -12,7 +13,7 @@ export default function EmployerJobDetailsPage() {
   useEffect(() => {
     async function fetchJobDetails() {
       try {
-        const res = await fetch(`http://localhost:8080/jobs/${jobId}`, {
+        const res = await fetch(`${API_URL}/jobs/${jobId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -44,7 +45,7 @@ export default function EmployerJobDetailsPage() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await fetch(`http://localhost:8080/jobs/${jobId}`, {
+          const res = await fetch(`${API_URL}/jobs/${jobId}`, {
             method: "DELETE",
             headers: {
               Authorization: `Bearer ${token}`,

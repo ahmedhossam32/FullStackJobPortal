@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../api/config";
 
 export default function CreateJobPage() {
   const [step, setStep] = useState(1);
@@ -264,7 +265,7 @@ export default function CreateJobPage() {
               onClick={async () => {
                 try {
                   const token = localStorage.getItem("token");
-                  const res = await fetch("http://localhost:8080/jobs", {
+                  const res = await fetch(`${API_URL}/jobs`, {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",

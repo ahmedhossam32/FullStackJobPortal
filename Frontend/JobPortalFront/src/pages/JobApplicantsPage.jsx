@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FaClock, FaEnvelope } from "react-icons/fa";
 import { toast } from "react-toastify";
+import API_URL from "../api/config";
 
 const openResume = (url) => {
   if (!url) return;
@@ -23,7 +24,7 @@ export default function JobApplicantsPage() {
   useEffect(() => {
     async function fetchApplicantsAndTitle() {
       try {
-        const res = await fetch(`http://localhost:8080/applications/job/${jobId}`, {
+        const res = await fetch(`${API_URL}/applications/job/${jobId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -32,7 +33,7 @@ export default function JobApplicantsPage() {
         if (data.length > 0) {
           setJobTitle(data[0].jobTitle);
         } else {
-          const jobRes = await fetch(`http://localhost:8080/jobs/${jobId}`, {
+          const jobRes = await fetch(`${API_URL}/jobs/${jobId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           const jobData = await jobRes.json();

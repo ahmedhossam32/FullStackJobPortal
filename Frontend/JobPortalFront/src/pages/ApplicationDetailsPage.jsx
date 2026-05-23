@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import ApplicationDetailsCard from "../components/ApplicationDetailsCard";
 import { toast } from "react-toastify";
+import API_URL from "../api/config";
 
 export default function ApplicationDetailsPage() {
   const { id } = useParams();
@@ -15,7 +16,7 @@ export default function ApplicationDetailsPage() {
     toast.dismiss();
 
     axios
-      .get(`http://localhost:8080/applications/${id}`, {
+      .get(`${API_URL}/applications/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

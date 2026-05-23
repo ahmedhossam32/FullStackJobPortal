@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { FaBell } from "react-icons/fa";
 import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
+import API_URL from "../api/config";
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
@@ -27,7 +28,7 @@ export default function NotificationBell() {
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/notifications", {
+      const response = await axios.get(`${API_URL}/notifications`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const unseen = response.data.filter((n) => !n.seen);
@@ -42,7 +43,7 @@ export default function NotificationBell() {
   const markAsRead = async (id) => {
     try {
       await axios.put(
-        `http://localhost:8080/notifications/${id}/read`,
+        `${API_URL}/notifications/${id}/read`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import API_URL from '../api/config';
 
 export default function JobSeekerModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('signin');
@@ -47,7 +48,7 @@ export default function JobSeekerModal({ isOpen, onClose }) {
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const signupRes = await fetch('http://localhost:8080/auth/signup/jobseeker', {
+      const signupRes = await fetch(`${API_URL}/auth/signup/jobseeker`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -75,7 +76,7 @@ export default function JobSeekerModal({ isOpen, onClose }) {
     e.preventDefault();
     setSigningIn(true);
     try {
-      const loginRes = await fetch('http://localhost:8080/auth/signin', {
+      const loginRes = await fetch(`${API_URL}/auth/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(signinData)
@@ -96,7 +97,7 @@ export default function JobSeekerModal({ isOpen, onClose }) {
       if (profilePic) {
         const picForm = new FormData();
         picForm.append('file', profilePic);
-        const picRes = await fetch("http://localhost:8080/user/upload-profile-picture", {
+        const picRes = await fetch(`${API_URL}/user/upload-profile-picture`, {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
           body: picForm
@@ -111,7 +112,7 @@ export default function JobSeekerModal({ isOpen, onClose }) {
       if (resume) {
         const resumeForm = new FormData();
         resumeForm.append('file', resume);
-        const resumeRes = await fetch('http://localhost:8080/user/jobseeker/upload-resume', {
+        const resumeRes = await fetch(`${API_URL}/user/jobseeker/upload-resume`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
           body: resumeForm
@@ -123,7 +124,7 @@ export default function JobSeekerModal({ isOpen, onClose }) {
         }
       }
 
-      const meRes = await fetch('http://localhost:8080/user/me', {
+      const meRes = await fetch(`${API_URL}/user/me`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` }
       });

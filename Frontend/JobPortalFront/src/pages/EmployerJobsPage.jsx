@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaMapMarkerAlt, FaClock } from "react-icons/fa";
+import API_URL from "../api/config";
 
 export default function EmployerJobsPage() {
   const [jobs, setJobs] = useState([]);
@@ -16,7 +17,7 @@ export default function EmployerJobsPage() {
   useEffect(() => {
     async function fetchJobs() {
       try {
-        const res = await fetch("http://localhost:8080/jobs/my", {
+        const res = await fetch(`${API_URL}/jobs/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();

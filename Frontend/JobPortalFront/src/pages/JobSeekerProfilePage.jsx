@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
+import API_URL from "../api/config";
 
 const openResume = (url) => {
   if (!url) return;
@@ -29,7 +30,7 @@ export default function JobSeekerProfilePage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/user/me", {
+      .get(`${API_URL}/user/me`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -73,7 +74,7 @@ export default function JobSeekerProfilePage() {
 
     try {
       await axios.put(
-        "http://localhost:8080/user/jobseeker/update-profile",
+        `${API_URL}/user/jobseeker/update-profile`,
         {
           name: formData.name,
           username: formData.username,
@@ -94,10 +95,10 @@ export default function JobSeekerProfilePage() {
       try {
         const picForm = new FormData();
         picForm.append("file", profilePicFile);
-        await axios.post("http://localhost:8080/user/upload-profile-picture", picForm, {
+        await axios.post(`${API_URL}/user/upload-profile-picture`, picForm, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const meRes = await axios.get("http://localhost:8080/user/me", {
+        const meRes = await axios.get(`${API_URL}/user/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         updateUser(meRes.data);
@@ -112,7 +113,7 @@ export default function JobSeekerProfilePage() {
       try {
         const resumeForm = new FormData();
         resumeForm.append("file", resumeFile);
-        await axios.post("http://localhost:8080/user/jobseeker/upload-resume", resumeForm, {
+        await axios.post(`${API_URL}/user/jobseeker/upload-resume`, resumeForm, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } catch (err) {

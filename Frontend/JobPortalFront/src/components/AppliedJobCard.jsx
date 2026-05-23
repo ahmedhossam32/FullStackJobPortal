@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import API_URL from "../api/config";
 
 export default function AppliedJobCard({ application, onWithdraw, onRefresh }) {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ export default function AppliedJobCard({ application, onWithdraw, onRefresh }) {
   const handleWithdraw = async () => {
     try {
       await axios.delete(
-        `http://localhost:8080/applications/${application.applicationId}`,
+        `${API_URL}/applications/${application.applicationId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
