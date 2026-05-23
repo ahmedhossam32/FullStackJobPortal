@@ -62,14 +62,47 @@ function App() {
             <ApplicationDetailsPage />
           </RequireRole>
         } />
-        <Route path="/dashboard" element={<EmployerDashboard />} />
-        <Route path="/employer/jobs" element={<EmployerJobsPage />} />
-        <Route path="/employer/jobs/:jobId" element={<EmployerJobDetailsPage />} /> 
-       <Route path="/create-job" element={<CreateJobPage />} />
-       <Route path="/employer/jobs/update/:jobId" element={<UpdateJobPage />} />
-       <Route path="/employer/applicants" element={<EmployerApplicantsPage />} />
-       <Route path="/employer/jobs/:jobId/applicants" element={<JobApplicantsPage />} />
-       <Route path="/employer/applications/:id" element={<ApplicationDetailsEmployerPage />} />
+        {/* Employer Protected Routes */}
+        <Route path="/dashboard" element={
+          <RequireRole role="EMPLOYER">
+            <EmployerDashboard />
+          </RequireRole>
+        } />
+        <Route path="/employer/jobs" element={
+          <RequireRole role="EMPLOYER">
+            <EmployerJobsPage />
+          </RequireRole>
+        } />
+        <Route path="/employer/jobs/:jobId" element={
+          <RequireRole role="EMPLOYER">
+            <EmployerJobDetailsPage />
+          </RequireRole>
+        } />
+        <Route path="/create-job" element={
+          <RequireRole role="EMPLOYER">
+            <CreateJobPage />
+          </RequireRole>
+        } />
+        <Route path="/employer/jobs/update/:jobId" element={
+          <RequireRole role="EMPLOYER">
+            <UpdateJobPage />
+          </RequireRole>
+        } />
+        <Route path="/employer/applicants" element={
+          <RequireRole role="EMPLOYER">
+            <EmployerApplicantsPage />
+          </RequireRole>
+        } />
+        <Route path="/employer/jobs/:jobId/applicants" element={
+          <RequireRole role="EMPLOYER">
+            <JobApplicantsPage />
+          </RequireRole>
+        } />
+        <Route path="/employer/applications/:id" element={
+          <RequireRole role="EMPLOYER">
+            <ApplicationDetailsEmployerPage />
+          </RequireRole>
+        } />
 
       </Routes>
 
