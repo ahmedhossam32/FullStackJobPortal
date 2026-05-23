@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
+
 export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
@@ -10,8 +11,7 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
   const [fullName] = useState(user?.name || "");
   const [email] = useState(user?.email || "");
   const [phone, setPhone] = useState("");
-  const [existingResume] = useState(user?.resumeUrl || null);
-  const [selectedResume, setSelectedResume] = useState(existingResume);
+  const [existingResume] = useState(user?.resume || null);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -28,7 +28,7 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
     });
 
     if (!res.ok) throw new Error("Resume upload failed");
-    return await res.text(); // return uploaded filename
+    return await res.text();
   };
 
   const handleSubmit = async () => {
@@ -86,10 +86,6 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
     }
   };
 
-  const previewResume = () => {
-    window.open(existingResume, "_blank");
-  };
-
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
@@ -128,29 +124,21 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
         <label className="block text-sm font-medium text-gray-800 mb-2">Resume</label>
 
         {existingResume ? (
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 cursor-pointer text-sm">
-              <input
-                type="radio"
-                name="resume"
-                checked={selectedResume === existingResume}
-                onChange={() => {
-                  setUploadedFile(null);
-                  setSelectedResume(existingResume);
-                }}
-              />
-              <span className="text-gray-700">{existingResume.split("_").slice(1).join("_")}</span>
+          <div className="space-y-3">
+            <div className="text-sm text-gray-700">
+              Using your saved resume:{" "}
+              <span className="font-medium text-gray-900">My Resume</span>{" "}
               <button
                 type="button"
-                onClick={previewResume}
+                onClick={() => window.open(existingResume, "_blank")}
                 className="text-blue-600 underline hover:text-blue-800"
               >
                 Preview
               </button>
-            </label>
+            </div>
 
-            <div className="border-t pt-2 text-sm text-gray-600">
-              <p className="mb-1">Or upload a new resume:</p>
+            <div className="border-t pt-3 text-sm text-gray-600">
+              <p className="mb-2">Upload a different resume:</p>
               <label
                 htmlFor="resume-upload"
                 className="flex items-center justify-center w-full sm:w-auto min-h-[44px] bg-white border border-gray-300 px-4 py-2 rounded cursor-pointer text-[#6B3F27] hover:bg-[#f8f4f2] font-medium text-sm"
@@ -161,13 +149,9 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
                   type="file"
                   accept=".pdf"
                   className="hidden"
-                  onChange={(e) => {
-                    setUploadedFile(e.target.files[0]);
-                    setSelectedResume(null);
-                  }}
+                  onChange={(e) => setUploadedFile(e.target.files[0])}
                 />
               </label>
-
               {uploadedFile && (
                 <div className="mt-1 text-green-700 text-sm font-medium">
                   ✅ Selected: {uploadedFile.name}
@@ -176,12 +160,15 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
             </div>
           </div>
         ) : (
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={(e) => setUploadedFile(e.target.files[0])}
-            className="w-full border border-gray-300 px-3 py-3 rounded-md bg-gray-50 text-sm min-h-[44px]"
-          />
+          <div className="space-y-2">
+            <p className="text-sm text-amber-700">No resume on file — please upload one to apply.</p>
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={(e) => setUploadedFile(e.target.files[0])}
+              className="w-full border border-gray-300 px-3 py-3 rounded-md bg-gray-50 text-sm min-h-[44px]"
+            />
+          </div>
         )}
       </div>
 

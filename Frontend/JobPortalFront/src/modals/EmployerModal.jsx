@@ -22,6 +22,7 @@ export default function EmployerModal({ isOpen, onClose }) {
     username: '',
     password: ''
   });
+  const [signingIn, setSigningIn] = useState(false);
 
   if (!isOpen) return null;
 
@@ -66,6 +67,7 @@ export default function EmployerModal({ isOpen, onClose }) {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
+    setSigningIn(true);
     try {
       const loginRes = await fetch("http://localhost:8080/auth/signin", {
         method: "POST",
@@ -84,14 +86,21 @@ export default function EmployerModal({ isOpen, onClose }) {
         return;
       }
 
+      const warnings = [];
+
       if (profilePic) {
         const picForm = new FormData();
         picForm.append('file', profilePic);
-        await fetch("http://localhost:8080/user/upload-profile-picture", {
+        const picRes = await fetch("http://localhost:8080/user/upload-profile-picture", {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
           body: picForm
         });
+        if (!picRes.ok) {
+          const errData = await picRes.json().catch(() => null);
+          const msg = errData?.message || "Profile picture upload failed.";
+          warnings.push(msg + " You can upload it later from your profile.");
+        }
       }
 
       const meRes = await fetch("http://localhost:8080/user/me", {
@@ -103,10 +112,13 @@ export default function EmployerModal({ isOpen, onClose }) {
       login(updatedUser, token);
 
       toast.success("Signed in!");
+      warnings.forEach((w) => toast.warning(w));
       onClose();
       navigate("/dashboard");
     } catch (err) {
       toast.error("Sign in failed: " + err.message);
+    } finally {
+      setSigningIn(false);
     }
   };
 
@@ -139,7 +151,14 @@ export default function EmployerModal({ isOpen, onClose }) {
             <form className="space-y-4" onSubmit={handleSignIn}>
               <input name="username" onChange={handleSigninChange} value={signinData.username} type="text" placeholder="Username" className="w-full border px-3 py-3 rounded text-base" />
               <input name="password" onChange={handleSigninChange} value={signinData.password} type="password" placeholder="Password" className="w-full border px-3 py-3 rounded text-base" />
-              <button type="submit" className="w-full bg-black text-white py-3 rounded text-base font-medium min-h-[44px]">Sign In</button>
+              <button type="submit" disabled={signingIn} className="w-full bg-black text-white py-2 rounded flex items-center justify-center gap-2 min-h-[44px]">
+                {signingIn ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Signing in...
+                  </>
+                ) : 'Sign In'}
+              </button>
             </form>
           ) : (
             <form className="space-y-4" onSubmit={handleSignUp}>

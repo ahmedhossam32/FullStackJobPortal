@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 
+
 export default function ApplicationDetailsCard({ application }) {
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString(undefined, {

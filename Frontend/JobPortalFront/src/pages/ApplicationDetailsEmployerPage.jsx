@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
+
 export default function ApplicationDetailsEmployerPage() {
   const { id } = useParams();
   const [application, setApplication] = useState(null);
@@ -94,9 +95,15 @@ export default function ApplicationDetailsEmployerPage() {
                 className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${
                   application.status === "PENDING"
                     ? "bg-yellow-100 text-yellow-800"
-                    : application.status === "ACCEPTED"
+                    : application.status === "REVIEWED"
+                    ? "bg-blue-100 text-blue-800"
+                    : application.status === "INTERVIEW"
+                    ? "bg-purple-100 text-purple-800"
+                    : application.status === "OFFERED"
                     ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-700"
+                    : application.status === "REJECTED"
+                    ? "bg-red-100 text-red-700"
+                    : "bg-gray-100 text-gray-700"
                 }`}
               >
                 {application.status}
@@ -121,8 +128,11 @@ export default function ApplicationDetailsEmployerPage() {
                 className="flex-1 sm:flex-none border border-gray-300 rounded px-3 py-2 min-h-[44px] text-sm"
               >
                 <option value="PENDING">PENDING</option>
-                <option value="ACCEPTED">ACCEPTED</option>
+                <option value="REVIEWED">REVIEWED</option>
+                <option value="INTERVIEW">INTERVIEW</option>
+                <option value="OFFERED">OFFERED</option>
                 <option value="REJECTED">REJECTED</option>
+                <option value="WITHDRAWN">WITHDRAWN</option>
               </select>
               <button
                 onClick={handleStatusUpdate}

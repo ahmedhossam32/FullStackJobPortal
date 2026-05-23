@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
 
+
 export default function JobSeekerProfilePage() {
   const [formData, setFormData] = useState({
     name: "",

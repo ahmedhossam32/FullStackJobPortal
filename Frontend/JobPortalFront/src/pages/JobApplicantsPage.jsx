@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { FaClock, FaEnvelope } from "react-icons/fa";
 import { toast } from "react-toastify";
 
+
 export default function JobApplicantsPage() {
   const { jobId } = useParams();
   const navigate = useNavigate();

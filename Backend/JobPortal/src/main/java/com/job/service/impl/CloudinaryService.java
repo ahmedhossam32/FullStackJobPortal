@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -49,10 +50,14 @@ public class CloudinaryService {
         log.info("Uploading resume to Cloudinary: {}", file.getOriginalFilename());
         try {
             @SuppressWarnings("unchecked")
-            Map<String, Object> result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
-                    "folder", "resumes",
-                    "resource_type", "raw"
-            ));
+            Map<String, Object> options = new HashMap<>();
+            options.put("resource_type", "raw");
+            options.put("folder", "resumes");
+            options.put("format", "pdf");
+            options.put("flags", "attachment:false");
+            options.put("type", "upload");
+            options.put("access_mode", "public");
+            Map<String, Object> result = cloudinary.uploader().upload(file.getBytes(), options);
             String url = (String) result.get("secure_url");
             log.info("Resume uploaded successfully to Cloudinary");
             return url;

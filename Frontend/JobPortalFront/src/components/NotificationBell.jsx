@@ -64,7 +64,7 @@ export default function NotificationBell() {
       </div>
 
       {showDropdown && (
-        <div className="absolute right-0 mt-2 w-[min(400px,calc(100vw-1rem))] max-w-full bg-white shadow-xl border rounded-xl z-50 max-h-[450px] overflow-y-auto">
+        <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: '8px', width: '380px', maxHeight: '450px', overflowY: 'auto', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.15)', zIndex: 9999 }}>
           <div className="p-4 font-semibold text-gray-800 border-b text-base">
             Notifications
           </div>
