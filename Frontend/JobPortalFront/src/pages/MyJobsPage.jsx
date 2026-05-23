@@ -30,7 +30,7 @@ export default function MyJobsPage() {
         }),
       ]);
       setSavedJobs(savedRes.data);
-      setAppliedJobs(appliedRes.data);
+      setAppliedJobs(appliedRes.data.content);
     } catch (err) {
       console.error("Error refreshing tabs:", err);
     }
@@ -49,7 +49,7 @@ export default function MyJobsPage() {
 
   const handleUnsave = async (jobId) => {
     try {
-      await axios.delete(`http://localhost:8080/user/unsave/${jobId}`, {
+      await axios.delete(`http://localhost:8080/user/unsave-job/${jobId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSavedJobs((prev) => prev.filter((job) => job.id !== jobId));
