@@ -88,9 +88,9 @@ export default function NotificationBell() {
                   <div className="flex-1">
                     <p className="text-sm text-gray-800 leading-snug">{n.message}</p>
                     <p className="text-xs text-gray-400 mt-1">
-                      {formatDistanceToNow(new Date(n.createdAt), {
-                        addSuffix: true,
-                      })}
+                      {n.createdAt
+                        ? formatDistanceToNow(new Date(n.createdAt), { addSuffix: true })
+                        : ""}
                     </p>
                   </div>
                   <button

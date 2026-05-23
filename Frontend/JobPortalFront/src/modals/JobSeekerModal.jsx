@@ -52,7 +52,11 @@ export default function JobSeekerModal({ isOpen, onClose }) {
         body: JSON.stringify(formData)
       });
 
-      if (!signupRes.ok) throw new Error('Signup failed');
+      if (!signupRes.ok) {
+        const errorData = await signupRes.json().catch(() => null);
+        const message = errorData?.message || 'Signup failed. Please try again.';
+        throw new Error(message);
+      }
 
       toast.success("Account created. Now sign in to complete your registration.");
       setSigninData({

@@ -47,7 +47,11 @@ export default function EmployerModal({ isOpen, onClose }) {
         body: JSON.stringify(signupData)
       });
 
-      if (!res.ok) throw new Error("Signup failed");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        const message = errorData?.message || 'Signup failed. Please try again.';
+        throw new Error(message);
+      }
       toast.success("Account created! Now sign in.");
 
       setSigninData({
