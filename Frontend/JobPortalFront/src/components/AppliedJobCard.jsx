@@ -35,21 +35,21 @@ export default function AppliedJobCard({ application, onWithdraw, onRefresh }) {
   return (
     <div
       key={application.applicationId}
-      className="flex justify-between items-center px-4 py-4 mb-4 rounded-lg border border-gray-200 bg-white hover:shadow-sm transition"
+      className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 py-4 mb-4 rounded-lg border border-gray-200 bg-white hover:shadow-sm transition gap-3 sm:gap-0"
     >
       {/* Left: Logo + Info */}
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 bg-gray-100 border rounded-full overflow-hidden flex items-center justify-center">
+      <div className="flex items-center gap-4 min-w-0 flex-1">
+        <div className="w-12 h-12 flex-shrink-0 bg-gray-100 border rounded-full overflow-hidden flex items-center justify-center">
           <img
             src={application.companyLogoUrl || "/default-logo.png"}
             alt="Company Logo"
             className="w-full h-full object-contain"
           />
         </div>
-        <div>
-          <h2 className="text-lg font-semibold text-[#000000]">{application.jobTitle}</h2>
-          <p className="text-sm text-gray-700">{application.companyName}</p>
-          <p className="text-sm text-gray-600">{application.location}</p>
+        <div className="min-w-0">
+          <h2 className="text-lg font-semibold text-[#000000] truncate">{application.jobTitle}</h2>
+          <p className="text-sm text-gray-700 truncate">{application.companyName}</p>
+          <p className="text-sm text-gray-600 truncate">{application.location}</p>
           <p className="text-xs text-gray-500">
             Applied on {formatDate(application.appliedAt)}
           </p>
@@ -57,13 +57,13 @@ export default function AppliedJobCard({ application, onWithdraw, onRefresh }) {
       </div>
 
       {/* Right: Status + Actions */}
-      <div className="flex flex-col md:flex-row gap-2 items-center">
-        <span className="text-sm border border-gray-400 text-gray-800 px-4 py-1 rounded-full font-medium">
+      <div className="flex flex-wrap gap-2 items-center flex-shrink-0 sm:ml-4">
+        <span className="text-sm border border-gray-400 text-gray-800 px-4 py-2 rounded-full font-medium whitespace-nowrap">
           {application.status}
         </span>
 
         <button
-          className="border border-black text-black px-4 py-1 rounded hover:bg-black hover:text-white transition text-sm"
+          className="border border-black text-black px-4 py-2 min-h-[44px] rounded hover:bg-black hover:text-white transition text-sm whitespace-nowrap"
           onClick={() =>
             navigate(`/applications/${application.applicationId}`)
           }
@@ -73,7 +73,7 @@ export default function AppliedJobCard({ application, onWithdraw, onRefresh }) {
 
         <button
           onClick={handleWithdraw}
-          className="bg-[#6B3F27] hover:bg-[#5C3421] text-white px-4 py-1 rounded text-sm transition"
+          className="bg-[#6B3F27] hover:bg-[#5C3421] text-white px-4 py-2 min-h-[44px] rounded text-sm transition whitespace-nowrap"
         >
           Withdraw
         </button>

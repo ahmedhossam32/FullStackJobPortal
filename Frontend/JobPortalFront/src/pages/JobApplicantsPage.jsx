@@ -47,7 +47,7 @@ export default function JobApplicantsPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 bg-white min-h-screen">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8 border-b pb-4">
+      <div className="flex flex-wrap items-center gap-4 mb-8 border-b pb-4">
         <img
           src={logoUrl}
           alt="Company Logo"
@@ -72,36 +72,37 @@ export default function JobApplicantsPage() {
             <div
               key={app.id}
                 onClick={() => navigate(`/employer/applications/${app.id}`)}
-              className="bg-gray-100 border border-gray-200 rounded-xl p-5 shadow-md flex justify-between items-center hover:bg-gray-50 transition"
-              style={{ borderLeft: "6px solid #6B3F27", paddingLeft: "0.5rem" }}
+              className="bg-gray-100 border border-gray-200 rounded-xl p-4 shadow-md flex flex-col sm:flex-row sm:justify-between sm:items-center hover:bg-gray-50 transition gap-3 sm:gap-4"
+              style={{ borderLeft: "6px solid #6B3F27" }}
             >
               {/* Left: profile and info */}
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-4 min-w-0 flex-1">
                 <img
                   src={app.applicantProfilePicture || "/default-avatar.png"}
                   alt="Applicant"
-                  className="w-12 h-12 rounded-full object-cover border"
+                  className="w-12 h-12 flex-shrink-0 rounded-full object-cover border"
                 />
-                <div className="leading-snug">
+                <div className="leading-snug min-w-0">
                   <p
                     onClick={() => navigate(`/employer/applications/${app.id}`)}
-                    className="font-semibold text-blue-700 hover:underline cursor-pointer"
+                    className="font-semibold text-blue-700 hover:underline cursor-pointer truncate"
                   >
                     {app.applicantUsername}
                   </p>
                   <p className="text-sm text-gray-600 flex items-center gap-2">
-                    <FaEnvelope className="text-gray-500" /> {app.applicantEmail}
+                    <FaEnvelope className="text-gray-500 flex-shrink-0" />
+                    <span className="truncate">{app.applicantEmail}</span>
                   </p>
                   <p className="text-sm text-gray-600">
                     <strong>DOB:</strong> {app.applicantDOB}
                   </p>
                   <p className="text-sm text-gray-600 flex items-center gap-2">
-                    <FaClock className="text-gray-500" /> Applied on:{" "}
+                    <FaClock className="text-gray-500 flex-shrink-0" /> Applied on:{" "}
                     {new Date(app.appliedAt).toLocaleDateString()}
                   </p>
                   <button
-                    onClick={() => handleViewResume(app.resumeUrl)}
-                    className="text-blue-600 hover:underline text-sm mt-2"
+                    onClick={(e) => { e.stopPropagation(); handleViewResume(app.resumeUrl); }}
+                    className="text-blue-600 hover:underline text-sm mt-2 min-h-[44px] flex items-center"
                   >
                     📎 View Resume
                   </button>
@@ -110,7 +111,7 @@ export default function JobApplicantsPage() {
 
               {/* Right: status badge */}
               <span
-                className={`text-xs px-3 py-1 rounded-full font-semibold border shadow-sm ${
+                className={`self-start sm:self-center flex-shrink-0 whitespace-nowrap text-xs px-3 py-1 rounded-full font-semibold border shadow-sm ${
                   app.status === "PENDING"
                     ? "bg-yellow-100 text-yellow-800 border-yellow-300"
                     : app.status === "ACCEPTED"

@@ -54,7 +54,7 @@ export default function EmployerJobsPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 bg-white min-h-screen">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-10 border-b pb-4">
+      <div className="flex flex-wrap items-center gap-4 mb-10 border-b pb-4">
         <img
           src={logoUrl}
           alt="Company Logo"
@@ -80,17 +80,17 @@ export default function EmployerJobsPage() {
               {getCategoryFromTitle(job.title)}
             </span>
 
-            <div className="flex justify-between items-start mt-6">
-              <div>
-                <h2 className="text-lg font-bold text-gray-800">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mt-6 gap-3 sm:gap-0">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg font-bold text-gray-800 break-words">
                   {job.title || "Untitled Job"}
                 </h2>
                 <div className="text-sm text-gray-600 flex gap-4 flex-wrap mt-2">
                   <span className="flex items-center">
-                    <FaMapMarkerAlt className="mr-1" /> {job.location || "N/A"}
+                    <FaMapMarkerAlt className="mr-1 flex-shrink-0" /> {job.location || "N/A"}
                   </span>
                   <span className="flex items-center">
-                    <FaClock className="mr-1" />
+                    <FaClock className="mr-1 flex-shrink-0" />
                     {job.postedAt
                       ? new Date(job.postedAt).toLocaleDateString()
                       : "Unknown Date"}
@@ -98,20 +98,20 @@ export default function EmployerJobsPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col items-end gap-2">
-                <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
+              <div className="flex flex-row flex-wrap sm:flex-col sm:items-end gap-2 flex-shrink-0">
+                <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium whitespace-nowrap">
                   ● Open
                 </span>
                 {job.postedAt && isNew(job.postedAt) && (
-                  <span className="px-2 py-1 text-xs font-semibold text-red-600 bg-red-100 rounded-full">
+                  <span className="px-2 py-1 text-xs font-semibold text-red-600 bg-red-100 rounded-full whitespace-nowrap">
                     New
                   </span>
                 )}
                 <div className="flex gap-2">
-                  <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full font-medium">
+                  <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full font-medium whitespace-nowrap">
                     {job.type ? job.type.replace("_", " ").toLowerCase() : "n/a"}
                   </span>
-                  <span className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded-full font-medium">
+                  <span className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded-full font-medium whitespace-nowrap">
                     {job.workMode ? job.workMode.toLowerCase() : "n/a"}
                   </span>
                 </div>
@@ -134,7 +134,7 @@ export default function EmployerJobsPage() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 rounded border text-sm font-medium ${
+                className={`px-3 py-2 min-h-[44px] rounded border text-sm font-medium ${
                   currentPage === page
                     ? "bg-[#6B3F27] text-white border-[#6B3F27]"
                     : "bg-white text-black border-gray-300"

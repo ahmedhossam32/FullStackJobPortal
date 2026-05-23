@@ -66,11 +66,11 @@ export default function MyJobCard({ job, tab, onUnsave, onWithdraw, onRefresh })
     isSaved && (
       <div
         key={job.id}
-        className="flex justify-between items-center px-4 py-4 mb-4 rounded-lg border border-gray-200 bg-white hover:shadow-md transition-all"
+        className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 py-4 mb-4 rounded-lg border border-gray-200 bg-white hover:shadow-md transition-all gap-3 sm:gap-0"
       >
         {/* Left - Logo and Info */}
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-gray-100 border flex items-center justify-center overflow-hidden">
+        <div className="flex items-center gap-4 min-w-0 flex-1">
+          <div className="w-12 h-12 flex-shrink-0 rounded-full bg-gray-100 border flex items-center justify-center overflow-hidden">
             <img
               src={job.profilePictureUrl || "/default-logo.png"}
               alt="Company Logo"
@@ -78,10 +78,10 @@ export default function MyJobCard({ job, tab, onUnsave, onWithdraw, onRefresh })
             />
           </div>
 
-          <div>
-            <h2 className="text-lg font-semibold text-[#000000]">{job.title}</h2>
-            <p className="text-sm text-gray-700 font-medium">{job.companyName}</p>
-            <p className="text-sm text-gray-600">{job.location}</p>
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold text-[#000000] truncate">{job.title}</h2>
+            <p className="text-sm text-gray-700 font-medium truncate">{job.companyName}</p>
+            <p className="text-sm text-gray-600 truncate">{job.location}</p>
             <p className="text-xs text-gray-500">
               {tab === "saved"
                 ? `Saved on ${formatDate(job.postedAt)}`
@@ -91,47 +91,51 @@ export default function MyJobCard({ job, tab, onUnsave, onWithdraw, onRefresh })
         </div>
 
         {/* Right - Actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 flex-shrink-0 sm:ml-4">
           {tab === "saved" && (
             <>
               {!isApplied ? (
                 <button
-                  className="bg-[#6B3F27] hover:bg-[#5C3421] text-white px-4 py-1 rounded transition-all"
+                  className="bg-[#6B3F27] hover:bg-[#5C3421] text-white px-4 py-2 min-h-[44px] rounded transition-all text-sm"
                   onClick={handleApply}
                 >
                   Apply now
                 </button>
               ) : (
-                <span className="text-sm px-3 py-1 rounded border border-[#6B3F27] text-[#6B3F27] bg-gray-100 font-medium">
+                <span className="text-sm px-3 py-2 rounded border border-[#6B3F27] text-[#6B3F27] bg-gray-100 font-medium">
                   Applied
                 </span>
               )}
 
-              <FaBookmark
-                className="text-[#6B3F27] hover:text-red-500 cursor-pointer text-lg"
-                title="Unsave"
+              <button
                 onClick={handleUnsave}
-              />
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-[#6B3F27] hover:text-red-500 transition"
+                title="Unsave"
+              >
+                <FaBookmark className="text-lg" />
+              </button>
             </>
           )}
 
           {tab === "applied" && (
             <>
-              <span className="text-sm bg-[#6B3F27] text-white px-4 py-1 rounded">
+              <span className="text-sm bg-[#6B3F27] text-white px-4 py-2 rounded">
                 Applied
               </span>
-              <FaTrash
-                className="text-gray-500 hover:text-red-600 cursor-pointer"
-                title="Withdraw application"
+              <button
                 onClick={() => {
                   if (onWithdraw) onWithdraw(job.id);
                   if (onRefresh) onRefresh();
                 }}
-              />
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-gray-500 hover:text-red-600 transition"
+                title="Withdraw application"
+              >
+                <FaTrash />
+              </button>
             </>
           )}
 
-          <span className="text-xl cursor-pointer" title="More options">⋮</span>
+          <button className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-xl" title="More options">⋮</button>
         </div>
       </div>
     )

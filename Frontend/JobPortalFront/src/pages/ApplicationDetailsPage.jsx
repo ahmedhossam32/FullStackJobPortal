@@ -29,11 +29,15 @@ export default function ApplicationDetailsPage() {
 
   if (!application) {
     return (
-      <div className="p-6 text-center text-gray-600">
+      <div className="px-4 py-6 text-center text-gray-600">
         Loading application details...
       </div>
     );
   }
 
-  return <ApplicationDetailsCard application={application} />;
+  return (
+    <div className="px-4 md:px-0 pb-10">
+      <ApplicationDetailsCard application={application} />
+    </div>
+  );
 }

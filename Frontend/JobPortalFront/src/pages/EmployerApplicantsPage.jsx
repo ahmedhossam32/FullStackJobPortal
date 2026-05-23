@@ -43,7 +43,7 @@ export default function EmployerApplicantsPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 bg-white min-h-screen">
       {/* Company Header */}
-      <div className="flex items-center gap-4 mb-8 border-b pb-4">
+      <div className="flex flex-wrap items-center gap-4 mb-8 border-b pb-4">
         <img
           src={logoUrl}
           alt="Company Logo"
@@ -65,23 +65,23 @@ export default function EmployerApplicantsPage() {
             style={{ borderLeft: "6px solid #6B3F27" }}
           >
             {/* Top Row: Avatar + Name + Status */}
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
+            <div className="flex justify-between items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
                 <img
                   src={a.applicantProfilePicture || "/default-avatar.png"}
                   alt="Applicant"
-                  className="w-10 h-10 rounded-full object-cover border"
+                  className="w-10 h-10 flex-shrink-0 rounded-full object-cover border"
                 />
-                <h2 className="text-lg font-semibold text-gray-800">{a.applicantUsername}</h2>
+                <h2 className="text-base font-semibold text-gray-800 truncate">{a.applicantUsername}</h2>
                 {isNew(a.appliedAt) && (
-                  <span className="text-xs font-medium text-red-500 bg-red-100 px-2 py-0.5 rounded-full ml-2">
+                  <span className="text-xs font-medium text-red-500 bg-red-100 px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
                     New
                   </span>
                 )}
               </div>
 
               <span
-                className={`text-xs px-3 py-1 rounded-full font-semibold shadow-sm ${
+                className={`flex-shrink-0 whitespace-nowrap text-xs px-3 py-1 rounded-full font-semibold shadow-sm ${
                   a.status === "PENDING"
                     ? "bg-yellow-100 text-yellow-800"
                     : a.status === "ACCEPTED"
@@ -123,7 +123,7 @@ export default function EmployerApplicantsPage() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 rounded border text-sm font-medium ${
+                className={`px-3 py-2 min-h-[44px] rounded border text-sm font-medium ${
                   currentPage === page
                     ? "bg-[#6B3F27] text-white border-[#6B3F27]"
                     : "bg-white text-black border-gray-300"

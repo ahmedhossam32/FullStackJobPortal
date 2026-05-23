@@ -87,11 +87,11 @@ export default function MyJobsPage() {
     <div className="max-w-5xl mx-auto mt-10 px-4">
       <h1 className="text-3xl font-bold mb-6">My jobs</h1>
 
-      <div className="flex gap-6 border-b pb-2 mb-6 text-sm font-medium">
+      <div className="flex overflow-x-auto border-b pb-2 mb-6 text-sm font-medium gap-2 sm:gap-6">
         {["saved", "applied", "interviews"].map((tab) => (
           <button
             key={tab}
-            className={`pb-2 border-b-2 capitalize transition-all duration-200 ${
+            className={`pb-2 border-b-2 capitalize transition-all duration-200 whitespace-nowrap px-2 min-h-[44px] ${
               activeTab === tab
                 ? "border-black font-semibold text-black"
                 : "border-transparent text-gray-500 hover:text-black"
@@ -129,7 +129,7 @@ export default function MyJobsPage() {
             {savedJobs.length > 5 && (
               <div className="flex justify-center items-center gap-4 mt-6">
                 <button
-                  className="px-4 py-1 border border-gray-300 rounded hover:bg-gray-100 transition disabled:opacity-40"
+                  className="px-4 py-2 min-h-[44px] border border-gray-300 rounded hover:bg-gray-100 transition disabled:opacity-40"
                   onClick={() => setCurrentSavedPage((prev) => Math.max(prev - 1, 1))}
                   disabled={currentSavedPage === 1}
                 >
@@ -139,7 +139,7 @@ export default function MyJobsPage() {
                   Page {currentSavedPage} of {totalSavedPages}
                 </span>
                 <button
-                  className="px-4 py-1 border border-gray-300 rounded hover:bg-gray-100 transition disabled:opacity-40"
+                  className="px-4 py-2 min-h-[44px] border border-gray-300 rounded hover:bg-gray-100 transition disabled:opacity-40"
                   onClick={() => setCurrentSavedPage((prev) => Math.min(prev + 1, totalSavedPages))}
                   disabled={currentSavedPage === totalSavedPages}
                 >
@@ -168,7 +168,7 @@ export default function MyJobsPage() {
             {appliedJobs.length > 5 && (
               <div className="flex justify-center items-center gap-4 mt-6">
                 <button
-                  className="px-4 py-1 border border-gray-300 rounded hover:bg-gray-100 transition disabled:opacity-40"
+                  className="px-4 py-2 min-h-[44px] border border-gray-300 rounded hover:bg-gray-100 transition disabled:opacity-40"
                   onClick={() => setCurrentAppliedPage((prev) => Math.max(prev - 1, 1))}
                   disabled={currentAppliedPage === 1}
                 >
@@ -178,7 +178,7 @@ export default function MyJobsPage() {
                   Page {currentAppliedPage} of {totalAppliedPages}
                 </span>
                 <button
-                  className="px-4 py-1 border border-gray-300 rounded hover:bg-gray-100 transition disabled:opacity-40"
+                  className="px-4 py-2 min-h-[44px] border border-gray-300 rounded hover:bg-gray-100 transition disabled:opacity-40"
                   onClick={() => setCurrentAppliedPage((prev) => Math.min(prev + 1, totalAppliedPages))}
                   disabled={currentAppliedPage === totalAppliedPages}
                 >

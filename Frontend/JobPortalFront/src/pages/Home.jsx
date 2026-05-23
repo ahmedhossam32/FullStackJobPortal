@@ -14,31 +14,31 @@ export default function Home() {
     <div className="bg-white text-black">
      
       {/* Hero Section */}
-      <header className="px-6 py-10 md:py-6 flex flex-col md:flex-row items-start justify-between gap-4 md:gap-12">
-        {/* Left Image */}
+      <header className="px-4 md:px-6 py-10 md:py-6 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-12">
+        {/* Left Image — hidden on mobile */}
         <img
           src={leftImage}
           alt="Left Illustration"
-          className="w-[300px] md:w-[380px] max-w-full object-contain mt-6 md:mt-0"
+          className="hidden md:block md:w-[380px] max-w-full object-contain"
         />
 
         {/* Center Text */}
-        <div className="text-center md:w-1/3 md:mt-10">
-          <h1 className="text-4xl font-bold mb-3">Your Career Starts Here</h1>
-          <p className="text-lg text-gray-600 mb-5">
+        <div className="text-center w-full md:w-1/3 md:mt-10 mx-auto py-4 md:py-0">
+          <h1 className="text-3xl md:text-4xl font-bold mb-3">Your Career Starts Here</h1>
+          <p className="text-base md:text-lg text-gray-600 mb-6">
             Explore thousands of job opportunities and company reviews
           </p>
-          <div className="space-x-4">
-            <button className="px-6 py-2 bg-black text-white rounded">Find Jobs</button>
-            <button className="px-6 py-2 border rounded">Post a Job</button>
+          <div className="flex flex-wrap justify-center gap-3">
+            <button className="px-6 py-2.5 min-h-[44px] bg-black text-white rounded">Find Jobs</button>
+            <button className="px-6 py-2.5 min-h-[44px] border rounded">Post a Job</button>
           </div>
         </div>
 
-        {/* Right Image */}
+        {/* Right Image — hidden on mobile */}
         <img
           src={rightImage}
           alt="Right Illustration"
-          className="w-[300px] md:w-[380px] max-w-full object-contain mt-6 md:mt-0"
+          className="hidden md:block md:w-[380px] max-w-full object-contain"
         />
       </header>
 

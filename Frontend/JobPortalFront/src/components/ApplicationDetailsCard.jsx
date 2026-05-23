@@ -25,24 +25,24 @@ export default function ApplicationDetailsCard({ application }) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+    <div className="max-w-3xl mx-auto mt-4 md:mt-10 bg-white p-4 md:p-8 rounded-lg shadow-lg border border-gray-200">
       {/* Header */}
-      <div className="flex items-center gap-5 mb-6">
-        <div className="w-16 h-16 rounded border bg-white flex items-center justify-center overflow-hidden">
+      <div className="flex flex-wrap items-center gap-4 md:gap-5 mb-5 md:mb-6">
+        <div className="w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded border bg-white flex items-center justify-center overflow-hidden">
           <img
             src={application.companyLogoUrl || "/default-logo.png"}
             alt="Company Logo"
             className="object-contain w-full h-full"
           />
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">{application.jobTitle}</h1>
-          <p className="text-gray-600 text-sm">{application.companyName} • {application.location}</p>
+        <div className="min-w-0 flex-1">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800 break-words">{application.jobTitle}</h1>
+          <p className="text-gray-600 text-sm break-words">{application.companyName} • {application.location}</p>
         </div>
       </div>
 
       {/* Status Badges */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex flex-wrap items-center gap-3 mb-5 md:mb-6">
         <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-500 border border-gray-300">
           Applied
         </span>

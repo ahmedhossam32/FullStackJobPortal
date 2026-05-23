@@ -8,10 +8,10 @@ export default function RecentJobCard({ job, onClick }) {
       className="cursor-pointer bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition"
       style={{ borderLeft: "6px solid #6B3F27" }}
     >
-      <div className="font-semibold text-lg">{job.title}</div>
+      <div className="font-semibold text-lg truncate">{job.title}</div>
       <div className="text-sm text-gray-500 mt-1">Posted on {job.date}</div>
       <div className="text-sm text-gray-600 flex items-center mt-1">
-        <FaMapMarkerAlt className="mr-1" /> {job.location}
+        <FaMapMarkerAlt className="mr-1 flex-shrink-0" /> <span className="truncate">{job.location}</span>
       </div>
       <div className="mt-2">
         <span

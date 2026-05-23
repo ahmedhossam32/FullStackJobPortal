@@ -40,7 +40,7 @@ export default function ScreeningQuestions({ questions = [], onNext }) {
             id={`question-${index}`}
             type="text"
             ref={(el) => (inputRefs.current[index] = el)}
-            className="w-full border border-gray-300 focus:border-[#6B3F27] focus:ring focus:ring-[#6B3F27]/20 px-3 py-2 rounded-md transition-all outline-none"
+            className="w-full border border-gray-300 focus:border-[#6B3F27] focus:ring focus:ring-[#6B3F27]/20 px-3 py-2.5 text-base rounded-md transition-all outline-none"
             placeholder="Type your answer here..."
             value={answers[index] || ""}
             onChange={(e) => handleChange(index, e.target.value)}
@@ -53,7 +53,7 @@ export default function ScreeningQuestions({ questions = [], onNext }) {
         type="button"
         onClick={() => onNext(answers)}
         disabled={!allAnswered}
-        className={`w-full sm:w-fit px-6 py-2 rounded-md text-white font-medium transition-all ${
+        className={`w-full sm:w-fit px-6 py-2.5 min-h-[44px] rounded-md text-white font-medium transition-all ${
           allAnswered
             ? "bg-[#6B3F27] hover:bg-[#5C3421]"
             : "bg-gray-400 cursor-not-allowed"

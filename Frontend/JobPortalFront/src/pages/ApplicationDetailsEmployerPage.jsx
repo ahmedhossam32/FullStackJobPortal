@@ -104,21 +104,21 @@ export default function ApplicationDetailsEmployerPage() {
             </p>
           </div>
 
-          <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="mt-6 flex flex-col gap-4">
             {/* View Resume */}
             <button
               onClick={handleViewResume}
-              className="text-sm text-[#6B3F27] font-medium hover:underline"
+              className="self-start text-sm text-[#6B3F27] font-medium hover:underline min-h-[44px] flex items-center"
             >
               📎 View Resume
             </button>
 
             {/* Status Selector + Save */}
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="border border-gray-300 rounded px-3 py-1 text-sm"
+                className="flex-1 sm:flex-none border border-gray-300 rounded px-3 py-2 min-h-[44px] text-sm"
               >
                 <option value="PENDING">PENDING</option>
                 <option value="ACCEPTED">ACCEPTED</option>
@@ -127,7 +127,7 @@ export default function ApplicationDetailsEmployerPage() {
               <button
                 onClick={handleStatusUpdate}
                 disabled={isUpdating || selectedStatus === application.status}
-                className={`text-sm px-4 py-1.5 rounded transition ${
+                className={`flex-1 sm:flex-none text-sm px-4 py-2 min-h-[44px] rounded transition ${
                   selectedStatus === application.status || isUpdating
                     ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                     : "bg-[#6B3F27] text-white hover:bg-[#5c3421]"

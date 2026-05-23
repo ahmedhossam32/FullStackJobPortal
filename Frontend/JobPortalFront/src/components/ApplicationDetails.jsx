@@ -153,7 +153,7 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
               <p className="mb-1">Or upload a new resume:</p>
               <label
                 htmlFor="resume-upload"
-                className="inline-block bg-white border border-gray-300 px-4 py-1 rounded cursor-pointer text-[#6B3F27] hover:bg-[#f8f4f2] font-medium"
+                className="flex items-center justify-center w-full sm:w-auto min-h-[44px] bg-white border border-gray-300 px-4 py-2 rounded cursor-pointer text-[#6B3F27] hover:bg-[#f8f4f2] font-medium text-sm"
               >
                 Choose File
                 <input
@@ -180,7 +180,7 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
             type="file"
             accept=".pdf"
             onChange={(e) => setUploadedFile(e.target.files[0])}
-            className="w-full text-sm"
+            className="w-full border border-gray-300 px-3 py-3 rounded-md bg-gray-50 text-sm min-h-[44px]"
           />
         )}
       </div>
@@ -188,7 +188,7 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
       <button
         onClick={handleSubmit}
         disabled={submitting}
-        className={`w-full sm:w-fit px-6 py-2 rounded-md text-white font-medium transition-all ${
+        className={`w-full sm:w-fit px-6 py-2.5 min-h-[44px] rounded-md text-white font-medium transition-all ${
           submitting
             ? "bg-[#6B3F27]/60 cursor-not-allowed"
             : "bg-[#6B3F27] hover:bg-[#5C3421]"

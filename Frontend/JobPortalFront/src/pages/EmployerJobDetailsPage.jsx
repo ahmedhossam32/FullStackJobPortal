@@ -80,17 +80,19 @@ export default function EmployerJobDetailsPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
-      <div className="relative bg-white shadow-xl rounded-2xl p-8 border border-gray-200">
+      <div className="relative bg-white shadow-xl rounded-2xl p-4 md:p-8 border border-gray-200">
         {/* View Applicants */}
-        <button
-          onClick={handleViewApplicants}
-          className="absolute top-6 right-6 bg-[#6B3F27] text-white px-4 py-2 rounded hover:bg-[#5C3421] text-sm shadow-sm"
-        >
-          View Applicants for Job
-        </button>
+        <div className="flex justify-end mb-4 md:mb-0">
+          <button
+            onClick={handleViewApplicants}
+            className="w-full sm:w-auto md:absolute md:top-6 md:right-6 bg-[#6B3F27] text-white px-4 py-2 min-h-[44px] rounded hover:bg-[#5C3421] text-sm shadow-sm"
+          >
+            View Applicants for Job
+          </button>
+        </div>
 
         {/* Header */}
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex flex-wrap items-center gap-4 mb-4">
           {job.profilePictureUrl && (
             <img
               src={job.profilePictureUrl || "/default-logo.png"}
@@ -168,16 +170,16 @@ export default function EmployerJobDetailsPage() {
         )}
 
         {/* Action Buttons */}
-        <div className="flex gap-4 mt-4">
+        <div className="flex flex-wrap gap-3 mt-4">
           <button
             onClick={handleUpdate}
-            className="bg-[#6B3F27] text-white px-5 py-2 rounded hover:bg-[#5C3421] transition"
+            className="flex-1 sm:flex-none bg-[#6B3F27] text-white px-5 py-2.5 min-h-[44px] rounded hover:bg-[#5C3421] transition"
           >
             Update
           </button>
           <button
             onClick={handleDelete}
-            className="bg-red-600 text-white px-5 py-2 rounded hover:bg-red-700 transition"
+            className="flex-1 sm:flex-none bg-red-600 text-white px-5 py-2.5 min-h-[44px] rounded hover:bg-red-700 transition"
           >
             Delete
           </button>

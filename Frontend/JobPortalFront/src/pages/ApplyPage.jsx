@@ -50,13 +50,22 @@ export default function ApplyPage() {
   if (!job) return <div className="p-8 text-red-500">Job not found.</div>;
 
   return (
-    <div className="min-h-screen bg-white px-6 md:px-10 py-10 flex flex-col md:flex-row gap-12 animate-fade-in">
+    <div className="min-h-screen bg-white px-4 md:px-10 py-6 md:py-10 flex flex-col md:flex-row gap-6 md:gap-12 animate-fade-in">
       <div className="md:w-[42%] w-full">
-        <h2 className="text-2xl font-semibold mb-6 leading-relaxed">
+        <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 leading-relaxed">
           Apply for{' '}
           <span className="text-[#6B3F27]">{job.title}</span> at{' '}
           <span className="text-[#6B3F27]">{job.companyName}</span>
         </h2>
+
+        {/* Step indicator — only shown when there are screening questions */}
+        {job.screeningQuestions?.length > 0 && (
+          <div className="flex items-center mb-5">
+            <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold flex-shrink-0 ${step >= 1 ? 'bg-[#6B3F27] text-white' : 'bg-gray-200 text-gray-500'}`}>1</div>
+            <div className={`flex-1 h-0.5 mx-2 transition-colors ${step >= 2 ? 'bg-[#6B3F27]' : 'bg-gray-200'}`}></div>
+            <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold flex-shrink-0 ${step >= 2 ? 'bg-[#6B3F27] text-white' : 'bg-gray-200 text-gray-500'}`}>2</div>
+          </div>
+        )}
 
         {step === 1 && (
           <ScreeningQuestions

@@ -80,13 +80,13 @@ export default function EmployerDashboard() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
+      <div className="flex flex-wrap items-center gap-4 mb-8">
         <img
           src={user?.profilePictureUrl || "/default-logo.png"}
           alt="Company Logo"
-          className="w-12 h-12 object-contain border rounded-md"
+          className="w-12 h-12 flex-shrink-0 object-contain border rounded-md"
         />
-        <h1 className="text-2xl md:text-3xl font-bold">
+        <h1 className="text-2xl md:text-3xl font-bold min-w-0">
           Welcome, {user?.name || "Employer"}!
         </h1>
       </div>
@@ -109,7 +109,7 @@ export default function EmployerDashboard() {
           <h2 className="text-xl font-semibold">Recent Jobs</h2>
           <button
             onClick={() => navigate("/create-job")}
-            className="bg-[#6B3F27] text-white px-4 py-2 rounded hover:bg-[#5C3421] text-sm transition"
+            className="bg-[#6B3F27] text-white px-4 py-2 min-h-[44px] rounded hover:bg-[#5C3421] text-sm transition whitespace-nowrap flex-shrink-0"
           >
             + Create Job
           </button>
@@ -145,26 +145,26 @@ export default function EmployerDashboard() {
             <div
               key={index}
               onClick={() => navigate(`/employer/applications/${a.id}`)}
-              className="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition cursor-pointer"
-              style={{ borderLeft: "6px solid #6B3F27", paddingLeft: "0.5rem" }}
+              className="flex items-center justify-between gap-3 px-3 py-4 hover:bg-gray-50 transition cursor-pointer"
+              style={{ borderLeft: "6px solid #6B3F27" }}
             >
               {/* Left Side */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
                 <img
                   src={a.applicantProfilePicture || "/default-avatar.png"}
                   alt="Applicant"
-                  className="w-11 h-11 rounded-full object-cover border"
+                  className="w-11 h-11 flex-shrink-0 rounded-full object-cover border"
                 />
-                <div className="leading-snug">
-                  <p className="font-semibold text-blue-700 hover:underline flex items-center gap-2">
-                    {a.applicantUsername}
+                <div className="leading-snug min-w-0">
+                  <p className="font-semibold text-blue-700 hover:underline flex items-center gap-2 flex-wrap">
+                    <span className="truncate">{a.applicantUsername}</span>
                     {isNew(a.appliedAt) && (
-                      <span className="text-xs text-red-600 bg-red-100 px-2 py-0.5 rounded-full font-medium">
+                      <span className="text-xs text-red-600 bg-red-100 px-2 py-0.5 rounded-full font-medium whitespace-nowrap">
                         New
                       </span>
                     )}
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 truncate">
                     Applied for <strong>{a.jobTitle}</strong>
                   </p>
                   <p className="text-xs text-gray-400">
@@ -180,7 +180,7 @@ export default function EmployerDashboard() {
 
               {/* Right Side - Status */}
               <span
-                className={`px-3 py-1 rounded-full text-sm font-semibold border shadow-sm ${
+                className={`flex-shrink-0 whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold border shadow-sm ${
                   a.status === "PENDING"
                     ? "bg-yellow-100 text-yellow-700 border-yellow-300"
                     : a.status === "OFFERED"

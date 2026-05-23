@@ -95,32 +95,34 @@ export default function JobSeekerProfilePage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 px-4">
-      <h1 className="text-3xl font-bold mb-8">My Profile</h1>
+    <div className="max-w-4xl mx-auto mt-8 px-4 pb-10">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">My Profile</h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-10 items-start">
+      <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-8 md:gap-10 md:items-start">
         {/* Profile Picture */}
-        <div className="relative w-40 h-40 rounded-full overflow-hidden border border-gray-300 shadow-sm">
-          {formData.profilePicture ? (
-            <img
-              src={formData.profilePicture || "/default-avatar.png"}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-500 text-sm">
-              No Image
-            </div>
-          )}
-          <label className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-center text-sm cursor-pointer py-1">
-            Edit
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleFileChange(e, "profilePic")}
-              className="hidden"
-            />
-          </label>
+        <div className="flex justify-center md:justify-start md:flex-shrink-0">
+          <div className="relative w-36 h-36 md:w-40 md:h-40 rounded-full overflow-hidden border border-gray-300 shadow-sm">
+            {formData.profilePicture ? (
+              <img
+                src={formData.profilePicture || "/default-avatar.png"}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-500 text-sm">
+                No Image
+              </div>
+            )}
+            <label className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-center text-sm cursor-pointer py-1.5">
+              Edit
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleFileChange(e, "profilePic")}
+                className="hidden"
+              />
+            </label>
+          </div>
         </div>
 
         {/* Form Fields */}
@@ -132,7 +134,7 @@ export default function JobSeekerProfilePage() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full border border-gray-300 px-3 py-2 rounded-md"
+              className="w-full border border-gray-300 px-3 py-2.5 rounded-md text-base"
               required
             />
           </div>
@@ -144,7 +146,7 @@ export default function JobSeekerProfilePage() {
               name="username"
               value={formData.username}
               onChange={handleChange}
-              className="w-full border border-gray-300 px-3 py-2 rounded-md"
+              className="w-full border border-gray-300 px-3 py-2.5 rounded-md text-base"
               required
             />
           </div>
@@ -156,7 +158,7 @@ export default function JobSeekerProfilePage() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full border border-gray-300 px-3 py-2 rounded-md"
+              className="w-full border border-gray-300 px-3 py-2.5 rounded-md text-base"
               required
             />
           </div>
@@ -168,7 +170,7 @@ export default function JobSeekerProfilePage() {
               name="dob"
               value={formData.dob}
               onChange={handleChange}
-              className="w-full border border-gray-300 px-3 py-2 rounded-md"
+              className="w-full border border-gray-300 px-3 py-2.5 rounded-md text-base"
               required
             />
           </div>
@@ -179,10 +181,10 @@ export default function JobSeekerProfilePage() {
               type="file"
               accept=".pdf"
               onChange={(e) => handleFileChange(e, "resume")}
-              className="text-sm"
+              className="w-full border border-gray-300 px-3 py-2.5 rounded-md bg-gray-50 text-sm"
             />
             {formData.resume && (
-              <div className="text-xs text-gray-600 mt-1">
+              <div className="text-xs text-gray-600 mt-2">
                 {formData.resumeOriginalName && (
                   <p className="mb-1">
                     <span className="font-medium text-gray-800">Current:</span> {formData.resumeOriginalName}
@@ -201,7 +203,7 @@ export default function JobSeekerProfilePage() {
 
           <button
             type="submit"
-            className="bg-[#6B3F27] hover:bg-[#5c3421] text-white px-6 py-2 rounded-md font-semibold mt-4"
+            className="w-full md:w-auto bg-[#6B3F27] hover:bg-[#5c3421] text-white px-6 py-3 min-h-[44px] rounded-md font-semibold mt-2"
           >
             Save Changes
           </button>
