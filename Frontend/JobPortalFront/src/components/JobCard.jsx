@@ -20,7 +20,7 @@ export default function JobCard({ job, isSelected, onSelect }) {
       </div>
 
       {/* Job Info */}
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <h2 className="text-lg font-bold text-gray-800">{job.title}</h2>
 
         <div className="text-sm text-gray-600 flex items-center mt-1">

@@ -23,11 +23,11 @@ export default function JobSearchBar({ onSearch }) {
 
   return (
     <div className="flex justify-center my-8 z-10 relative">
-      <div className="flex items-center bg-white/70 backdrop-blur-md rounded-xl overflow-visible w-[90%] max-w-5xl shadow-lg border border-gray-200">
-        
+      <div className="flex flex-col md:flex-row md:items-center bg-white/70 backdrop-blur-md rounded-xl overflow-visible w-[90%] max-w-5xl shadow-lg border border-gray-200">
+
         {/* Job title input */}
-        <div className="flex items-center px-4 py-3 w-1/3">
-          <FiSearch className="text-gray-500 mr-2" />
+        <div className="flex items-center px-4 py-3 w-full md:w-1/3 border-b md:border-b-0 border-gray-200">
+          <FiSearch className="text-gray-500 mr-2 flex-shrink-0" />
           <input
             type="text"
             placeholder="Find your perfect job"
@@ -38,8 +38,8 @@ export default function JobSearchBar({ onSearch }) {
         </div>
 
         {/* Location input */}
-        <div className="flex items-center px-4 py-3 w-1/3 border-l border-gray-200">
-          <GoLocation className="text-gray-500 mr-2" />
+        <div className="flex items-center px-4 py-3 w-full md:w-1/3 border-b md:border-b-0 md:border-l border-gray-200">
+          <GoLocation className="text-gray-500 mr-2 flex-shrink-0" />
           <input
             type="text"
             placeholder="Enter city or country"
@@ -50,7 +50,7 @@ export default function JobSearchBar({ onSearch }) {
         </div>
 
         {/* Job type dropdown using react-select */}
-        <div className="px-4 py-2 w-1/4 border-l border-gray-200">
+        <div className="px-4 py-2 w-full md:w-1/4 border-b md:border-b-0 md:border-l border-gray-200">
           <Select
             value={type}
             onChange={setType}
@@ -81,7 +81,7 @@ export default function JobSearchBar({ onSearch }) {
         {/* Search button */}
         <button
           onClick={handleClick}
-          className="bg-[#6F4E37] text-white px-6 py-2 m-2 text-sm font-medium rounded-xl hover:bg-[#3E2723] transition"
+          className="bg-[#6F4E37] text-white px-6 py-3 md:py-2 m-2 min-h-[44px] w-[calc(100%-1rem)] md:w-auto text-sm font-medium rounded-xl hover:bg-[#3E2723] transition"
         >
           Search
         </button>

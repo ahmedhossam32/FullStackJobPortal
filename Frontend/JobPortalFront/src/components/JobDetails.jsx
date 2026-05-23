@@ -99,9 +99,9 @@ export default function JobDetails({ job }) {
     return <div className="text-gray-500">Select a job to view details</div>;
 
   return (
-    <div className="relative bg-white p-6 rounded-lg shadow-lg border border-gray-200 w-full">
+    <div className="relative bg-white p-4 md:p-6 rounded-lg shadow-lg border border-gray-200 w-full">
       {/* Action Buttons */}
-      <div className="absolute top-4 right-4 flex items-center gap-3">
+      <div className="flex flex-wrap justify-end gap-3 mb-3 md:absolute md:top-4 md:right-4 md:mb-0">
         <button
           onClick={toggleSave}
           className="text-[#6B3F27] hover:text-[#5C3421] transition-colors duration-200"
@@ -133,7 +133,7 @@ export default function JobDetails({ job }) {
             className="w-full h-full object-contain"
           />
         </div>
-        <h1 className="text-2xl font-bold text-[#000000]">{job.title}</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-[#000000]">{job.title}</h1>
       </div>
 
       {/* Company Info */}

@@ -34,7 +34,7 @@ export default function PaginatedJobList({ jobs, selectedJob, onSelect }) {
           <button
             onClick={() => setCurrentPage((prev) => prev - 1)}
             disabled={currentPage === 1}
-            className={`px-4 py-2 text-sm rounded transition-colors duration-200 ${
+            className={`px-4 py-2 min-h-[44px] text-sm rounded transition-colors duration-200 ${
               currentPage === 1
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : "bg-[#5D3A00] text-white hover:bg-[#4b2f00]"
@@ -50,7 +50,7 @@ export default function PaginatedJobList({ jobs, selectedJob, onSelect }) {
           <button
             onClick={() => setCurrentPage((prev) => prev + 1)}
             disabled={currentPage === totalPages}
-            className={`px-4 py-2 text-sm rounded transition-colors duration-200 ${
+            className={`px-4 py-2 min-h-[44px] text-sm rounded transition-colors duration-200 ${
               currentPage === totalPages
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : "bg-[#5D3A00] text-white hover:bg-[#4b2f00]"

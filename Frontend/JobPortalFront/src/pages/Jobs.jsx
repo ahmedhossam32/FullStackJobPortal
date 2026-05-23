@@ -91,7 +91,7 @@ export default function Jobs() {
   };
 
   return (
-    <div className="p-6">
+    <div className="px-4 py-4 md:p-6">
       <JobSearchBar onSearch={handleSearch} />
 
       {error && <div className="text-red-600 font-semibold mb-4">{error}</div>}
@@ -111,7 +111,7 @@ export default function Jobs() {
               <button
                 onClick={() => fetchAllJobs(currentPage - 1)}
                 disabled={currentPage === 0}
-                className="px-4 py-2 rounded text-sm font-medium bg-[#5D3A00] text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 min-h-[44px] rounded text-sm font-medium bg-[#5D3A00] text-white disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
@@ -121,7 +121,7 @@ export default function Jobs() {
               <button
                 onClick={() => fetchAllJobs(currentPage + 1)}
                 disabled={currentPage === totalPages - 1}
-                className="px-4 py-2 rounded text-sm font-medium bg-[#5D3A00] text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 min-h-[44px] rounded text-sm font-medium bg-[#5D3A00] text-white disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Next
               </button>
@@ -130,7 +130,7 @@ export default function Jobs() {
         </div>
 
         <div className="md:col-span-2">
-          <div className="sticky top-24">
+          <div className="md:sticky md:top-24">
             {selectedJob ? (
               <JobDetails job={selectedJob} />
             ) : (
