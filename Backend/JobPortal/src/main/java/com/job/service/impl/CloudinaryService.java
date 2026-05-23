@@ -46,7 +46,7 @@ public class CloudinaryService {
         }
     }
 
-    public String uploadResume(MultipartFile file) throws IOException {
+    public String uploadResume(MultipartFile file) {
         log.info("Uploading resume to Cloudinary: {}", file.getOriginalFilename());
         try {
             Map<String, Object> options = new HashMap<>();
@@ -65,7 +65,7 @@ public class CloudinaryService {
             return url;
         } catch (Exception e) {
             log.error("Failed to upload resume to Cloudinary", e);
-            throw new IOException("Failed to upload resume", e);
+            throw new BadRequestException("Resume upload failed: " + e.getMessage());
         }
     }
 
