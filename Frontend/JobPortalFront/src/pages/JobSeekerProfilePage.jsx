@@ -8,9 +8,8 @@ export default function JobSeekerProfilePage() {
     username: "",
     email: "",
     dob: "",
-    profilePicture: "",
-    resume: "",
-    resumeOriginalName: "",
+    profilePictureUrl: "",
+    resumeUrl: "",
   });
 
   const [profilePicFile, setProfilePicFile] = useState(null);
@@ -29,9 +28,8 @@ export default function JobSeekerProfilePage() {
           username: data.username || "",
           email: data.email || "",
           dob: data.dob || "",
-          profilePicture: data.profilePictureUrl || "",
-          resume: data.resumeUrl || "",
-          resumeOriginalName: data.resumeOriginalName || "",
+          profilePictureUrl: data.profilePictureUrl || "",
+          resumeUrl: data.resumeUrl || "",
         });
       })
       .catch((err) => {
@@ -91,7 +89,7 @@ export default function JobSeekerProfilePage() {
   };
 
   const handleResumePreview = () => {
-    window.open(formData.resume, "_blank");
+    window.open(formData.resumeUrl, "_blank");
   };
 
   return (
@@ -101,9 +99,9 @@ export default function JobSeekerProfilePage() {
       <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-10 items-start">
         {/* Profile Picture */}
         <div className="relative w-40 h-40 rounded-full overflow-hidden border border-gray-300 shadow-sm">
-          {formData.profilePicture ? (
+          {formData.profilePictureUrl ? (
             <img
-              src={formData.profilePicture || "/default-avatar.png"}
+              src={formData.profilePictureUrl || "/default-avatar.png"}
               alt="Profile"
               className="w-full h-full object-cover"
             />
@@ -181,11 +179,8 @@ export default function JobSeekerProfilePage() {
               onChange={(e) => handleFileChange(e, "resume")}
               className="text-sm"
             />
-            {formData.resumeOriginalName && (
+            {formData.resumeUrl && (
               <div className="text-xs text-gray-600 mt-1">
-                <p className="mb-1">
-                  <span className="font-medium text-gray-800">Current:</span> {formData.resumeOriginalName}
-                </p>
                 <button
                   type="button"
                   onClick={handleResumePreview}

@@ -10,7 +10,7 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
   const [fullName] = useState(user?.name || "");
   const [email] = useState(user?.email || "");
   const [phone, setPhone] = useState("");
-  const [existingResume] = useState(user?.resume || null);
+  const [existingResume] = useState(user?.resumeUrl || null);
   const [selectedResume, setSelectedResume] = useState(existingResume);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -32,12 +32,16 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
   };
 
   const handleSubmit = async () => {
+    if (!existingResume && !uploadedFile) {
+      toast.error("Please upload a resume before applying.");
+      return;
+    }
+
     try {
       setSubmitting(true);
-      let resumeUrl = selectedResume;
 
       if (uploadedFile) {
-        resumeUrl = await uploadResume();
+        await uploadResume();
       }
 
       const response = await fetch("http://localhost:8080/applications", {
@@ -48,7 +52,6 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
         },
         body: JSON.stringify({
           jobId,
-          resumeUrl,
           screeningAnswers,
         }),
       });
@@ -83,23 +86,8 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
     }
   };
 
-  const previewResume = async () => {
-    try {
-      const res = await fetch(`http://localhost:8080/files/resume/${existingResume}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error("Failed to fetch resume");
-
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      window.open(url, "_blank");
-    } catch (err) {
-      console.error("Preview failed:", err);
-      toast.error("⚠️ Failed to preview resume.");
-    }
+  const previewResume = () => {
+    window.open(existingResume, "_blank");
   };
 
   return (
