@@ -16,9 +16,11 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(Arrays.asList(
-            "https://full-stack-job-portal-three.vercel.app",
-            "https://full-stack-job-portal-git-main-ahmeds-projects-cc4d86f7.vercel.app",
-            "http://localhost:5173"
+                "https://full-stack-job-portal-three.vercel.app",
+                "https://full-stack-job-portal-git-main-ahmeds-projects-cc4d86f7.vercel.app",
+                "https://jobportal.dev",
+                "https://www.jobportal.dev",
+                "http://localhost:5173"
         ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
