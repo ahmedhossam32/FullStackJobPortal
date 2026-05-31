@@ -9,6 +9,9 @@ to an employer posting jobs, managing applicants, and making hiring decisions.
 Every feature was **planned, built, and tested end-to-end**, covering frontend, backend, database, and API integration.
 
 ---
+🌐 **Live Demo:** [jobportal.dev](https://www.jobportal.dev/)  
+📁 **GitHub:** [FullStackJobPortal](https://github.com/ahmedhossam32/FullStackJobPortal)
+---
 
 ## 📖 About the Project
 
@@ -22,19 +25,20 @@ The project required:
 - Writing clean, maintainable code with modular architecture.
 
 ---
-
 ## 🛠️ Built With
 
 ### 🧠 Backend
 - Java 17
 - Spring Boot
-- Spring Security with JWT
+- Spring Security with JWT + OAuth2
 - Hibernate (JPA)
 - PostgreSQL
+- Cloudinary (cloud file storage)
+- Docker & Docker Compose
 - Lombok
 
 For the full backend documentation and implementation details,  
-please navigate to the [Backend README](./Backend/JobPortal/README.md). 
+please navigate to the [Backend README](./Backend/JobPortal/README.md).
 
 ### 🎨 Frontend
 - React.js
@@ -42,7 +46,13 @@ please navigate to the [Backend README](./Backend/JobPortal/README.md).
 - Axios
 - Formik
 - Context API
-- Plain CSS / Inline styling
+- Tailwind CSS
+
+### ☁️ Deployment
+- DigitalOcean — Backend (Spring Boot + PostgreSQL)
+- Vercel — Frontend (React)
+- Cloudinary — File & image storage
+- Custom domain — [jobportal.dev](https://www.jobportal.dev/)
 
 ---
 
@@ -69,16 +79,20 @@ please navigate to the [Backend README](./Backend/JobPortal/README.md).
 - **Dashboard:** View statistics for total jobs, applicants, accepted, rejected, and pending applications.
 
 ---
-
 ## 🌟 Why This Project Stands Out
 
 - **60+ unique UI screens** designed and implemented manually.
-- **Fully functional backend** with clean service-layer architecture.
+- **Fully functional backend** with clean service-layer architecture and DTO separation (request/response).
 - **Real database integration** (PostgreSQL) with optimized queries and entity relationships.
-- **File uploads** for resumes and profile pictures with secure handling.
+- **Cloud file storage** via Cloudinary for profile pictures and resume uploads.
+- **Pagination** on all job listing endpoints for optimized performance and reduced server load.
 - **Notification system** that mimics real-time updates using efficient state management.
-- **Role-based access control** ensuring separate flows for job seekers and employers.
-- **Responsive design** that adapts to various screen sizes without relying on heavy UI frameworks.
+- **Role-based access control** with @PreAuthorize annotations protecting every endpoint (JOB_SEEKER / EMPLOYER).
+- **Global exception handling** ensuring consistent, proper error responses across the app.
+- **Dockerized backend** for consistent and portable deployment.
+- **CORS security** restricted to specific allowed origins only.
+- **Responsive design** that adapts to all screen sizes including mobile.
+- **Deployed with a custom domain** — fully accessible at [jobportal.dev](https://www.jobportal.dev/).
 
 ---
 
