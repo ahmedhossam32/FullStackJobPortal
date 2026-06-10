@@ -11,7 +11,6 @@ export default function NavbarEmployer() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    console.log("👔 Employer user:", user);
   }, [user]);
 
   const handleLogout = () => {

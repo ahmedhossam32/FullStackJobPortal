@@ -10,7 +10,6 @@ export default function CustomNotificationToast({ notification, token }) {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log(`✅ Notification ${notification.id} marked as read`);
     } catch (err) {
       console.error(`❌ Failed to mark as read:`, err);
     }

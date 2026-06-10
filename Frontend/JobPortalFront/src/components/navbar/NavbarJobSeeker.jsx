@@ -12,7 +12,6 @@ export default function Navbar({ onOpenJobSeeker, onOpenEmployer }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    console.log("🧠 Logged-in user from context:", user);
     if (user && !user.profilePicture) {
       console.warn("⚠️ User has no profilePicture — using default avatar");
     }

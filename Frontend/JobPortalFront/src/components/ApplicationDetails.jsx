@@ -69,7 +69,7 @@ export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
 
       toast.success(
   <div>
-    <p className="text-[#256029] font-semibold">✅ Application submitted!</p>
+    <p className="text-[#256029] font-semibold">✅ Application submitted! A confirmation email has been sent to your inbox.</p>
     <button
       onClick={() => navigate(`/applications/${applicationId}`)}
       className="mt-1 text-blue-600 underline hover:text-blue-800 text-sm"

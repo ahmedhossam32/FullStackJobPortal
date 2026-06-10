@@ -33,7 +33,6 @@ export default function NotificationToastManager() {
         });
 
         const unread = res.data.filter((n) => !n.seen);
-        console.log("📌 Unread notifications:", unread);
 
         if (unread.length === 0) {
           console.log("✅ No unread notifications.");
@@ -55,7 +54,6 @@ export default function NotificationToastManager() {
           if (index >= unread.length) return;
 
           const n = unread[index++];
-          console.log("🔊 Showing toast for:", n.message);
 
           toast(<CustomNotificationToast notification={n} token={token} />, {
             autoClose: 5000,
