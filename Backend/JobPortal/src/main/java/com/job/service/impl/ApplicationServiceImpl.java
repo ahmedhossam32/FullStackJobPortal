@@ -16,6 +16,7 @@ import com.job.exception.ResourceNotFoundException;
 import com.job.exception.UnauthorizedException;
 import com.job.repository.ApplicationRepository;
 import com.job.repository.JobRepository;
+import com.job.service.interfaces.EmailService;
 import com.job.service.interfaces.IApplicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     private final ApplicationRepository applicationRepository;
     private final JobRepository jobRepository;
     private final List<ApplicationObserver> observers;
+    private final EmailService emailService;
 
     @Override
     @Transactional
@@ -65,6 +67,13 @@ public class ApplicationServiceImpl implements IApplicationService {
         application.setStatus(ApplicationStatus.PENDING);
 
         applicationRepository.save(application);
+
+        emailService.sendApplicationConfirmation(
+                jobSeeker.getEmail(),
+                jobSeeker.getName(),
+                job.getTitle(),
+                job.getEmployer().getCompanyName()
+        );
 
         return mapToDTO(application);
     }
@@ -167,6 +176,13 @@ public class ApplicationServiceImpl implements IApplicationService {
         app.setStatus(newStatus);
         applicationRepository.save(app);
         notifyObservers(app.getJobSeeker(), app);
+
+        emailService.sendApplicationStatusUpdate(
+                app.getJobSeeker().getEmail(),
+                app.getJobSeeker().getName(),
+                app.getJob().getTitle(),
+                newStatus.toString()
+        );
     }
 
     @Override

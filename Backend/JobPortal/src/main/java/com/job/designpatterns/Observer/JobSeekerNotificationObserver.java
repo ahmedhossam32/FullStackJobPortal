@@ -6,7 +6,6 @@ import com.job.entity.Notification;
 import com.job.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -16,7 +15,6 @@ public class JobSeekerNotificationObserver implements ApplicationObserver {
 
     private final NotificationRepository notificationRepository;
 
-    @Async
     @Override
     public void notify(JobSeeker jobSeeker, Application application) {
         String message = String.format(
