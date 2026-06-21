@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { successToast, infoToast } from "../utils/toastUtils";
+import { successToast, errorToast, infoToast } from "../utils/toastUtils";
 import API_URL from "../api/config";
 
 export default function JobDetails({ job }) {
@@ -90,12 +90,18 @@ export default function JobDetails({ job }) {
         setSaved(!saved);
         successToast(saved ? "Job removed from saved list." : "Job saved successfully!");
       } else {
-        const errorMsg = await response.text();
-        successToast(`Failed to ${saved ? "unsave" : "save"} job: ${errorMsg}`);
+        let errorMsg;
+        try {
+          const body = await response.json();
+          errorMsg = body?.message ?? `Failed to ${saved ? "unsave" : "save"} job.`;
+        } catch {
+          errorMsg = `Failed to ${saved ? "unsave" : "save"} job.`;
+        }
+        errorToast(errorMsg);
       }
     } catch (err) {
       console.error(err);
-      successToast("An error occurred while saving the job.");
+      errorToast("An error occurred while saving the job.");
     } finally {
       setSaving(false);
     }
