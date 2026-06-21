@@ -1,14 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { FaBell } from "react-icons/fa";
-import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
-import API_URL from "../api/config";
+import apiClient from "../api/client";
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const bellRef = useRef(null);
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -28,9 +26,7 @@ export default function NotificationBell() {
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get(`${API_URL}/notifications`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get("/notifications");
       const unseen = response.data.filter((n) => !n.seen);
       setNotifications(unseen);
     } catch (error) {
@@ -42,11 +38,7 @@ export default function NotificationBell() {
 
   const markAsRead = async (id) => {
     try {
-      await axios.put(
-        `${API_URL}/notifications/${id}/read`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await apiClient.put(`/notifications/${id}/read`, {});
       setNotifications((prev) => prev.filter((n) => n.id !== id));
     } catch (error) {
       console.error("Failed to mark notification as read:", error);

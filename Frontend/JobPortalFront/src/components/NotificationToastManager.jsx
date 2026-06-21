@@ -1,73 +1,52 @@
 import { useEffect, useContext } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
 import CustomNotificationToast from "./CustomNotificationToast";
-import API_URL from "../api/config";
+import apiClient from "../api/client";
 
 export default function NotificationToastManager() {
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    if (!user) {
-      console.log("🚫 No user yet, skipping toast logic.");
-      return;
-    }
-
-    if (user.role !== "JOB_SEEKER") {
-      console.log("🚫 User is not a job seeker. Skipping notifications.");
-      return;
-    }
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.log("🚫 No token found, skipping toast logic.");
-      return;
-    }
+    if (!user || user.role !== "JOB_SEEKER") return;
 
     const showToasts = async () => {
       try {
-        console.log("📡 Fetching notifications...");
-        const res = await axios.get(`${API_URL}/notifications`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
+        const res = await apiClient.get("/notifications");
         const unread = res.data.filter((n) => !n.seen);
 
-        if (unread.length === 0) {
-          console.log("✅ No unread notifications.");
-          return;
-        }
+        if (unread.length === 0) return;
 
         localStorage.removeItem("shownToasts");
 
         const alreadyShown = localStorage.getItem("shownToasts");
-        if (alreadyShown === "true") {
-          console.log("⚠️ Toasts already shown, skipping.");
-          return;
-        }
+        if (alreadyShown === "true") return;
 
         let index = 0;
         localStorage.setItem("shownToasts", "true");
 
         const showNext = () => {
           if (index >= unread.length) return;
-
           const n = unread[index++];
+          const toastId = `notif-${n.id}`;
 
-          toast(<CustomNotificationToast notification={n} token={token} />, {
-            autoClose: 5000,
-            closeButton: false,
-            position: "top-right",
-            hideProgressBar: true,
-            style: {
-              background: "transparent",
-              boxShadow: "none",
-              padding: 0,
-              maxWidth: "100vw",
-              width: "auto",
-            },
-          });
+          toast(
+            <CustomNotificationToast notification={n} toastId={toastId} />,
+            {
+              toastId,
+              autoClose: 5000,
+              closeButton: false,
+              position: "top-right",
+              hideProgressBar: true,
+              style: {
+                background: "transparent",
+                boxShadow: "none",
+                padding: 0,
+                maxWidth: "100vw",
+                width: "auto",
+              },
+            }
+          );
 
           setTimeout(showNext, 5500);
         };

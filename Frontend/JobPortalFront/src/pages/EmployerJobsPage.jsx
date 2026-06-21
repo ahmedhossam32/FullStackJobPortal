@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaMapMarkerAlt, FaClock } from "react-icons/fa";
-import API_URL from "../api/config";
+import apiClient from "../api/client";
 
 export default function EmployerJobsPage() {
   const [jobs, setJobs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 5;
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   const user = JSON.parse(localStorage.getItem("user"));
   const logoUrl = user?.profilePicture || "/default-logo.png";
@@ -17,10 +16,8 @@ export default function EmployerJobsPage() {
   useEffect(() => {
     async function fetchJobs() {
       try {
-        const res = await fetch(`${API_URL}/jobs/my`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
+        const res = await apiClient.get("/jobs/my");
+        const data = res.data;
         const sorted = [...data].sort(
           (a, b) => new Date(b.postedAt) - new Date(a.postedAt)
         );
@@ -30,7 +27,7 @@ export default function EmployerJobsPage() {
       }
     }
     fetchJobs();
-  }, [token]);
+  }, []);
 
   const totalPages = Math.ceil(jobs.length / jobsPerPage);
   const startIdx = (currentPage - 1) * jobsPerPage;

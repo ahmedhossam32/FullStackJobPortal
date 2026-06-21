@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import ScreeningQuestions from '../components/ScreeningQuestions';
 import ApplicationDetails from '../components/ApplicationDetails';
 import JobDetails from '../components/JobDetails';
-import API_URL from '../api/config';
+import apiClient from '../api/client';
 
 export default function ApplyPage() {
   const { jobId } = useParams();
@@ -16,17 +16,8 @@ export default function ApplyPage() {
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("No token found");
-
-        const res = await fetch(`${API_URL}/jobs/${jobId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!res.ok) throw new Error("Failed to fetch job");
-        const data = await res.json();
+        const res = await apiClient.get(`/jobs/${jobId}`);
+        const data = res.data;
         setJob(data);
 
         if (!data.screeningQuestions || data.screeningQuestions.length === 0) {

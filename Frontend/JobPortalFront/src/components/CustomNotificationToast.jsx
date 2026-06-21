@@ -1,17 +1,25 @@
-import axios from "axios";
+import { useState } from "react";
+import { toast } from "react-toastify";
 import { IoMdClose } from "react-icons/io";
-import API_URL from "../api/config";
+import apiClient from "../api/client";
 
-export default function CustomNotificationToast({ notification, token }) {
+export default function CustomNotificationToast({ notification, toastId }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleDismiss = () => {
+    toast.dismiss(toastId);
+  };
+
   const handleMarkAsRead = async () => {
+    if (loading) return;
+    setLoading(true);
     try {
-      await axios.put(
-        `${API_URL}/notifications/${notification.id}/read`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await apiClient.put(`/notifications/${notification.id}/read`, {});
+      toast.dismiss(toastId);
     } catch (err) {
-      console.error(`❌ Failed to mark as read:`, err);
+      console.error("❌ Failed to mark as read:", err);
+      toast.error("Failed to mark notification as read");
+      setLoading(false);
     }
   };
 
@@ -35,9 +43,9 @@ export default function CustomNotificationToast({ notification, token }) {
 
   return (
     <div className="relative rounded-xl bg-white p-4 shadow-lg flex items-start gap-3 max-w-sm border border-gray-100">
-      {/* Close button */}
+      {/* Close button — dismisses visually only, no API call */}
       <button
-        onClick={handleMarkAsRead}
+        onClick={handleDismiss}
         className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
       >
         <IoMdClose size={18} />
@@ -56,9 +64,10 @@ export default function CustomNotificationToast({ notification, token }) {
 
         <button
           onClick={handleMarkAsRead}
-          className="mt-2 bg-[#6b4027] text-white text-xs font-medium px-4 py-1.5 rounded hover:bg-[#59331f] transition"
+          disabled={loading}
+          className="mt-2 bg-[#6b4027] text-white text-xs font-medium px-4 py-1.5 rounded hover:bg-[#59331f] transition disabled:opacity-50"
         >
-          Mark as Read
+          {loading ? "Marking..." : "Mark as Read"}
         </button>
       </div>
     </div>
