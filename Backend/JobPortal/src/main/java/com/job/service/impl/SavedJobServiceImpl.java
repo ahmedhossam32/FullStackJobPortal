@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -81,8 +82,8 @@ public class SavedJobServiceImpl implements ISavedJobService {
         dto.setProfilePicture(job.getEmployer().getProfilePictureUrl());
         dto.setType(job.getType());
         dto.setWorkMode(job.getWorkMode());
-        dto.setResponsibilities(job.getResponsibilities());
-        dto.setRequiredSkills(job.getRequiredSkills());
+        dto.setResponsibilities(new ArrayList<>(job.getResponsibilities() != null ? job.getResponsibilities() : List.of()));
+        dto.setRequiredSkills(new ArrayList<>(job.getRequiredSkills() != null ? job.getRequiredSkills() : List.of()));
         dto.setEmployerId(job.getEmployer().getId());
         return dto;
     }
