@@ -7,6 +7,7 @@ import com.job.enums.Role;
 import com.job.repository.EmployerRepository;
 import com.job.repository.JobSeekerRepository;
 import com.job.repository.UserRepository;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,7 +52,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         log.debug("JWT token received for request: {}", request.getRequestURI());
         String token = authHeader.substring(7);
 
-        String username = jwtUtil.extractUsername(token);
+        String username;
+        try {
+            username = jwtUtil.extractUsername(token);
+        } catch (ExpiredJwtException e) {
+            log.warn("Expired JWT for request: {}", request.getRequestURI());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write(
+                "{\"error\":\"TOKEN_EXPIRED\",\"message\":\"Your session has expired, please log in again\"}"
+            );
+            return;
+        }
+
         if (username == null) {
             log.error("Could not extract username from token");
             filterChain.doFilter(request, response);

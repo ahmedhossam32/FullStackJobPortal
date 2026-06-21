@@ -40,6 +40,8 @@ public class JwtUtil {
             String username = getClaims(token).getSubject();
             log.debug("Extracted username from token: {}", username);
             return username;
+        } catch (ExpiredJwtException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Failed to extract username from token: {}", e.getMessage());
             return null;
