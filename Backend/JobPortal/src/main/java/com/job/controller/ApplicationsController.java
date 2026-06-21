@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class ApplicationsController {
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @PostMapping
     public ResponseEntity<ApplicationResponseDTO> applyToJob(
-            @RequestBody ApplicationRequestDTO dto,
+            @Valid @RequestBody ApplicationRequestDTO dto,
             @RequestAttribute("user") User user) {
         JobSeeker jobSeeker = (JobSeeker) user;
         log.info("Job seeker {} applying to job id: {}", jobSeeker.getUsername(), dto.getJobId());
@@ -98,7 +99,7 @@ public class ApplicationsController {
     @PutMapping("/{id}/status")
     public ResponseEntity<String> updateApplicationStatus(
             @PathVariable Long id,
-            @RequestBody ApplicationStatusUpdateDTO dto,
+            @Valid @RequestBody ApplicationStatusUpdateDTO dto,
             @RequestAttribute("user") User user) {
         Employer employer = (Employer) user;
         log.info("Employer {} updating application id: {} to status: {}", employer.getUsername(), id, dto.getStatus());
