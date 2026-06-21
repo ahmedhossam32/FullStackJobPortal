@@ -1,64 +1,55 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useRef } from "react";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
+import { NotificationContext } from "../context/NotificationContext";
 import CustomNotificationToast from "./CustomNotificationToast";
-import apiClient from "../api/client";
 
 export default function NotificationToastManager() {
   const { user } = useContext(AuthContext);
+  const { notifications } = useContext(NotificationContext);
+  const hasShownToasts = useRef(false);
 
   useEffect(() => {
-    if (!user || user.role !== "JOB_SEEKER") return;
+    if (!user) {
+      hasShownToasts.current = false;
+      return;
+    }
+    if (user.role !== "JOB_SEEKER") return;
+    if (notifications.length === 0 || hasShownToasts.current) return;
 
-    const showToasts = async () => {
-      try {
-        const res = await apiClient.get("/notifications");
-        const unread = res.data.filter((n) => !n.seen);
+    const unread = [...notifications];
+    let index = 0;
 
-        if (unread.length === 0) return;
+    const showNext = () => {
+      hasShownToasts.current = true;
+      if (index >= unread.length) return;
+      const n = unread[index++];
+      const toastId = `notif-${n.id}`;
 
-        localStorage.removeItem("shownToasts");
+      toast(
+        <CustomNotificationToast notification={n} toastId={toastId} />,
+        {
+          toastId,
+          autoClose: 5000,
+          closeButton: false,
+          position: "top-right",
+          hideProgressBar: true,
+          style: {
+            background: "transparent",
+            boxShadow: "none",
+            padding: 0,
+            maxWidth: "100vw",
+            width: "auto",
+          },
+        }
+      );
 
-        const alreadyShown = localStorage.getItem("shownToasts");
-        if (alreadyShown === "true") return;
-
-        let index = 0;
-        localStorage.setItem("shownToasts", "true");
-
-        const showNext = () => {
-          if (index >= unread.length) return;
-          const n = unread[index++];
-          const toastId = `notif-${n.id}`;
-
-          toast(
-            <CustomNotificationToast notification={n} toastId={toastId} />,
-            {
-              toastId,
-              autoClose: 5000,
-              closeButton: false,
-              position: "top-right",
-              hideProgressBar: true,
-              style: {
-                background: "transparent",
-                boxShadow: "none",
-                padding: 0,
-                maxWidth: "100vw",
-                width: "auto",
-              },
-            }
-          );
-
-          setTimeout(showNext, 5500);
-        };
-
-        showNext();
-      } catch (err) {
-        console.error("❌ Failed to fetch toast notifications:", err);
-      }
+      setTimeout(showNext, 5500);
     };
 
-    setTimeout(showToasts, 500);
-  }, [user]);
+    const timer = setTimeout(showNext, 500);
+    return () => clearTimeout(timer);
+  }, [notifications, user]);
 
   return null;
 }

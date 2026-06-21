@@ -1,49 +1,24 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { FaBell } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
-import apiClient from "../api/client";
+import { NotificationContext } from "../context/NotificationContext";
 
 export default function NotificationBell() {
-  const [notifications, setNotifications] = useState([]);
+  const { notifications, markAsRead } = useContext(NotificationContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const bellRef = useRef(null);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user || user.role !== "JOB_SEEKER") return;
-
-    fetchNotifications();
-
     const handleClickOutside = (event) => {
       if (bellRef.current && !bellRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const fetchNotifications = async () => {
-    try {
-      const response = await apiClient.get("/notifications");
-      const unseen = response.data.filter((n) => !n.seen);
-      setNotifications(unseen);
-    } catch (error) {
-      console.error("Failed to fetch notifications:", error);
-    }
-  };
-
   const toggleDropdown = () => setShowDropdown(!showDropdown);
-
-  const markAsRead = async (id) => {
-    try {
-      await apiClient.put(`/notifications/${id}/read`, {});
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-    } catch (error) {
-      console.error("Failed to mark notification as read:", error);
-    }
-  };
 
   return (
     <div className="relative" ref={bellRef}>
@@ -88,7 +63,7 @@ export default function NotificationBell() {
                   </div>
                   <button
                     className="text-xs text-[#6F4E37] hover:underline self-start"
-                    onClick={() => markAsRead(n.id)}
+                    onClick={async () => { try { await markAsRead(n.id); } catch {} }}
                   >
                     Mark read
                   </button>

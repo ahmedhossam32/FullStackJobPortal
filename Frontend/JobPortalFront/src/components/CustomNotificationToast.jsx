@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { toast } from "react-toastify";
 import { IoMdClose } from "react-icons/io";
-import apiClient from "../api/client";
+import { NotificationContext } from "../context/NotificationContext";
 
 export default function CustomNotificationToast({ notification, toastId }) {
+  const { markAsRead } = useContext(NotificationContext);
   const [loading, setLoading] = useState(false);
 
   const handleDismiss = () => {
@@ -14,7 +15,7 @@ export default function CustomNotificationToast({ notification, toastId }) {
     if (loading) return;
     setLoading(true);
     try {
-      await apiClient.put(`/notifications/${notification.id}/read`, {});
+      await markAsRead(notification.id);
       toast.dismiss(toastId);
     } catch (err) {
       console.error("❌ Failed to mark as read:", err);
