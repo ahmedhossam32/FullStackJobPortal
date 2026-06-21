@@ -33,7 +33,7 @@ public class Notification {
     @JoinColumn(nullable = false)
     private JobSeeker recipient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "application_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Application application;

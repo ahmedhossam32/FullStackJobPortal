@@ -3,6 +3,7 @@ package com.job.entity;
 import com.job.enums.JobType;
 import com.job.enums.WorkMode;
 import jakarta.persistence.*;
+import org.hibernate.annotations.BatchSize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,13 +43,16 @@ public class Job {
     @ManyToOne(fetch = FetchType.LAZY)
     private Employer employer;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
+    @BatchSize(size = 25)
     private List<String> responsibilities;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
+    @BatchSize(size = 25)
     private List<String> requiredSkills;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
+    @BatchSize(size = 25)
     private List<String> screeningQuestions;
 
 
