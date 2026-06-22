@@ -1,5 +1,6 @@
 package com.job.controller;
 
+import com.job.exception.ResourceNotFoundException;
 import com.job.dto.request.EmployerRegisterRequestDTO;
 import com.job.dto.request.JobSeekerRegisterRequestDTO;
 import com.job.dto.request.LoginRequestDTO;
@@ -42,7 +43,13 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid LoginRequestDTO dto) {
         log.info("Sign-in attempt for username: {}", dto.getUsername());
-        User user = userService.getUserByUsername(dto.getUsername());
+        User user;
+        try {
+            user = userService.getUserByUsername(dto.getUsername());
+        } catch (ResourceNotFoundException e) {
+            log.warn("Failed sign-in attempt for username: {}", dto.getUsername());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             log.warn("Failed sign-in attempt for username: {}", dto.getUsername());
