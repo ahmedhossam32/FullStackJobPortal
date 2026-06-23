@@ -8,12 +8,11 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 import RecentJobCard from "../components/RecentJobCard";
-import API_URL from "../api/config";
+import apiClient from "../api/client";
 
 export default function EmployerDashboard() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
-  const token = localStorage.getItem("token");
   const [allJobs, setAllJobs] = useState([]);
   const [recentJobs, setRecentJobs] = useState([]);
   const [applications, setApplications] = useState([]);
@@ -25,12 +24,7 @@ export default function EmployerDashboard() {
   useEffect(() => {
     async function fetchApplications() {
       try {
-        const res = await fetch(`${API_URL}/applications/employer`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await res.json();
+        const { data } = await apiClient.get("/applications/employer");
         setApplications(data);
 
         const pendingCount = data.filter(app => app.status === "PENDING").length;
@@ -50,17 +44,12 @@ export default function EmployerDashboard() {
       }
     }
     fetchApplications();
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     async function fetchJobs() {
       try {
-        const res = await fetch(`${API_URL}/jobs/my`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await res.json();
+        const { data } = await apiClient.get("/jobs/my");
         const sorted = [...data].sort(
           (a, b) => new Date(b.postedAt) - new Date(a.postedAt)
         );
@@ -71,7 +60,7 @@ export default function EmployerDashboard() {
       }
     }
     fetchJobs();
-  }, [token]);
+  }, []);
 
   const isNew = (appliedAt) => {
     const daysAgo = (Date.now() - new Date(appliedAt)) / (1000 * 60 * 60 * 24);

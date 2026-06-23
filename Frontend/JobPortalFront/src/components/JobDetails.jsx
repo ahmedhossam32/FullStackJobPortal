@@ -8,7 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { successToast, errorToast, infoToast } from "../utils/toastUtils";
-import API_URL from "../api/config";
+import apiClient from "../api/client";
 
 export default function JobDetails({ job }) {
   const navigate = useNavigate();
@@ -22,31 +22,11 @@ export default function JobDetails({ job }) {
       if (!token || !job) return;
 
       try {
-        const res = await fetch(`${API_URL}/user/saved-jobs`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const { data: savedJobs } = await apiClient.get("/user/saved-jobs");
+        setSaved(savedJobs.some((savedJob) => savedJob.id === job.id));
 
-        if (res.ok) {
-          const savedJobs = await res.json();
-          const isSaved = savedJobs.some((savedJob) => savedJob.id === job.id);
-          setSaved(isSaved);
-        }
-
-        const appliedRes = await fetch(
-          `${API_URL}/applications/has-applied/${job.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (appliedRes.ok) {
-          const applied = await appliedRes.json();
-          setHasApplied(applied);
-        }
+        const { data: applied } = await apiClient.get(`/applications/has-applied/${job.id}`);
+        setHasApplied(applied);
       } catch (err) {
         console.error("Error fetching status:", err);
       }
@@ -65,43 +45,22 @@ export default function JobDetails({ job }) {
   };
 
   const toggleSave = async () => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
+    if (!localStorage.getItem("token")) {
       infoToast("You need to be logged in to save jobs.");
       return;
     }
 
-    const endpoint = saved
-      ? `${API_URL}/user/unsave-job/${job.id}`
-      : `${API_URL}/user/save-job/${job.id}`;
-    const method = saved ? "DELETE" : "POST";
-
     setSaving(true);
     try {
-      const response = await fetch(endpoint, {
-        method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        setSaved(!saved);
-        successToast(saved ? "Job removed from saved list." : "Job saved successfully!");
-      } else {
-        let errorMsg;
-        try {
-          const body = await response.json();
-          errorMsg = body?.message ?? `Failed to ${saved ? "unsave" : "save"} job.`;
-        } catch {
-          errorMsg = `Failed to ${saved ? "unsave" : "save"} job.`;
-        }
-        errorToast(errorMsg);
-      }
+      saved
+        ? await apiClient.delete(`/user/unsave-job/${job.id}`)
+        : await apiClient.post(`/user/save-job/${job.id}`);
+      setSaved(!saved);
+      successToast(saved ? "Job removed from saved list." : "Job saved successfully!");
     } catch (err) {
       console.error(err);
-      errorToast("An error occurred while saving the job.");
+      const errorMsg = err.response?.data?.message ?? `Failed to ${saved ? "unsave" : "save"} job.`;
+      errorToast(errorMsg);
     } finally {
       setSaving(false);
     }
