@@ -12,7 +12,8 @@ import apiClient from "../api/client";
 
 export default function EmployerDashboard() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
+  let user = null;
+  try { user = JSON.parse(localStorage.getItem("user")); } catch {}
   const [allJobs, setAllJobs] = useState([]);
   const [recentJobs, setRecentJobs] = useState([]);
   const [applications, setApplications] = useState([]);

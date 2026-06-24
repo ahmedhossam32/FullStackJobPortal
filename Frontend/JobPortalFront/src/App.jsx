@@ -14,6 +14,7 @@ import JobSeekerProfilePage from './pages/JobSeekerProfilePage';
 import ApplicationDetailsPage from "./pages/ApplicationDetailsPage";
 import NotificationToastManager from './components/NotificationToastManager';
 import RequireRole from './components/RequireRole';
+import ErrorBoundary from './components/ErrorBoundary';
 import EmployerDashboard from './pages/EmployerDashboard';
 import EmployerJobsPage from './pages/EmployerJobsPage';
 import EmployerJobDetailsPage from './pages/EmployerJobDetailsPage';
@@ -36,7 +37,8 @@ function App() {
       <ToastContainer position="top-center" autoClose={2000} pauseOnHover />
       <NotificationToastManager />
 
-      <Routes>
+      <ErrorBoundary>
+        <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/jobs" element={<Jobs />} />
@@ -104,7 +106,8 @@ function App() {
           </RequireRole>
         } />
 
-      </Routes>
+        </Routes>
+      </ErrorBoundary>
 
       {/* Modals */}
       <JobSeekerModal

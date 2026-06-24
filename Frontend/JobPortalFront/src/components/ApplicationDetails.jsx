@@ -11,7 +11,8 @@ const openResume = (url) => {
 
 export default function ApplicationDetails({ jobId, screeningAnswers = [] }) {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
+  let user = null;
+  try { user = JSON.parse(localStorage.getItem("user")); } catch {}
   const token = localStorage.getItem("token");
 
   const [fullName] = useState(user?.name || "");

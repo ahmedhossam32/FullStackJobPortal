@@ -15,7 +15,8 @@ export default function JobApplicantsPage() {
   const navigate = useNavigate();
   const [applicants, setApplicants] = useState([]);
   const [jobTitle, setJobTitle] = useState("");
-  const user = JSON.parse(localStorage.getItem("user"));
+  let user = null;
+  try { user = JSON.parse(localStorage.getItem("user")); } catch {}
   const token = localStorage.getItem("token");
 
   const logoUrl = user?.profilePicture || "/default-logo.png";
