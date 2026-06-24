@@ -10,6 +10,8 @@ import com.job.enums.Role;
 import com.job.exception.BadRequestException;
 import com.job.repository.UserRepository;
 import com.job.service.interfaces.IProfileService;
+import java.io.IOException;
+import java.io.InputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,14 @@ public class ProfileServiceImpl implements IProfileService {
         if (file.getSize() > 5 * 1024 * 1024) {
             throw new BadRequestException("File size must not exceed 5MB");
         }
+        String contentType = file.getContentType();
+        if (contentType == null ||
+                (!contentType.equals("application/pdf") &&
+                 !contentType.equals("application/msword") &&
+                 !contentType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document"))) {
+            throw new BadRequestException("Only PDF and Word documents are allowed");
+        }
+        validateResumeBytes(file, contentType);
         log.info("Uploading resume for user: {}, file: {}", jobSeeker.getUsername(), file.getOriginalFilename());
         String url = cloudinaryService.uploadResume(file);
         jobSeeker.setResumeUrl(url);
@@ -102,5 +112,31 @@ public class ProfileServiceImpl implements IProfileService {
         }
 
         throw new BadRequestException("Unsupported user role");
+    }
+
+    private void validateResumeBytes(MultipartFile file, String contentType) {
+        byte[] header = new byte[4];
+        try (InputStream is = file.getInputStream()) {
+            if (is.read(header) < 4) {
+                throw new BadRequestException("Only PDF and Word documents are allowed");
+            }
+        } catch (IOException e) {
+            throw new BadRequestException("Only PDF and Word documents are allowed");
+        }
+        boolean valid = switch (contentType) {
+            case "application/pdf" ->
+                (header[0] & 0xFF) == 0x25 && (header[1] & 0xFF) == 0x50 &&
+                (header[2] & 0xFF) == 0x44 && (header[3] & 0xFF) == 0x46; // %PDF
+            case "application/msword" ->
+                (header[0] & 0xFF) == 0xD0 && (header[1] & 0xFF) == 0xCF &&
+                (header[2] & 0xFF) == 0x11 && (header[3] & 0xFF) == 0xE0; // OLE2
+            case "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ->
+                (header[0] & 0xFF) == 0x50 && (header[1] & 0xFF) == 0x4B &&
+                (header[2] & 0xFF) == 0x03 && (header[3] & 0xFF) == 0x04; // PK ZIP
+            default -> false;
+        };
+        if (!valid) {
+            throw new BadRequestException("Only PDF and Word documents are allowed");
+        }
     }
 }
