@@ -47,6 +47,7 @@ export default function CustomNotificationToast({ notification, toastId }) {
       {/* Close button — dismisses visually only, no API call */}
       <button
         onClick={handleDismiss}
+        aria-label="Dismiss notification"
         className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
       >
         <IoMdClose size={18} />

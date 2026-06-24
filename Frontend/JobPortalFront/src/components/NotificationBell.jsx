@@ -22,14 +22,18 @@ export default function NotificationBell() {
 
   return (
     <div className="relative" ref={bellRef}>
-      <div className="relative cursor-pointer" onClick={toggleDropdown}>
+      <button
+        className="relative cursor-pointer bg-transparent border-0 p-0 inline-flex"
+        onClick={toggleDropdown}
+        aria-label="Open notifications"
+      >
         <FaBell className="text-lg hover:text-[#6F4E37] transition" title="Notifications" />
         {notifications.length > 0 && (
           <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full animate-pulse">
             {notifications.length}
           </span>
         )}
-      </div>
+      </button>
 
       {showDropdown && (
         <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: '8px', width: '380px', maxHeight: '450px', overflowY: 'auto', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.15)', zIndex: 9999 }}>
