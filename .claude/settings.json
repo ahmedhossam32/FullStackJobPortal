@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git add:*)",
+      "Bash(git rm:*)",
+      "Bash(git reset:*)",
+      "Bash(git stash:*)",
+      "Read(**/application.properties)"
+    ]
+  }
+}
