@@ -28,16 +28,20 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
     private final int maxRequests;
     private final int windowMinutes;
     private final ErrorResponseWriter errorResponseWriter;
+    private final ClientIpResolver clientIpResolver;
 
     public AuthRateLimitFilter(
             @Value("${auth.ratelimit.requests:5}") int maxRequests,
             @Value("${auth.ratelimit.window-minutes:1}") int windowMinutes,
+            @Value("${auth.ratelimit.client-ip-header:do-connecting-ip}") String clientIpHeader,
             ErrorResponseWriter errorResponseWriter) {
         this.maxRequests = maxRequests;
         this.windowMinutes = windowMinutes;
         this.errorResponseWriter = errorResponseWriter;
+        this.clientIpResolver = new ClientIpResolver(clientIpHeader);
         this.bucketCache = Caffeine.newBuilder()
                 .expireAfterAccess(10, TimeUnit.MINUTES)
+                .maximumSize(100_000)
                 .build();
     }
 
@@ -52,7 +56,7 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-        String ip = extractClientIp(request);
+        String ip = clientIpResolver.resolve(request);
         Bucket bucket = bucketCache.get(ip, k -> newBucket());
 
         if (bucket.tryConsume(1)) {
@@ -68,13 +72,5 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
         Bandwidth limit = Bandwidth.classic(maxRequests,
                 Refill.intervally(maxRequests, Duration.ofMinutes(windowMinutes)));
         return Bucket.builder().addLimit(limit).build();
-    }
-
-    private String extractClientIp(HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isBlank()) {
-            return forwarded.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
     }
 }
