@@ -237,6 +237,34 @@ public class GlobalExceptionHandler {
         return respond(HttpStatus.PAYLOAD_TOO_LARGE, "PAYLOAD_TOO_LARGE", message, request);
     }
 
+    @ExceptionHandler(InvalidFileException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidFile(InvalidFileException ex, HttpServletRequest request) {
+        HttpStatus status = switch (ex.getReason()) {
+            case EMPTY -> HttpStatus.BAD_REQUEST;
+            case TOO_LARGE -> HttpStatus.PAYLOAD_TOO_LARGE;
+            case UNSUPPORTED_TYPE -> HttpStatus.UNSUPPORTED_MEDIA_TYPE;
+        };
+        String errorCode = switch (ex.getReason()) {
+            case EMPTY -> "BAD_REQUEST";
+            case TOO_LARGE -> "PAYLOAD_TOO_LARGE";
+            case UNSUPPORTED_TYPE -> "UNSUPPORTED_MEDIA_TYPE";
+        };
+        logClientError(request, status, ex.getMessage());
+        return respond(status, errorCode, ex.getMessage(), request);
+    }
+
+    // ── File storage provider failures ──
+
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<ErrorResponse> handleFileStorage(FileStorageException ex, HttpServletRequest request) {
+        String errorId = UUID.randomUUID().toString();
+        log.error("File storage failure [errorId={}] {} {}", errorId, request.getMethod(), request.getRequestURI(), ex);
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.BAD_GATEWAY.value(), "File storage is temporarily unavailable. Please try again later.",
+                LocalDateTime.now(), "BAD_GATEWAY", request.getRequestURI(), null, errorId);
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(body);
+    }
+
     // ── Database constraint violations, classified by SQLState ──
 
     @ExceptionHandler(DataIntegrityViolationException.class)
