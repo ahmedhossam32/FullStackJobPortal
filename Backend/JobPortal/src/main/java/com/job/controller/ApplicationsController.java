@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,8 +53,8 @@ public class ApplicationsController {
     @GetMapping("/my")
     public ResponseEntity<PageResponseDTO<ApplicationResponseDTO>> getMyApplications(
             @RequestAttribute("user") User user,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
         JobSeeker jobSeeker = (JobSeeker) user;
         return ResponseEntity.ok(applicationService.getMyApplications(jobSeeker, page, size));
     }
