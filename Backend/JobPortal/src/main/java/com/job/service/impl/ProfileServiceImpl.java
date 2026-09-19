@@ -8,6 +8,7 @@ import com.job.entity.JobSeeker;
 import com.job.entity.User;
 import com.job.enums.Role;
 import com.job.exception.BadRequestException;
+import com.job.exception.DuplicateResourceException;
 import com.job.repository.UserRepository;
 import com.job.service.interfaces.IProfileService;
 import com.job.validation.FileValidator;
@@ -52,6 +53,16 @@ public class ProfileServiceImpl implements IProfileService {
     @Transactional
     public void updateJobSeekerProfile(JobSeeker currentUser, UpdateProfileRequestDTO updatedInfo) {
         log.info("Updating profile for job seeker: {}", currentUser.getUsername());
+
+        if (!updatedInfo.getUsername().equals(currentUser.getUsername())
+                && userRepository.existsByUsername(updatedInfo.getUsername())) {
+            throw new DuplicateResourceException("Username already taken");
+        }
+        if (!updatedInfo.getEmail().equals(currentUser.getEmail())
+                && userRepository.existsByEmail(updatedInfo.getEmail())) {
+            throw new DuplicateResourceException("Email already registered");
+        }
+
         currentUser.setName(updatedInfo.getName());
         currentUser.setUsername(updatedInfo.getUsername());
         currentUser.setEmail(updatedInfo.getEmail());
