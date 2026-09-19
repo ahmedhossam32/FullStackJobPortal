@@ -1,5 +1,6 @@
 package com.job.dto.request;
 
+import com.job.validation.MaxUtf8Bytes;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ public class JobSeekerRegisterRequestDTO {
 
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
+    @MaxUtf8Bytes(value = 72, message = "Password must be at most 72 bytes long")
     private String password;
 
     @NotNull(message = "Date of birth is required")
