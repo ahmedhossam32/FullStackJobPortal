@@ -9,6 +9,7 @@ import com.job.repository.EmployerRepository;
 import com.job.repository.JobSeekerRepository;
 import com.job.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -63,10 +64,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             errorResponseWriter.write(response, HttpStatus.UNAUTHORIZED, "TOKEN_EXPIRED",
                     "Your session has expired, please log in again", request.getRequestURI());
             return;
+        } catch (JwtException | IllegalArgumentException e) {
+            log.warn("Rejected malformed JWT: {} {} ({})", request.getMethod(), request.getRequestURI(),
+                    e.getClass().getSimpleName());
+            filterChain.doFilter(request, response);
+            return;
         }
 
         if (username == null) {
-            log.error("Could not extract username from token");
             filterChain.doFilter(request, response);
             return;
         }
