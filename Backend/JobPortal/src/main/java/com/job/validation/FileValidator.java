@@ -16,7 +16,7 @@ import java.util.Arrays;
 @Component
 public class FileValidator {
 
-    public static final long MAX_IMAGE_SIZE = 2L * 1024 * 1024;
+    public static final long MAX_IMAGE_SIZE = 5L * 1024 * 1024;
     public static final long MAX_RESUME_SIZE = 5L * 1024 * 1024;
 
     private static final int IMAGE_HEADER_LENGTH = 12; // enough for WebP's "RIFF"[4 bytes]"WEBP" at offset 8
