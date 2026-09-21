@@ -13,13 +13,14 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.AbstractMockHttpServletRequestBuilder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,11 +51,24 @@ class SecurityMatrixIntegrationTest extends AbstractIntegrationTest {
 
     private enum Access { PUBLIC, JOB_SEEKER_ONLY, EMPLOYER_ONLY, ANY_AUTHENTICATED }
 
-    private record EndpointSpec(String name, Access access, Supplier<MockHttpServletRequestBuilder> builder) {
+    /**
+     * {@code requestFor} takes a nullable bearer token (null = no Authorization header at all)
+     * and returns the fully-built request. A plain {@code Supplier<MockHttpServletRequestBuilder>}
+     * doesn't work here because Spring Framework 7 no longer makes
+     * {@code MockMultipartHttpServletRequestBuilder} a subtype of {@code MockHttpServletRequestBuilder}
+     * (they now extend sibling generic base classes), so the common declared type has to be the
+     * {@code RequestBuilder} interface that {@code mockMvc.perform(...)} actually accepts, with
+     * the token applied inside the builder lambda via {@link #withAuth}.
+     */
+    private record EndpointSpec(String name, Access access, Function<String, RequestBuilder> requestFor) {
         @Override
         public String toString() {
             return name;
         }
+    }
+
+    private static <B extends AbstractMockHttpServletRequestBuilder<B>> B withAuth(B builder, String token) {
+        return token == null ? builder : builder.header(AUTH_HEADER, bearer(token));
     }
 
     @BeforeAll
@@ -79,8 +93,8 @@ class SecurityMatrixIntegrationTest extends AbstractIntegrationTest {
     // ── Assertions ───────────────────────────────────────────────────────────
 
     private void checkNoTokenAndGarbageToken(EndpointSpec spec) throws Exception {
-        ResultActions noToken = mockMvc.perform(spec.builder().get());
-        ResultActions garbage = mockMvc.perform(spec.builder().get().header(AUTH_HEADER, "Bearer not-a-real-token"));
+        ResultActions noToken = mockMvc.perform(spec.requestFor().apply(null));
+        ResultActions garbage = mockMvc.perform(spec.requestFor().apply("not-a-real-token"));
 
         if (spec.access() == Access.PUBLIC) {
             assertNotAuthOrForbidden(noToken, spec.name() + " (no token, endpoint should be public)");
@@ -102,7 +116,7 @@ class SecurityMatrixIntegrationTest extends AbstractIntegrationTest {
         if (wrongToken == null) {
             return;
         }
-        mockMvc.perform(spec.builder().get().header(AUTH_HEADER, bearer(wrongToken)))
+        mockMvc.perform(spec.requestFor().apply(wrongToken))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.error").value("FORBIDDEN"));
     }
@@ -115,7 +129,7 @@ class SecurityMatrixIntegrationTest extends AbstractIntegrationTest {
             case ANY_AUTHENTICATED -> List.of(seeker.token(), employer.token());
         };
         for (String token : allowedTokens) {
-            ResultActions result = mockMvc.perform(spec.builder().get().header(AUTH_HEADER, bearer(token)));
+            ResultActions result = mockMvc.perform(spec.requestFor().apply(token));
             assertNotAuthOrForbidden(result, spec.name() + " (allowed role must not be blocked)");
         }
     }
@@ -132,80 +146,89 @@ class SecurityMatrixIntegrationTest extends AbstractIntegrationTest {
 
         // Auth (3) -- all public.
         specs.add(new EndpointSpec("POST /auth/signup/jobseeker", Access.PUBLIC,
-                () -> post("/auth/signup/jobseeker").contentType(MediaType.APPLICATION_JSON)
-                        .content(newSeekerSignupJson())));
+                token -> withAuth(post("/auth/signup/jobseeker").contentType(MediaType.APPLICATION_JSON)
+                        .content(newSeekerSignupJson()), token)));
         specs.add(new EndpointSpec("POST /auth/signup/employer", Access.PUBLIC,
-                () -> post("/auth/signup/employer").contentType(MediaType.APPLICATION_JSON)
-                        .content(newEmployerSignupJson())));
+                token -> withAuth(post("/auth/signup/employer").contentType(MediaType.APPLICATION_JSON)
+                        .content(newEmployerSignupJson()), token)));
         specs.add(new EndpointSpec("POST /auth/signin", Access.PUBLIC,
-                () -> post("/auth/signin").contentType(MediaType.APPLICATION_JSON)
-                        .content(validSignInJson())));
+                token -> withAuth(post("/auth/signin").contentType(MediaType.APPLICATION_JSON)
+                        .content(validSignInJson()), token)));
 
         // Jobs (10).
         specs.add(new EndpointSpec("POST /jobs", Access.EMPLOYER_ONLY,
-                () -> post("/jobs").contentType(MediaType.APPLICATION_JSON).content(quietJobJson("Matrix Job"))));
-        specs.add(new EndpointSpec("GET /jobs/my", Access.EMPLOYER_ONLY, () -> get("/jobs/my")));
+                token -> withAuth(post("/jobs").contentType(MediaType.APPLICATION_JSON)
+                        .content(quietJobJson("Matrix Job")), token)));
+        specs.add(new EndpointSpec("GET /jobs/my", Access.EMPLOYER_ONLY,
+                token -> withAuth(get("/jobs/my"), token)));
         specs.add(new EndpointSpec("PUT /jobs/{id}", Access.EMPLOYER_ONLY,
-                () -> put("/jobs/{id}", DUMMY_ID).contentType(MediaType.APPLICATION_JSON)
-                        .content(quietJobJson("Matrix Job Updated"))));
+                token -> withAuth(put("/jobs/{id}", DUMMY_ID).contentType(MediaType.APPLICATION_JSON)
+                        .content(quietJobJson("Matrix Job Updated")), token)));
         specs.add(new EndpointSpec("DELETE /jobs/{id}", Access.EMPLOYER_ONLY,
-                () -> delete("/jobs/{id}", DUMMY_ID)));
-        specs.add(new EndpointSpec("GET /jobs", Access.PUBLIC, () -> get("/jobs")));
-        specs.add(new EndpointSpec("GET /jobs/{id}", Access.PUBLIC, () -> get("/jobs/{id}", DUMMY_ID)));
+                token -> withAuth(delete("/jobs/{id}", DUMMY_ID), token)));
+        specs.add(new EndpointSpec("GET /jobs", Access.PUBLIC,
+                token -> withAuth(get("/jobs"), token)));
+        specs.add(new EndpointSpec("GET /jobs/{id}", Access.PUBLIC,
+                token -> withAuth(get("/jobs/{id}", DUMMY_ID), token)));
         specs.add(new EndpointSpec("GET /jobs/search/title", Access.PUBLIC,
-                () -> get("/jobs/search/title").param("keyword", "engineer")));
+                token -> withAuth(get("/jobs/search/title").param("keyword", "engineer"), token)));
         specs.add(new EndpointSpec("GET /jobs/search/type", Access.PUBLIC,
-                () -> get("/jobs/search/type").param("type", "FULL_TIME")));
+                token -> withAuth(get("/jobs/search/type").param("type", "FULL_TIME"), token)));
         specs.add(new EndpointSpec("GET /jobs/search/location", Access.PUBLIC,
-                () -> get("/jobs/search/location").param("location", "Cairo")));
+                token -> withAuth(get("/jobs/search/location").param("location", "Cairo"), token)));
         specs.add(new EndpointSpec("GET /jobs/search/workmode", Access.PUBLIC,
-                () -> get("/jobs/search/workmode").param("workMode", "REMOTE")));
+                token -> withAuth(get("/jobs/search/workmode").param("workMode", "REMOTE"), token)));
 
         // Applications (9).
         specs.add(new EndpointSpec("POST /applications", Access.JOB_SEEKER_ONLY,
-                () -> post("/applications").contentType(MediaType.APPLICATION_JSON)
-                        .content(applicationJson(DUMMY_ID))));
+                token -> withAuth(post("/applications").contentType(MediaType.APPLICATION_JSON)
+                        .content(applicationJson(DUMMY_ID)), token)));
         specs.add(new EndpointSpec("GET /applications/has-applied/{jobId}", Access.JOB_SEEKER_ONLY,
-                () -> get("/applications/has-applied/{jobId}", DUMMY_ID)));
-        specs.add(new EndpointSpec("GET /applications/my", Access.JOB_SEEKER_ONLY, () -> get("/applications/my")));
+                token -> withAuth(get("/applications/has-applied/{jobId}", DUMMY_ID), token)));
+        specs.add(new EndpointSpec("GET /applications/my", Access.JOB_SEEKER_ONLY,
+                token -> withAuth(get("/applications/my"), token)));
         specs.add(new EndpointSpec("GET /applications/{id}", Access.JOB_SEEKER_ONLY,
-                () -> get("/applications/{id}", DUMMY_ID)));
+                token -> withAuth(get("/applications/{id}", DUMMY_ID), token)));
         specs.add(new EndpointSpec("DELETE /applications/{id}", Access.JOB_SEEKER_ONLY,
-                () -> delete("/applications/{id}", DUMMY_ID)));
+                token -> withAuth(delete("/applications/{id}", DUMMY_ID), token)));
         specs.add(new EndpointSpec("GET /applications/job/{jobId}", Access.EMPLOYER_ONLY,
-                () -> get("/applications/job/{jobId}", DUMMY_ID)));
+                token -> withAuth(get("/applications/job/{jobId}", DUMMY_ID), token)));
         specs.add(new EndpointSpec("GET /applications/employer/{id}", Access.EMPLOYER_ONLY,
-                () -> get("/applications/employer/{id}", DUMMY_ID)));
+                token -> withAuth(get("/applications/employer/{id}", DUMMY_ID), token)));
         specs.add(new EndpointSpec("PUT /applications/{id}/status", Access.EMPLOYER_ONLY,
-                () -> put("/applications/{id}/status", DUMMY_ID).contentType(MediaType.APPLICATION_JSON)
-                        .content(statusJson("REVIEWED"))));
+                token -> withAuth(put("/applications/{id}/status", DUMMY_ID).contentType(MediaType.APPLICATION_JSON)
+                        .content(statusJson("REVIEWED")), token)));
         specs.add(new EndpointSpec("GET /applications/employer", Access.EMPLOYER_ONLY,
-                () -> get("/applications/employer")));
+                token -> withAuth(get("/applications/employer"), token)));
 
         // User (7).
         specs.add(new EndpointSpec("POST /user/jobseeker/upload-resume", Access.JOB_SEEKER_ONLY,
-                () -> multipart("/user/jobseeker/upload-resume").file(pdfPart())));
+                token -> withAuth(multipart("/user/jobseeker/upload-resume").file(pdfPart()), token)));
         specs.add(new EndpointSpec("POST /user/upload-profile-picture", Access.ANY_AUTHENTICATED,
-                () -> multipart("/user/upload-profile-picture").file(pngPart())));
+                token -> withAuth(multipart("/user/upload-profile-picture").file(pngPart()), token)));
         specs.add(new EndpointSpec("POST /user/save-job/{jobId}", Access.JOB_SEEKER_ONLY,
-                () -> post("/user/save-job/{jobId}", DUMMY_ID)));
+                token -> withAuth(post("/user/save-job/{jobId}", DUMMY_ID), token)));
         specs.add(new EndpointSpec("PUT /user/jobseeker/update-profile", Access.JOB_SEEKER_ONLY,
-                () -> put("/user/jobseeker/update-profile").contentType(MediaType.APPLICATION_JSON)
-                        .content(updateProfileJson())));
+                token -> withAuth(put("/user/jobseeker/update-profile").contentType(MediaType.APPLICATION_JSON)
+                        .content(updateProfileJson()), token)));
         specs.add(new EndpointSpec("DELETE /user/unsave-job/{jobId}", Access.JOB_SEEKER_ONLY,
-                () -> delete("/user/unsave-job/{jobId}", DUMMY_ID)));
-        specs.add(new EndpointSpec("GET /user/saved-jobs", Access.JOB_SEEKER_ONLY, () -> get("/user/saved-jobs")));
-        specs.add(new EndpointSpec("GET /user/me", Access.ANY_AUTHENTICATED, () -> get("/user/me")));
+                token -> withAuth(delete("/user/unsave-job/{jobId}", DUMMY_ID), token)));
+        specs.add(new EndpointSpec("GET /user/saved-jobs", Access.JOB_SEEKER_ONLY,
+                token -> withAuth(get("/user/saved-jobs"), token)));
+        specs.add(new EndpointSpec("GET /user/me", Access.ANY_AUTHENTICATED,
+                token -> withAuth(get("/user/me"), token)));
 
         // Notifications (5).
-        specs.add(new EndpointSpec("GET /notifications", Access.JOB_SEEKER_ONLY, () -> get("/notifications")));
-        specs.add(new EndpointSpec("DELETE /notifications", Access.JOB_SEEKER_ONLY, () -> delete("/notifications")));
+        specs.add(new EndpointSpec("GET /notifications", Access.JOB_SEEKER_ONLY,
+                token -> withAuth(get("/notifications"), token)));
+        specs.add(new EndpointSpec("DELETE /notifications", Access.JOB_SEEKER_ONLY,
+                token -> withAuth(delete("/notifications"), token)));
         specs.add(new EndpointSpec("PUT /notifications/{id}/read", Access.JOB_SEEKER_ONLY,
-                () -> put("/notifications/{id}/read", DUMMY_ID)));
+                token -> withAuth(put("/notifications/{id}/read", DUMMY_ID), token)));
         specs.add(new EndpointSpec("GET /notifications/unread-count", Access.JOB_SEEKER_ONLY,
-                () -> get("/notifications/unread-count")));
+                token -> withAuth(get("/notifications/unread-count"), token)));
         specs.add(new EndpointSpec("GET /notifications/unread", Access.JOB_SEEKER_ONLY,
-                () -> get("/notifications/unread")));
+                token -> withAuth(get("/notifications/unread"), token)));
 
         return specs;
     }

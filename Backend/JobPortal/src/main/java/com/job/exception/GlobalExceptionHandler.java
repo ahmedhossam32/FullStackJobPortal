@@ -1,7 +1,7 @@
 package com.job.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
@@ -105,7 +105,7 @@ public class GlobalExceptionHandler {
         String message = "Malformed or unreadable request body";
         Throwable cause = ex.getCause();
         if (cause instanceof InvalidFormatException ife && !ife.getPath().isEmpty()) {
-            String field = ife.getPath().get(ife.getPath().size() - 1).getFieldName();
+            String field = ife.getPath().get(ife.getPath().size() - 1).getPropertyName();
             if (field != null) {
                 message = "Malformed or unreadable request body: invalid value for field '" + field + "'";
             }
