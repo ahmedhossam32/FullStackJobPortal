@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a monorepo with two independently-built projects:
 
-- `Backend/JobPortal/` — Spring Boot 3.5 (Java 17) REST API, Maven build, PostgreSQL.
+- `Backend/JobPortal/` — Spring Boot 4.1.1 (Java 17) REST API, Maven build, PostgreSQL.
 - `Frontend/JobPortalFront/` — React 19 + Vite SPA, Tailwind CSS v4.
 
 There is no root-level build tool tying them together; commands must be run from inside each project directory.
@@ -26,7 +26,7 @@ Backend only — ignore the frontend unless the user says otherwise.
 ./mvnw clean package            # build the jar (target/)
 ```
 
-Local setup requires a `src/main/resources/application.properties` (gitignored; copy from `application.properties.example` and fill in real values) with a PostgreSQL connection, a `JWT_SECRET` env var, Cloudinary credentials, and SMTP credentials — the app fails to start without them. `application-dev.properties` configures an in-memory H2 database and is meant for the `dev` Spring profile (e.g. tests).
+Local setup requires a `src/main/resources/application.properties` (gitignored; copy from `application.properties.example` and fill in real values) with a PostgreSQL connection, a `JWT_SECRET` env var, Cloudinary credentials, and SMTP credentials — the app fails to start without them. `application-dev.properties` configures an in-memory H2 database and is meant for the `dev` Spring profile (e.g. tests). `.env` files are no longer loaded automatically (the `spring-dotenv` dependency was dropped in the Boot 4 upgrade, since it was silently broken on Boot 4) — export the required environment variables in your terminal session, or set them in your IDE's run configuration.
 
 ### Frontend (`Frontend/JobPortalFront/`)
 
@@ -54,7 +54,7 @@ Core entities (`entity/`): `User` (base, with `Role` = `JOB_SEEKER` or `EMPLOYER
 
 **File uploads**: profile pictures and resumes go through `service/impl/CloudinaryService` (multipart upload to Cloudinary), not local disk.
 
-**Errors**: `exception/GlobalExceptionHandler` centralizes error responses; custom exceptions (`BadRequestException`, `ResourceNotFoundException`, `DuplicateResourceException`, `UnauthorizedException`) map to appropriate HTTP statuses.
+**Errors**: `exception/GlobalExceptionHandler` centralizes error responses; custom exceptions (`BadRequestException`, `ResourceNotFoundException`, `DuplicateResourceException`, `UnauthorizedException`) map to appropriate HTTP statuses. The project is on Jackson 3: databind classes (`ObjectMapper`, `JsonNode`, `InvalidFormatException`, etc.) live under `tools.jackson.*`, not `com.fasterxml.jackson.*`; `jackson-annotations` (e.g. `@JsonInclude`) is the one exception and keeps its `com.fasterxml.jackson.annotation` package.
 
 **Pagination**: job listing and search endpoints return `PageResponseDTO`-wrapped, paged results.
 
