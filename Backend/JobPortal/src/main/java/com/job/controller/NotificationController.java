@@ -1,8 +1,7 @@
 package com.job.controller;
 
 import com.job.dto.response.NotificationDTO;
-import com.job.entity.JobSeeker;
-import com.job.entity.User;
+import com.job.security.SecurityUtils;
 import com.job.service.interfaces.INotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,44 +21,40 @@ public class NotificationController {
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping
-    public ResponseEntity<List<NotificationDTO>> getMyNotifications(
-            @RequestAttribute("user") User user) {
-        JobSeeker jobSeeker = (JobSeeker) user;
-        return ResponseEntity.ok(notificationService.getNotificationsFor(jobSeeker));
+    public ResponseEntity<List<NotificationDTO>> getMyNotifications() {
+        Long jobSeekerId = SecurityUtils.getCurrentUserId();
+        return ResponseEntity.ok(notificationService.getNotificationsFor(jobSeekerId));
     }
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @DeleteMapping
-    public ResponseEntity<?> deleteAllNotifications(@RequestAttribute("user") User user) {
-        JobSeeker jobSeeker = (JobSeeker) user;
-        log.info("Deleting all notifications for user: {}", jobSeeker.getUsername());
-        notificationService.deleteAllNotificationsForUser(jobSeeker);
+    public ResponseEntity<?> deleteAllNotifications() {
+        Long jobSeekerId = SecurityUtils.getCurrentUserId();
+        log.info("Deleting all notifications for user id: {}", jobSeekerId);
+        notificationService.deleteAllNotificationsForUser(jobSeekerId);
         return ResponseEntity.ok("All notifications deleted successfully.");
     }
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @PutMapping("/{id}/read")
-    public ResponseEntity<Void> markAsRead(
-            @PathVariable Long id,
-            @RequestAttribute("user") User user) {
-        JobSeeker jobSeeker = (JobSeeker) user;
-        log.info("Marking notification id: {} as read for user: {}", id, jobSeeker.getUsername());
-        notificationService.markAsRead(id, jobSeeker);
+    public ResponseEntity<Void> markAsRead(@PathVariable Long id) {
+        Long jobSeekerId = SecurityUtils.getCurrentUserId();
+        log.info("Marking notification id: {} as read for user id: {}", id, jobSeekerId);
+        notificationService.markAsRead(id, jobSeekerId);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping("/unread-count")
-    public ResponseEntity<Integer> getUnreadCount(@RequestAttribute("user") User user) {
-        JobSeeker jobSeeker = (JobSeeker) user;
-        return ResponseEntity.ok(notificationService.getUnreadCount(jobSeeker));
+    public ResponseEntity<Integer> getUnreadCount() {
+        Long jobSeekerId = SecurityUtils.getCurrentUserId();
+        return ResponseEntity.ok(notificationService.getUnreadCount(jobSeekerId));
     }
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping("/unread")
-    public ResponseEntity<List<NotificationDTO>> getUnreadNotifications(
-            @RequestAttribute("user") User user) {
-        JobSeeker jobSeeker = (JobSeeker) user;
-        return ResponseEntity.ok(notificationService.getUnreadNotifications(jobSeeker));
+    public ResponseEntity<List<NotificationDTO>> getUnreadNotifications() {
+        Long jobSeekerId = SecurityUtils.getCurrentUserId();
+        return ResponseEntity.ok(notificationService.getUnreadNotifications(jobSeekerId));
     }
 }

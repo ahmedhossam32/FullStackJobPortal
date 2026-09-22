@@ -2,7 +2,6 @@ package com.job.service.impl;
 
 import com.job.dto.response.NotificationDTO;
 import com.job.entity.Application;
-import com.job.entity.JobSeeker;
 import com.job.entity.Notification;
 import com.job.exception.ResourceNotFoundException;
 import com.job.exception.UnauthorizedException;
@@ -24,8 +23,8 @@ public class NotificationServiceImpl implements INotificationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<NotificationDTO> getNotificationsFor(JobSeeker jobSeeker) {
-        return notificationRepository.findByRecipientOrderByCreatedAtDesc(jobSeeker).stream()
+    public List<NotificationDTO> getNotificationsFor(Long jobSeekerId) {
+        return notificationRepository.findByRecipientIdOrderByCreatedAtDesc(jobSeekerId).stream()
                 .map(this::mapToDTO)
                 .toList();
     }
@@ -55,18 +54,18 @@ public class NotificationServiceImpl implements INotificationService {
 
     @Override
     @Transactional
-    public void deleteAllNotificationsForUser(JobSeeker jobSeeker) {
-        notificationRepository.deleteAllByRecipient(jobSeeker);
+    public void deleteAllNotificationsForUser(Long jobSeekerId) {
+        notificationRepository.deleteAllByRecipientId(jobSeekerId);
     }
 
     @Override
     @Transactional
-    public void markAsRead(Long notificationId, JobSeeker jobSeeker) {
-        log.info("Marking notification id: {} as read for user: {}", notificationId, jobSeeker.getUsername());
+    public void markAsRead(Long notificationId, Long jobSeekerId) {
+        log.info("Marking notification id: {} as read for user id: {}", notificationId, jobSeekerId);
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
 
-        if (!notification.getRecipient().getId().equals(jobSeeker.getId())) {
+        if (!notification.getRecipient().getId().equals(jobSeekerId)) {
             throw new UnauthorizedException("You are not authorized to mark this notification as read");
         }
 
@@ -76,14 +75,14 @@ public class NotificationServiceImpl implements INotificationService {
 
     @Override
     @Transactional(readOnly = true)
-    public int getUnreadCount(JobSeeker jobSeeker) {
-        return notificationRepository.countByRecipientAndSeenFalse(jobSeeker);
+    public int getUnreadCount(Long jobSeekerId) {
+        return notificationRepository.countByRecipientIdAndSeenFalse(jobSeekerId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<NotificationDTO> getUnreadNotifications(JobSeeker jobSeeker) {
-        return notificationRepository.findByRecipientAndSeenFalseOrderByCreatedAtDesc(jobSeeker).stream()
+    public List<NotificationDTO> getUnreadNotifications(Long jobSeekerId) {
+        return notificationRepository.findByRecipientIdAndSeenFalseOrderByCreatedAtDesc(jobSeekerId).stream()
                 .map(this::mapToDTO)
                 .toList();
     }

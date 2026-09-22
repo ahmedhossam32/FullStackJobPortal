@@ -14,9 +14,12 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Query("SELECT n FROM Notification n JOIN FETCH n.application a JOIN FETCH a.job j JOIN FETCH j.employer WHERE n.recipient = :recipient ORDER BY n.createdAt DESC")
     List<Notification> findByRecipientOrderByCreatedAtDesc(@Param("recipient") JobSeeker recipient);
 
-    void deleteAllByRecipient(JobSeeker recipient);
-    int countByRecipientAndSeenFalse(JobSeeker jobSeeker);
+    @Query("SELECT n FROM Notification n JOIN FETCH n.application a JOIN FETCH a.job j JOIN FETCH j.employer WHERE n.recipient.id = :recipientId ORDER BY n.createdAt DESC")
+    List<Notification> findByRecipientIdOrderByCreatedAtDesc(@Param("recipientId") Long recipientId);
 
-    @Query("SELECT n FROM Notification n JOIN FETCH n.application a JOIN FETCH a.job j JOIN FETCH j.employer WHERE n.recipient = :recipient AND n.seen = false ORDER BY n.createdAt DESC")
-    List<Notification> findByRecipientAndSeenFalseOrderByCreatedAtDesc(@Param("recipient") JobSeeker recipient);
+    void deleteAllByRecipientId(Long recipientId);
+    int countByRecipientIdAndSeenFalse(Long recipientId);
+
+    @Query("SELECT n FROM Notification n JOIN FETCH n.application a JOIN FETCH a.job j JOIN FETCH j.employer WHERE n.recipient.id = :recipientId AND n.seen = false ORDER BY n.createdAt DESC")
+    List<Notification> findByRecipientIdAndSeenFalseOrderByCreatedAtDesc(@Param("recipientId") Long recipientId);
 }
