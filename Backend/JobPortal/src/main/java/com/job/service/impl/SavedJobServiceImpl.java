@@ -26,47 +26,47 @@ public class SavedJobServiceImpl implements ISavedJobService {
 
     @Override
     @Transactional
-    public void saveJob(JobSeeker jobSeeker, Long jobId) {
-        log.info("Job seeker {} saving job id: {}", jobSeeker.getUsername(), jobId);
+    public void saveJob(Long jobSeekerId, Long jobId) {
+        log.info("Job seeker id {} saving job id: {}", jobSeekerId, jobId);
 
-        JobSeeker freshJobSeeker = jobSeekerRepository.findById(jobSeeker.getId())
+        JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
 
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
-        if (freshJobSeeker.getSavedJobs().contains(job)) {
+        if (jobSeeker.getSavedJobs().contains(job)) {
             throw new DuplicateResourceException("You already saved this job.");
         }
 
-        freshJobSeeker.getSavedJobs().add(job);
+        jobSeeker.getSavedJobs().add(job);
     }
 
     @Override
     @Transactional
-    public void unsaveJob(JobSeeker jobSeeker, Long jobId) {
-        log.info("Job seeker {} unsaving job id: {}", jobSeeker.getUsername(), jobId);
+    public void unsaveJob(Long jobSeekerId, Long jobId) {
+        log.info("Job seeker id {} unsaving job id: {}", jobSeekerId, jobId);
 
-        JobSeeker freshJobSeeker = jobSeekerRepository.findById(jobSeeker.getId())
+        JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
 
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
-        if (!freshJobSeeker.getSavedJobs().contains(job)) {
+        if (!jobSeeker.getSavedJobs().contains(job)) {
             throw new ResourceNotFoundException("This job is not in your saved list.");
         }
 
-        freshJobSeeker.getSavedJobs().remove(job);
+        jobSeeker.getSavedJobs().remove(job);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<JobResponseDTO> getSavedJobs(JobSeeker jobSeeker) {
-        JobSeeker freshJobSeeker = jobSeekerRepository.findById(jobSeeker.getId())
+    public List<JobResponseDTO> getSavedJobs(Long jobSeekerId) {
+        JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
 
-        return freshJobSeeker.getSavedJobs().stream()
+        return jobSeeker.getSavedJobs().stream()
                 .map(this::mapToDTO)
                 .toList();
     }

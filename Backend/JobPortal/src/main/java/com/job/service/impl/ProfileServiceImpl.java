@@ -9,6 +9,8 @@ import com.job.entity.User;
 import com.job.enums.Role;
 import com.job.exception.BadRequestException;
 import com.job.exception.DuplicateResourceException;
+import com.job.exception.ResourceNotFoundException;
+import com.job.repository.JobSeekerRepository;
 import com.job.repository.UserRepository;
 import com.job.service.interfaces.IProfileService;
 import com.job.validation.FileValidator;
@@ -24,12 +26,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProfileServiceImpl implements IProfileService {
 
     private final UserRepository userRepository;
+    private final JobSeekerRepository jobSeekerRepository;
     private final CloudinaryService cloudinaryService;
     private final FileValidator fileValidator;
 
     @Override
     @Transactional
-    public String uploadResume(MultipartFile file, JobSeeker jobSeeker) {
+    public String uploadResume(MultipartFile file, Long jobSeekerId) {
+        JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
         fileValidator.validateResume(file);
         log.info("Uploading resume for user: {}, file: {}", jobSeeker.getUsername(), file.getOriginalFilename());
         String url = cloudinaryService.uploadResume(file);
@@ -40,7 +45,9 @@ public class ProfileServiceImpl implements IProfileService {
 
     @Override
     @Transactional
-    public String uploadProfilePicture(MultipartFile file, User user) {
+    public String uploadProfilePicture(MultipartFile file, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         fileValidator.validateImage(file);
         log.info("Uploading profile picture for user: {}, file: {}", user.getUsername(), file.getOriginalFilename());
         String url = cloudinaryService.uploadImage(file);
@@ -51,7 +58,9 @@ public class ProfileServiceImpl implements IProfileService {
 
     @Override
     @Transactional
-    public void updateJobSeekerProfile(JobSeeker currentUser, UpdateProfileRequestDTO updatedInfo) {
+    public void updateJobSeekerProfile(Long jobSeekerId, UpdateProfileRequestDTO updatedInfo) {
+        JobSeeker currentUser = jobSeekerRepository.findById(jobSeekerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
         log.info("Updating profile for job seeker: {}", currentUser.getUsername());
 
         if (!updatedInfo.getUsername().equals(currentUser.getUsername())
@@ -72,7 +81,9 @@ public class ProfileServiceImpl implements IProfileService {
 
     @Override
     @Transactional(readOnly = true)
-    public Object getCurrentUserDto(User user) {
+    public Object getCurrentUserDto(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         if (user.getRole() == Role.JOB_SEEKER && user instanceof JobSeeker jobSeeker) {
             JobSeekerProfileDTO dto = new JobSeekerProfileDTO();
             dto.setId(user.getId());
