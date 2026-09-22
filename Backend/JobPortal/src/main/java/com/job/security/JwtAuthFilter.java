@@ -1,13 +1,7 @@
 package com.job.security;
 
-import com.job.entity.Employer;
-import com.job.entity.JobSeeker;
-import com.job.entity.User;
 import com.job.enums.Role;
 import com.job.exception.ErrorResponseWriter;
-import com.job.repository.EmployerRepository;
-import com.job.repository.JobSeekerRepository;
-import com.job.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
@@ -18,25 +12,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
-    private final EmployerRepository employerRepository;
-    private final JobSeekerRepository jobSeekerRepository;
+    private final JwtService jwtService;
     private final ErrorResponseWriter errorResponseWriter;
 
     @Override
@@ -57,8 +44,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
 
         String username;
+        Long userId;
+        Role role;
         try {
-            username = jwtUtil.extractUsername(token);
+            username = jwtService.extractUsername(token);
+            userId = jwtService.extractUserId(token);
+            role = jwtService.extractRole(token);
         } catch (ExpiredJwtException e) {
             log.warn("Expired JWT for request: {}", request.getRequestURI());
             errorResponseWriter.write(response, HttpStatus.UNAUTHORIZED, "TOKEN_EXPIRED",
@@ -78,37 +69,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         log.debug("Username extracted from token: {}", username);
 
-        Optional<User> optionalUser = userRepository.findByUsername(username);
-        if (optionalUser.isEmpty()) {
-            log.warn("No user found with username: {}", username);
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        User user = optionalUser.get();
-
-        String roleName = "ROLE_" + user.getRole().name();
-        List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(roleName));
-
+        CustomUserDetails userDetails = CustomUserDetails.fromClaims(userId, username, role);
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(user, null, authorities);
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        log.debug("Security context set for user: {} with role: {}", username, roleName);
-
-        if (user.getRole() == Role.EMPLOYER) {
-            employerRepository.findById(user.getId()).ifPresentOrElse(
-                    employer -> request.setAttribute("user", employer),
-                    () -> log.warn("Employer record not found for user id: {}", user.getId())
-            );
-        } else if (user.getRole() == Role.JOB_SEEKER) {
-            jobSeekerRepository.findById(user.getId()).ifPresentOrElse(
-                    jobSeeker -> request.setAttribute("user", jobSeeker),
-                    () -> log.warn("JobSeeker record not found for user id: {}", user.getId())
-            );
-        } else {
-            request.setAttribute("user", user);
-        }
+        log.debug("Security context set for user: {} with role: {}", username, role);
 
         filterChain.doFilter(request, response);
     }
