@@ -19,6 +19,9 @@ public interface JobRepository extends JpaRepository<Job, Long> {
 
     List<Job> findByEmployer(Employer employer);
 
+    @Query(value = "SELECT j FROM Job j JOIN FETCH j.employer WHERE j.employer.id = :employerId")
+    List<Job> findByEmployerIdWithEmployer(@Param("employerId") Long employerId);
+
     @Query(value = "SELECT j FROM Job j JOIN FETCH j.employer",
             countQuery = "SELECT COUNT(j) FROM Job j")
     Page<Job> findAllWithEmployer(Pageable pageable);
@@ -42,6 +45,4 @@ public interface JobRepository extends JpaRepository<Job, Long> {
             countQuery = "SELECT COUNT(j) FROM Job j WHERE j.workMode = :workMode")
     Page<Job> findByWorkModeWithEmployer(@Param("workMode") WorkMode workMode, Pageable pageable);
 
-    @Query("SELECT j FROM Job j JOIN FETCH j.employer WHERE j.employer = :employer")
-    List<Job> findByEmployerWithEmployer(@Param("employer") Employer employer);
 }

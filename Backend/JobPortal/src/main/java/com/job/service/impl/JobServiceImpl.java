@@ -10,6 +10,7 @@ import com.job.enums.WorkMode;
 import com.job.exception.BadRequestException;
 import com.job.exception.ResourceNotFoundException;
 import com.job.exception.UnauthorizedException;
+import com.job.repository.EmployerRepository;
 import com.job.repository.JobRepository;
 import com.job.service.interfaces.IJobService;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +32,13 @@ import java.util.List;
 public class JobServiceImpl implements IJobService {
 
     private final JobRepository jobRepository;
+    private final EmployerRepository employerRepository;
 
     @Override
     @Transactional
-    public Job createJob(JobRequestDTO dto, Employer employer) {
+    public Job createJob(JobRequestDTO dto, Long employerId) {
+        Employer employer = employerRepository.findById(employerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employer not found"));
         log.info("Creating job '{}' for employer: {}", dto.getTitle(), employer.getUsername());
         Job job = new Job();
 
@@ -109,12 +113,12 @@ public class JobServiceImpl implements IJobService {
 
     @Override
     @Transactional
-    public JobResponseDTO updateJob(Long id, JobRequestDTO dto, Employer employer) {
-        log.info("Updating job id: {} by employer: {}", id, employer.getUsername());
+    public JobResponseDTO updateJob(Long id, JobRequestDTO dto, Long employerId) {
+        log.info("Updating job id: {} by employer id: {}", id, employerId);
         Job job = jobRepository.findByIdWithEmployer(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
-        if (!job.getEmployer().getId().equals(employer.getId())) {
+        if (!job.getEmployer().getId().equals(employerId)) {
             throw new UnauthorizedException("You are not authorized to update this job");
         }
 
@@ -133,12 +137,12 @@ public class JobServiceImpl implements IJobService {
 
     @Override
     @Transactional
-    public void deleteJob(Long jobId, Employer employer) {
-        log.info("Deleting job id: {} by employer: {}", jobId, employer.getUsername());
+    public void deleteJob(Long jobId, Long employerId) {
+        log.info("Deleting job id: {} by employer id: {}", jobId, employerId);
         Job job = jobRepository.findByIdWithEmployer(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
-        if (!job.getEmployer().getId().equals(employer.getId())) {
+        if (!job.getEmployer().getId().equals(employerId)) {
             throw new UnauthorizedException("You are not authorized to delete this job");
         }
 
@@ -147,8 +151,8 @@ public class JobServiceImpl implements IJobService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<JobResponseDTO> getJobsByEmployer(Employer employer) {
-        return jobRepository.findByEmployerWithEmployer(employer).stream()
+    public List<JobResponseDTO> getJobsByEmployer(Long employerId) {
+        return jobRepository.findByEmployerIdWithEmployer(employerId).stream()
                 .map(this::mapToDTO)
                 .toList();
     }
