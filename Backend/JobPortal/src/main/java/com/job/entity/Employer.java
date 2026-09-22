@@ -21,7 +21,7 @@ public class Employer extends User {
     @Column(nullable = false)
     private String industry;
 
-    @OneToMany(mappedBy = "employer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "employer", fetch = FetchType.LAZY)
     private List<Job> jobs;
 }
 
