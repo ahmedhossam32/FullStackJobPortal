@@ -1,7 +1,6 @@
 package com.job.repository;
 
 import com.job.entity.Application;
-import com.job.entity.Employer;
 import com.job.entity.Job;
 import com.job.entity.JobSeeker;
 import com.job.enums.ApplicationStatus;
@@ -17,16 +16,16 @@ import java.util.List;
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
 
-    @Query(value = "SELECT a FROM Application a JOIN FETCH a.job j JOIN FETCH j.employer WHERE a.jobSeeker = :jobSeeker",
-           countQuery = "SELECT COUNT(a) FROM Application a WHERE a.jobSeeker = :jobSeeker")
-    Page<Application> findByJobSeeker(@Param("jobSeeker") JobSeeker jobSeeker, Pageable pageable);
+    @Query(value = "SELECT a FROM Application a JOIN FETCH a.job j JOIN FETCH j.employer WHERE a.jobSeeker.id = :jobSeekerId",
+           countQuery = "SELECT COUNT(a) FROM Application a WHERE a.jobSeeker.id = :jobSeekerId")
+    Page<Application> findByJobSeekerId(@Param("jobSeekerId") Long jobSeekerId, Pageable pageable);
 
     boolean existsByJobAndJobSeeker(Job job, JobSeeker jobSeeker);
-    boolean existsByJobIdAndJobSeeker(Long jobId, JobSeeker jobSeeker);
+    boolean existsByJobIdAndJobSeekerId(Long jobId, Long jobSeekerId);
     @Query("SELECT a FROM Application a JOIN FETCH a.jobSeeker JOIN FETCH a.job j JOIN FETCH j.employer WHERE a.job = :job")
     List<Application> findByJob(@Param("job") Job job);
 
-    @Query("SELECT a FROM Application a JOIN FETCH a.jobSeeker JOIN FETCH a.job j JOIN FETCH j.employer WHERE j.employer = :employer")
-    List<Application> findByJob_Employer(@Param("employer") Employer employer);
-    List<Application> findByJob_EmployerAndStatus(Employer employer, ApplicationStatus status);
+    @Query("SELECT a FROM Application a JOIN FETCH a.jobSeeker JOIN FETCH a.job j JOIN FETCH j.employer WHERE j.employer.id = :employerId")
+    List<Application> findByJob_EmployerId(@Param("employerId") Long employerId);
+    List<Application> findByJob_EmployerIdAndStatus(Long employerId, ApplicationStatus status);
 }

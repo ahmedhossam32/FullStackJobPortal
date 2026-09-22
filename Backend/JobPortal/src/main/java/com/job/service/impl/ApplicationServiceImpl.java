@@ -16,6 +16,7 @@ import com.job.exception.ResourceNotFoundException;
 import com.job.exception.UnauthorizedException;
 import com.job.repository.ApplicationRepository;
 import com.job.repository.JobRepository;
+import com.job.repository.JobSeekerRepository;
 import com.job.service.interfaces.EmailService;
 import com.job.service.interfaces.IApplicationService;
 import lombok.RequiredArgsConstructor;
@@ -34,12 +35,15 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final JobRepository jobRepository;
+    private final JobSeekerRepository jobSeekerRepository;
     private final List<ApplicationObserver> observers;
     private final EmailService emailService;
 
     @Override
     @Transactional
-    public ApplicationResponseDTO applyToJob(ApplicationRequestDTO dto, JobSeeker jobSeeker) {
+    public ApplicationResponseDTO applyToJob(ApplicationRequestDTO dto, Long jobSeekerId) {
+        JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
         log.info("Job seeker {} applying to job id: {}", jobSeeker.getUsername(), dto.getJobId());
         if (jobSeeker.getResumeUrl() == null || jobSeeker.getResumeUrl().isBlank()) {
             throw new BadRequestException("You must upload a resume before applying to a job.");
@@ -80,13 +84,13 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ApplicationViewForEmployerDTO> getAllApplicationsForEmployer(Employer employer, ApplicationStatus status) {
+    public List<ApplicationViewForEmployerDTO> getAllApplicationsForEmployer(Long employerId, ApplicationStatus status) {
         List<Application> applications;
 
         if (status == null) {
-            applications = applicationRepository.findByJob_Employer(employer);
+            applications = applicationRepository.findByJob_EmployerId(employerId);
         } else {
-            applications = applicationRepository.findByJob_EmployerAndStatus(employer, status);
+            applications = applicationRepository.findByJob_EmployerIdAndStatus(employerId, status);
         }
 
         return applications.stream()
@@ -96,8 +100,8 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponseDTO<ApplicationResponseDTO> getMyApplications(JobSeeker jobSeeker, int page, int size) {
-        Page<Application> result = applicationRepository.findByJobSeeker(jobSeeker, PageRequest.of(page, size));
+    public PageResponseDTO<ApplicationResponseDTO> getMyApplications(Long jobSeekerId, int page, int size) {
+        Page<Application> result = applicationRepository.findByJobSeekerId(jobSeekerId, PageRequest.of(page, size));
         List<ApplicationResponseDTO> content = result.getContent().stream()
                 .map(this::mapToDTO)
                 .toList();
@@ -107,11 +111,11 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Override
     @Transactional(readOnly = true)
-    public ApplicationResponseDTO getApplicationById(Long id, JobSeeker requester) {
+    public ApplicationResponseDTO getApplicationById(Long id, Long requesterId) {
         Application app = applicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
-        if (!app.getJobSeeker().getId().equals(requester.getId())) {
+        if (!app.getJobSeeker().getId().equals(requesterId)) {
             throw new UnauthorizedException("Unauthorized access to application");
         }
 
@@ -120,12 +124,12 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Override
     @Transactional
-    public void withdrawApplication(Long id, JobSeeker requester) {
-        log.info("Job seeker {} withdrawing application id: {}", requester.getUsername(), id);
+    public void withdrawApplication(Long id, Long requesterId) {
+        log.info("Job seeker id {} withdrawing application id: {}", requesterId, id);
         Application app = applicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
-        if (!app.getJobSeeker().getId().equals(requester.getId())) {
+        if (!app.getJobSeeker().getId().equals(requesterId)) {
             throw new UnauthorizedException("Unauthorized to withdraw this application");
         }
 
@@ -134,11 +138,11 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ApplicationViewForEmployerDTO> getApplicationsForJob(Long jobId, Employer employer) {
+    public List<ApplicationViewForEmployerDTO> getApplicationsForJob(Long jobId, Long employerId) {
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
-        if (!job.getEmployer().getId().equals(employer.getId())) {
+        if (!job.getEmployer().getId().equals(employerId)) {
             throw new UnauthorizedException("Unauthorized to view applications for this job");
         }
 
@@ -151,11 +155,11 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Override
     @Transactional(readOnly = true)
-    public ApplicationViewForEmployerDTO getApplicationViewForEmployer(Long id, Employer employer) {
+    public ApplicationViewForEmployerDTO getApplicationViewForEmployer(Long id, Long employerId) {
         Application app = applicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
-        if (!app.getJob().getEmployer().getId().equals(employer.getId())) {
+        if (!app.getJob().getEmployer().getId().equals(employerId)) {
             throw new UnauthorizedException("Unauthorized to view this application");
         }
 
@@ -164,12 +168,12 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Override
     @Transactional
-    public void updateApplicationStatus(Long applicationId, ApplicationStatus newStatus, Employer employer) {
-        log.info("Employer {} updating application id: {} to status: {}", employer.getUsername(), applicationId, newStatus);
+    public void updateApplicationStatus(Long applicationId, ApplicationStatus newStatus, Long employerId) {
+        log.info("Employer id {} updating application id: {} to status: {}", employerId, applicationId, newStatus);
         Application app = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
-        if (!app.getJob().getEmployer().getId().equals(employer.getId())) {
+        if (!app.getJob().getEmployer().getId().equals(employerId)) {
             throw new UnauthorizedException("Unauthorized to update this application");
         }
 
@@ -187,8 +191,8 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean hasUserAppliedToJob(Long jobId, JobSeeker jobSeeker) {
-        return applicationRepository.existsByJobIdAndJobSeeker(jobId, jobSeeker);
+    public boolean hasUserAppliedToJob(Long jobId, Long jobSeekerId) {
+        return applicationRepository.existsByJobIdAndJobSeekerId(jobId, jobSeekerId);
     }
 
     private ApplicationResponseDTO mapToDTO(Application application) {
