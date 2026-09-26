@@ -15,12 +15,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ProfileIntegrationTest extends AbstractIntegrationTest {
 
     private UpdateProfileRequestDTO validUpdate(AuthedUser user) {
-        UpdateProfileRequestDTO dto = new UpdateProfileRequestDTO();
-        dto.setName("Updated Name");
-        dto.setUsername(user.username());
-        dto.setEmail(user.username() + "@example.com");
-        dto.setDob(LocalDate.of(1992, 6, 15));
-        return dto;
+        return new UpdateProfileRequestDTO(
+                "Updated Name", user.username(), user.username() + "@example.com", LocalDate.of(1992, 6, 15));
     }
 
     @Test
@@ -28,8 +24,8 @@ class ProfileIntegrationTest extends AbstractIntegrationTest {
         AuthedUser userA = createJobSeeker("profdupun_a");
         AuthedUser userB = createJobSeeker("profdupun_b");
 
-        UpdateProfileRequestDTO dto = validUpdate(userB);
-        dto.setUsername(userA.username());
+        UpdateProfileRequestDTO base = validUpdate(userB);
+        UpdateProfileRequestDTO dto = new UpdateProfileRequestDTO(base.name(), userA.username(), base.email(), base.dob());
 
         mockMvc.perform(put("/user/jobseeker/update-profile")
                         .header(AUTH_HEADER, bearer(userB.token()))
@@ -44,8 +40,9 @@ class ProfileIntegrationTest extends AbstractIntegrationTest {
         AuthedUser userA = createJobSeeker("profdupem_a");
         AuthedUser userB = createJobSeeker("profdupem_b");
 
-        UpdateProfileRequestDTO dto = validUpdate(userB);
-        dto.setEmail(userA.username() + "@example.com");
+        UpdateProfileRequestDTO base = validUpdate(userB);
+        UpdateProfileRequestDTO dto = new UpdateProfileRequestDTO(
+                base.name(), base.username(), userA.username() + "@example.com", base.dob());
 
         mockMvc.perform(put("/user/jobseeker/update-profile")
                         .header(AUTH_HEADER, bearer(userB.token()))
@@ -69,8 +66,9 @@ class ProfileIntegrationTest extends AbstractIntegrationTest {
     @Test
     void overLengthFieldsReturn400WithFieldErrors() throws Exception {
         AuthedUser user = createJobSeeker("profoverlen");
-        UpdateProfileRequestDTO dto = validUpdate(user);
-        dto.setName("N".repeat(101)); // @Size(max = 100)
+        UpdateProfileRequestDTO base = validUpdate(user);
+        UpdateProfileRequestDTO dto = new UpdateProfileRequestDTO(
+                "N".repeat(101), base.username(), base.email(), base.dob()); // @Size(max = 100)
 
         mockMvc.perform(put("/user/jobseeker/update-profile")
                         .header(AUTH_HEADER, bearer(user.token()))

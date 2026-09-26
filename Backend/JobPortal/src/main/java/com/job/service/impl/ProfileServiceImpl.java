@@ -63,19 +63,19 @@ public class ProfileServiceImpl implements ProfileService {
                 .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
         log.info("Updating profile for job seeker: {}", currentUser.getUsername());
 
-        if (!updatedInfo.getUsername().equals(currentUser.getUsername())
-                && userRepository.existsByUsername(updatedInfo.getUsername())) {
+        if (!updatedInfo.username().equals(currentUser.getUsername())
+                && userRepository.existsByUsername(updatedInfo.username())) {
             throw new DuplicateResourceException("Username already taken");
         }
-        if (!updatedInfo.getEmail().equals(currentUser.getEmail())
-                && userRepository.existsByEmail(updatedInfo.getEmail())) {
+        if (!updatedInfo.email().equals(currentUser.getEmail())
+                && userRepository.existsByEmail(updatedInfo.email())) {
             throw new DuplicateResourceException("Email already registered");
         }
 
-        currentUser.setName(updatedInfo.getName());
-        currentUser.setUsername(updatedInfo.getUsername());
-        currentUser.setEmail(updatedInfo.getEmail());
-        currentUser.setDob(updatedInfo.getDob());
+        currentUser.setName(updatedInfo.name());
+        currentUser.setUsername(updatedInfo.username());
+        currentUser.setEmail(updatedInfo.email());
+        currentUser.setDob(updatedInfo.dob());
         userRepository.save(currentUser);
     }
 

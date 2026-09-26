@@ -39,17 +39,17 @@ public class JobServiceImpl implements JobService {
     public Job createJob(JobRequestDTO dto, Long employerId) {
         Employer employer = employerRepository.findById(employerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employer not found"));
-        log.info("Creating job '{}' for employer: {}", dto.getTitle(), employer.getUsername());
+        log.info("Creating job '{}' for employer: {}", dto.title(), employer.getUsername());
         Job job = new Job();
 
-        job.setTitle(dto.getTitle());
-        job.setDescription(dto.getDescription());
-        job.setLocation(dto.getLocation());
-        job.setType(dto.getType() != null ? dto.getType() : JobType.FULL_TIME); // Default type
-        job.setWorkMode(dto.getWorkMode() != null ? dto.getWorkMode() : WorkMode.HYBRID); // Default work mode
-        job.setResponsibilities(dto.getResponsibilities());
-        job.setRequiredSkills(dto.getRequiredSkills());
-        job.setScreeningQuestions(dto.getScreeningQuestions()); // Optional field
+        job.setTitle(dto.title());
+        job.setDescription(dto.description());
+        job.setLocation(dto.location());
+        job.setType(dto.type());
+        job.setWorkMode(dto.workMode());
+        job.setResponsibilities(dto.responsibilities());
+        job.setRequiredSkills(dto.requiredSkills());
+        job.setScreeningQuestions(dto.screeningQuestions()); // Optional field
         job.setPostedAt(LocalDateTime.now());
         job.setEmployer(employer);
 
@@ -122,14 +122,14 @@ public class JobServiceImpl implements JobService {
             throw new ForbiddenException("You are not authorized to update this job");
         }
 
-        job.setTitle(dto.getTitle());
-        job.setDescription(dto.getDescription());
-        job.setLocation(dto.getLocation());
-        job.setType(dto.getType());
-        job.setWorkMode(dto.getWorkMode());
-        job.setRequiredSkills(dto.getRequiredSkills());
-        job.setResponsibilities(dto.getResponsibilities());
-        job.setScreeningQuestions(dto.getScreeningQuestions());
+        job.setTitle(dto.title());
+        job.setDescription(dto.description());
+        job.setLocation(dto.location());
+        job.setType(dto.type());
+        job.setWorkMode(dto.workMode());
+        job.setRequiredSkills(dto.requiredSkills());
+        job.setResponsibilities(dto.responsibilities());
+        job.setScreeningQuestions(dto.screeningQuestions());
 
         Job updated = jobRepository.save(job);
         return mapToDTO(updated);

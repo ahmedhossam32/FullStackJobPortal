@@ -237,31 +237,20 @@ class SecurityMatrixIntegrationTest extends AbstractIntegrationTest {
 
     private String newSeekerSignupJson() {
         String username = uniqueUsername("mxsk");
-        JobSeekerRegisterRequestDTO dto = new JobSeekerRegisterRequestDTO();
-        dto.setName("Matrix Seeker");
-        dto.setUsername(username);
-        dto.setPassword(DEFAULT_PASSWORD);
-        dto.setDob(LocalDate.of(1998, 5, 5));
-        dto.setEmail(username + "@example.com");
+        JobSeekerRegisterRequestDTO dto = new JobSeekerRegisterRequestDTO(
+                "Matrix Seeker", username, DEFAULT_PASSWORD, LocalDate.of(1998, 5, 5), username + "@example.com");
         return writeJson(dto);
     }
 
     private String newEmployerSignupJson() {
         String username = uniqueUsername("mxem");
-        EmployerRegisterRequestDTO dto = new EmployerRegisterRequestDTO();
-        dto.setName("Matrix Employer");
-        dto.setUsername(username);
-        dto.setPassword(DEFAULT_PASSWORD);
-        dto.setCompanyName("Matrix Co");
-        dto.setEmail(username + "@example.com");
-        dto.setIndustry("Tech");
+        EmployerRegisterRequestDTO dto = new EmployerRegisterRequestDTO(
+                "Matrix Employer", username, DEFAULT_PASSWORD, "Matrix Co", username + "@example.com", "Tech");
         return writeJson(dto);
     }
 
     private String validSignInJson() {
-        LoginRequestDTO dto = new LoginRequestDTO();
-        dto.setUsername(seeker.username());
-        dto.setPassword(seeker.password());
+        LoginRequestDTO dto = new LoginRequestDTO(seeker.username(), seeker.password());
         return writeJson(dto);
     }
 
@@ -274,14 +263,12 @@ class SecurityMatrixIntegrationTest extends AbstractIntegrationTest {
     }
 
     private String applicationJson(long jobId) {
-        ApplicationRequestDTO dto = new ApplicationRequestDTO();
-        dto.setJobId(jobId);
+        ApplicationRequestDTO dto = new ApplicationRequestDTO(jobId, null);
         return writeJson(dto);
     }
 
     private String statusJson(String status) {
-        ApplicationStatusUpdateDTO dto = new ApplicationStatusUpdateDTO();
-        dto.setStatus(ApplicationStatus.valueOf(status));
+        ApplicationStatusUpdateDTO dto = new ApplicationStatusUpdateDTO(ApplicationStatus.valueOf(status));
         return writeJson(dto);
     }
 
@@ -291,11 +278,8 @@ class SecurityMatrixIntegrationTest extends AbstractIntegrationTest {
      * {@code JwtAuthFilter} looks the user up by the username baked into the token's subject.
      */
     private String updateProfileJson() {
-        UpdateProfileRequestDTO dto = new UpdateProfileRequestDTO();
-        dto.setName("Matrix Updated");
-        dto.setUsername(seeker.username());
-        dto.setEmail(seeker.username() + "@example.com");
-        dto.setDob(LocalDate.of(1990, 1, 1));
+        UpdateProfileRequestDTO dto = new UpdateProfileRequestDTO(
+                "Matrix Updated", seeker.username(), seeker.username() + "@example.com", LocalDate.of(1990, 1, 1));
         return writeJson(dto);
     }
 

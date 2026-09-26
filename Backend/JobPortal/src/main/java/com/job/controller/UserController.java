@@ -6,6 +6,7 @@ import com.job.security.SecurityUtils;
 import com.job.service.ProfileService;
 import com.job.service.SavedJobService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,7 +40,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @PostMapping("/save-job/{jobId}")
-    public ResponseEntity<String> saveJob(@PathVariable Long jobId) {
+    public ResponseEntity<String> saveJob(@PathVariable @Positive Long jobId) {
         Long jobSeekerId = SecurityUtils.getCurrentUserId();
         savedJobService.saveJob(jobSeekerId, jobId);
         return ResponseEntity.ok("Job saved successfully.");
@@ -55,7 +56,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @DeleteMapping("/unsave-job/{jobId}")
-    public ResponseEntity<String> unsaveJob(@PathVariable Long jobId) {
+    public ResponseEntity<String> unsaveJob(@PathVariable @Positive Long jobId) {
         Long jobSeekerId = SecurityUtils.getCurrentUserId();
         savedJobService.unsaveJob(jobSeekerId, jobId);
         return ResponseEntity.ok("Job removed from saved list.");

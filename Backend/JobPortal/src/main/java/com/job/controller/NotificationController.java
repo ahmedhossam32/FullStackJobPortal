@@ -3,6 +3,7 @@ package com.job.controller;
 import com.job.dto.response.NotificationDTO;
 import com.job.security.SecurityUtils;
 import com.job.service.NotificationService;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class NotificationController {
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @PutMapping("/{id}/read")
-    public ResponseEntity<Void> markAsRead(@PathVariable Long id) {
+    public ResponseEntity<Void> markAsRead(@PathVariable @Positive Long id) {
         Long jobSeekerId = SecurityUtils.getCurrentUserId();
         log.info("Marking notification id: {} as read for user id: {}", id, jobSeekerId);
         notificationService.markAsRead(id, jobSeekerId);

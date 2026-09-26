@@ -9,6 +9,8 @@ import com.job.service.JobService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -33,7 +35,7 @@ public class JobController {
     @PostMapping
     public ResponseEntity<?> createJob(@RequestBody @Valid JobRequestDTO dto) {
         Long employerId = SecurityUtils.getCurrentUserId();
-        log.info("Creating job '{}' for employer id: {}", dto.getTitle(), employerId);
+        log.info("Creating job '{}' for employer id: {}", dto.title(), employerId);
         Job createdJob = jobService.createJob(dto, employerId);
         log.info("Job created with id: {} by employer id: {}", createdJob.getId(), employerId);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -50,7 +52,7 @@ public class JobController {
     @PreAuthorize("hasRole('EMPLOYER')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateJob(
-            @PathVariable Long id,
+            @PathVariable @Positive Long id,
             @RequestBody @Valid JobRequestDTO jobRequestDTO) {
         Long employerId = SecurityUtils.getCurrentUserId();
         log.info("Updating job id: {} by employer id: {}", id, employerId);
@@ -60,7 +62,7 @@ public class JobController {
 
     @PreAuthorize("hasRole('EMPLOYER')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteJob(@PathVariable Long id) {
+    public ResponseEntity<?> deleteJob(@PathVariable @Positive Long id) {
         Long employerId = SecurityUtils.getCurrentUserId();
         log.info("Deleting job id: {} by employer id: {}", id, employerId);
         jobService.deleteJob(id, employerId);
@@ -77,13 +79,13 @@ public class JobController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<JobResponseDTO> getJobById(@PathVariable Long id) {
+    public ResponseEntity<JobResponseDTO> getJobById(@PathVariable @Positive Long id) {
         return ResponseEntity.ok(jobService.getJobById(id));
     }
 
     @GetMapping("/search/title")
     public ResponseEntity<PageResponseDTO<JobResponseDTO>> searchByTitle(
-            @RequestParam String keyword,
+            @RequestParam @NotBlank String keyword,
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
         return ResponseEntity.ok(jobService.searchByTitle(keyword, page, size));
@@ -99,7 +101,7 @@ public class JobController {
 
     @GetMapping("/search/location")
     public ResponseEntity<PageResponseDTO<JobResponseDTO>> searchByLocation(
-            @RequestParam String location,
+            @RequestParam @NotBlank String location,
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
         return ResponseEntity.ok(jobService.searchByLocation(location, page, size));

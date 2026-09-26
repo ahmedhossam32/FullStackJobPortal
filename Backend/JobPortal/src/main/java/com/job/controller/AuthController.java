@@ -24,14 +24,14 @@ public class AuthController {
 
     @PostMapping("/signup/jobseeker")
     public ResponseEntity<String> signUpJobSeeker(@RequestBody @Valid JobSeekerRegisterRequestDTO dto) {
-        log.info("Job seeker signup attempt for username: {}", dto.getUsername());
+        log.info("Job seeker signup attempt for username: {}", dto.username());
         userService.registerJobSeekerWithoutFiles(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body("Job seeker signed up successfully!");
     }
 
     @PostMapping("/signup/employer")
     public ResponseEntity<String> signUpEmployer(@RequestBody @Valid EmployerRegisterRequestDTO dto) {
-        log.info("Employer signup attempt for username: {}", dto.getUsername());
+        log.info("Employer signup attempt for username: {}", dto.username());
         userService.registerEmployer(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body("Employer signed up successfully!");
     }

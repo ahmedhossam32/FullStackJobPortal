@@ -19,13 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AuthIntegrationTest extends AbstractIntegrationTest {
 
     private JobSeekerRegisterRequestDTO validSeeker(String username) {
-        JobSeekerRegisterRequestDTO dto = new JobSeekerRegisterRequestDTO();
-        dto.setName("Alice Seeker");
-        dto.setUsername(username);
-        dto.setPassword(DEFAULT_PASSWORD);
-        dto.setDob(LocalDate.of(1997, 3, 4));
-        dto.setEmail(username + "@example.com");
-        return dto;
+        return new JobSeekerRegisterRequestDTO(
+                "Alice Seeker", username, DEFAULT_PASSWORD, LocalDate.of(1997, 3, 4), username + "@example.com");
     }
 
     @Test
@@ -48,8 +43,9 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
                         .content(objectMapper.writeValueAsString(first)))
                 .andExpect(status().isCreated());
 
-        JobSeekerRegisterRequestDTO second = validSeeker(username);
-        second.setEmail(uniqueUsername("authdup") + "@example.com");
+        JobSeekerRegisterRequestDTO second = new JobSeekerRegisterRequestDTO(
+                first.name(), first.username(), first.password(), first.dob(),
+                uniqueUsername("authdup") + "@example.com");
         mockMvc.perform(post("/auth/signup/jobseeker")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(second)))
@@ -73,9 +69,10 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void passwordOver72BytesReturns400() throws Exception {
-        JobSeekerRegisterRequestDTO dto = validSeeker(uniqueUsername("authpwlen"));
+        JobSeekerRegisterRequestDTO base = validSeeker(uniqueUsername("authpwlen"));
         // 73 ASCII bytes == 73 UTF-8 bytes, one over the BCrypt-driven 72-byte limit.
-        dto.setPassword("a".repeat(73));
+        JobSeekerRegisterRequestDTO dto = new JobSeekerRegisterRequestDTO(
+                base.name(), base.username(), "a".repeat(73), base.dob(), base.email());
 
         mockMvc.perform(post("/auth/signup/jobseeker")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -92,9 +89,7 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
                         .content(objectMapper.writeValueAsString(validSeeker(username))))
                 .andExpect(status().isCreated());
 
-        LoginRequestDTO login = new LoginRequestDTO();
-        login.setUsername(username);
-        login.setPassword(DEFAULT_PASSWORD);
+        LoginRequestDTO login = new LoginRequestDTO(username, DEFAULT_PASSWORD);
 
         mockMvc.perform(post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -112,9 +107,7 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
                         .content(objectMapper.writeValueAsString(validSeeker(username))))
                 .andExpect(status().isCreated());
 
-        LoginRequestDTO login = new LoginRequestDTO();
-        login.setUsername(username);
-        login.setPassword("totally-wrong-password");
+        LoginRequestDTO login = new LoginRequestDTO(username, "totally-wrong-password");
 
         mockMvc.perform(post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -124,9 +117,7 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void signInUnknownUserReturns401() throws Exception {
-        LoginRequestDTO login = new LoginRequestDTO();
-        login.setUsername(uniqueUsername("nosuchuser"));
-        login.setPassword(DEFAULT_PASSWORD);
+        LoginRequestDTO login = new LoginRequestDTO(uniqueUsername("nosuchuser"), DEFAULT_PASSWORD);
 
         mockMvc.perform(post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -142,9 +133,7 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
                         .content(objectMapper.writeValueAsString(validSeeker(username))))
                 .andExpect(status().isCreated());
 
-        LoginRequestDTO login = new LoginRequestDTO();
-        login.setUsername(username);
-        login.setPassword("x".repeat(100));
+        LoginRequestDTO login = new LoginRequestDTO(username, "x".repeat(100));
 
         mockMvc.perform(post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -155,13 +144,8 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
     @Test
     void employerSignupHappyPathReturns201() throws Exception {
         String username = uniqueUsername("authemp");
-        EmployerRegisterRequestDTO dto = new EmployerRegisterRequestDTO();
-        dto.setName("Bob Employer");
-        dto.setUsername(username);
-        dto.setPassword(DEFAULT_PASSWORD);
-        dto.setCompanyName("Bob's Company");
-        dto.setEmail(username + "@example.com");
-        dto.setIndustry("Retail");
+        EmployerRegisterRequestDTO dto = new EmployerRegisterRequestDTO(
+                "Bob Employer", username, DEFAULT_PASSWORD, "Bob's Company", username + "@example.com", "Retail");
 
         mockMvc.perform(post("/auth/signup/employer")
                         .contentType(MediaType.APPLICATION_JSON)

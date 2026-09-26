@@ -118,12 +118,8 @@ public abstract class AbstractIntegrationTest {
 
     protected AuthedUser createJobSeeker(String prefix) throws Exception {
         String username = uniqueUsername(prefix);
-        JobSeekerRegisterRequestDTO dto = new JobSeekerRegisterRequestDTO();
-        dto.setName("Test Seeker " + prefix);
-        dto.setUsername(username);
-        dto.setPassword(DEFAULT_PASSWORD);
-        dto.setDob(LocalDate.of(1995, 1, 1));
-        dto.setEmail(username + "@example.com");
+        JobSeekerRegisterRequestDTO dto = new JobSeekerRegisterRequestDTO(
+                "Test Seeker " + prefix, username, DEFAULT_PASSWORD, LocalDate.of(1995, 1, 1), username + "@example.com");
 
         mockMvc.perform(post("/auth/signup/jobseeker")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -137,13 +133,8 @@ public abstract class AbstractIntegrationTest {
 
     protected AuthedUser createEmployer(String prefix) throws Exception {
         String username = uniqueUsername(prefix);
-        EmployerRegisterRequestDTO dto = new EmployerRegisterRequestDTO();
-        dto.setName("Test Employer " + prefix);
-        dto.setUsername(username);
-        dto.setPassword(DEFAULT_PASSWORD);
-        dto.setCompanyName("Acme " + prefix);
-        dto.setEmail(username + "@example.com");
-        dto.setIndustry("Technology");
+        EmployerRegisterRequestDTO dto = new EmployerRegisterRequestDTO(
+                "Test Employer " + prefix, username, DEFAULT_PASSWORD, "Acme " + prefix, username + "@example.com", "Technology");
 
         mockMvc.perform(post("/auth/signup/employer")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -156,9 +147,7 @@ public abstract class AbstractIntegrationTest {
     }
 
     protected String signIn(String username, String password) throws Exception {
-        LoginRequestDTO dto = new LoginRequestDTO();
-        dto.setUsername(username);
-        dto.setPassword(password);
+        LoginRequestDTO dto = new LoginRequestDTO(username, password);
 
         MvcResult result = mockMvc.perform(post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -190,7 +179,7 @@ public abstract class AbstractIntegrationTest {
     }
 
     protected String jobJson(String title) throws Exception {
-        return jobJson(title, null, null, null);
+        return jobJson(title, JobType.FULL_TIME, WorkMode.HYBRID, null);
     }
 
     protected String jobJson(String title, JobType type, WorkMode workMode) throws Exception {
@@ -199,18 +188,13 @@ public abstract class AbstractIntegrationTest {
 
     protected String jobJson(String title, JobType type, WorkMode workMode, List<String> screeningQuestions)
             throws Exception {
-        JobRequestDTO dto = new JobRequestDTO();
-        dto.setTitle(title);
-        dto.setDescription("Description for " + title);
-        dto.setLocation("Cairo");
-        dto.setType(type);
-        dto.setWorkMode(workMode);
-        dto.setScreeningQuestions(screeningQuestions);
+        JobRequestDTO dto = new JobRequestDTO(
+                title, "Description for " + title, "Cairo", type, workMode, null, null, screeningQuestions);
         return objectMapper.writeValueAsString(dto);
     }
 
     protected long createJob(String employerToken, String title) throws Exception {
-        return createJob(employerToken, title, null, null);
+        return createJob(employerToken, title, JobType.FULL_TIME, WorkMode.HYBRID);
     }
 
     protected long createJob(String employerToken, String title, JobType type, WorkMode workMode) throws Exception {
@@ -224,8 +208,7 @@ public abstract class AbstractIntegrationTest {
     }
 
     protected long applyToJob(String seekerToken, long jobId) throws Exception {
-        com.job.dto.request.ApplicationRequestDTO dto = new com.job.dto.request.ApplicationRequestDTO();
-        dto.setJobId(jobId);
+        com.job.dto.request.ApplicationRequestDTO dto = new com.job.dto.request.ApplicationRequestDTO(jobId, null);
         String body = objectMapper.writeValueAsString(dto);
         MvcResult result = mockMvc.perform(post("/applications")
                         .header(AUTH_HEADER, bearer(seekerToken))

@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,14 +32,14 @@ public class ApplicationsController {
     @PostMapping
     public ResponseEntity<ApplicationResponseDTO> applyToJob(@Valid @RequestBody ApplicationRequestDTO dto) {
         Long jobSeekerId = SecurityUtils.getCurrentUserId();
-        log.info("Job seeker id {} applying to job id: {}", jobSeekerId, dto.getJobId());
+        log.info("Job seeker id {} applying to job id: {}", jobSeekerId, dto.jobId());
         ApplicationResponseDTO response = applicationService.applyToJob(dto, jobSeekerId);
         return ResponseEntity.ok(response);
     }
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping("/has-applied/{jobId}")
-    public ResponseEntity<Boolean> hasAppliedToJob(@PathVariable Long jobId) {
+    public ResponseEntity<Boolean> hasAppliedToJob(@PathVariable @Positive Long jobId) {
         Long jobSeekerId = SecurityUtils.getCurrentUserId();
         return ResponseEntity.ok(applicationService.hasUserAppliedToJob(jobId, jobSeekerId));
     }
@@ -54,14 +55,14 @@ public class ApplicationsController {
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping("/{id}")
-    public ResponseEntity<ApplicationResponseDTO> getApplicationById(@PathVariable Long id) {
+    public ResponseEntity<ApplicationResponseDTO> getApplicationById(@PathVariable @Positive Long id) {
         Long jobSeekerId = SecurityUtils.getCurrentUserId();
         return ResponseEntity.ok(applicationService.getApplicationById(id, jobSeekerId));
     }
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> withdrawApplication(@PathVariable Long id) {
+    public ResponseEntity<?> withdrawApplication(@PathVariable @Positive Long id) {
         Long jobSeekerId = SecurityUtils.getCurrentUserId();
         log.info("Job seeker id {} withdrawing application id: {}", jobSeekerId, id);
         applicationService.withdrawApplication(id, jobSeekerId);
@@ -70,14 +71,14 @@ public class ApplicationsController {
 
     @PreAuthorize("hasRole('EMPLOYER')")
     @GetMapping("/job/{jobId}")
-    public ResponseEntity<List<ApplicationViewForEmployerDTO>> getApplicationsForJob(@PathVariable Long jobId) {
+    public ResponseEntity<List<ApplicationViewForEmployerDTO>> getApplicationsForJob(@PathVariable @Positive Long jobId) {
         Long employerId = SecurityUtils.getCurrentUserId();
         return ResponseEntity.ok(applicationService.getApplicationsForJob(jobId, employerId));
     }
 
     @PreAuthorize("hasRole('EMPLOYER')")
     @GetMapping("/employer/{id}")
-    public ResponseEntity<ApplicationViewForEmployerDTO> getApplicationForEmployer(@PathVariable Long id) {
+    public ResponseEntity<ApplicationViewForEmployerDTO> getApplicationForEmployer(@PathVariable @Positive Long id) {
         Long employerId = SecurityUtils.getCurrentUserId();
         return ResponseEntity.ok(applicationService.getApplicationViewForEmployer(id, employerId));
     }
@@ -85,11 +86,11 @@ public class ApplicationsController {
     @PreAuthorize("hasRole('EMPLOYER')")
     @PutMapping("/{id}/status")
     public ResponseEntity<String> updateApplicationStatus(
-            @PathVariable Long id,
+            @PathVariable @Positive Long id,
             @Valid @RequestBody ApplicationStatusUpdateDTO dto) {
         Long employerId = SecurityUtils.getCurrentUserId();
-        log.info("Employer id {} updating application id: {} to status: {}", employerId, id, dto.getStatus());
-        applicationService.updateApplicationStatus(id, dto.getStatus(), employerId);
+        log.info("Employer id {} updating application id: {} to status: {}", employerId, id, dto.status());
+        applicationService.updateApplicationStatus(id, dto.status(), employerId);
         return ResponseEntity.ok("Application status updated successfully.");
     }
 

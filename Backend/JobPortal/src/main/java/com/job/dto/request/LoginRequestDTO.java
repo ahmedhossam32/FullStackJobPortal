@@ -1,16 +1,13 @@
 package com.job.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-public class LoginRequestDTO {
+public record LoginRequestDTO(
 
-    @NotBlank(message = "Username is required")
-    private String username;
+        @NotBlank(message = "Username is required")
+        String username,
 
-    @NotBlank(message = "Password is required")
-    private String password;
+        @NotBlank(message = "Password is required")
+        String password
+) {
 }

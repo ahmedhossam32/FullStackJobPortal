@@ -44,12 +44,12 @@ public class ApplicationServiceImpl implements ApplicationService {
     public ApplicationResponseDTO applyToJob(ApplicationRequestDTO dto, Long jobSeekerId) {
         JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
-        log.info("Job seeker {} applying to job id: {}", jobSeeker.getUsername(), dto.getJobId());
+        log.info("Job seeker {} applying to job id: {}", jobSeeker.getUsername(), dto.jobId());
         if (jobSeeker.getResumeUrl() == null || jobSeeker.getResumeUrl().isBlank()) {
             throw new BadRequestException("You must upload a resume before applying to a job.");
         }
 
-        Job job = jobRepository.findById(dto.getJobId())
+        Job job = jobRepository.findById(dto.jobId())
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
         boolean alreadyApplied = applicationRepository.existsByJobAndJobSeeker(job, jobSeeker);
@@ -59,7 +59,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         List<String> screeningQs = job.getScreeningQuestions();
         if (screeningQs != null && !screeningQs.isEmpty()) {
-            if (dto.getScreeningAnswers() == null || dto.getScreeningAnswers().size() != screeningQs.size()) {
+            if (dto.screeningAnswers() == null || dto.screeningAnswers().size() != screeningQs.size()) {
                 throw new BadRequestException("You must answer all required screening questions.");
             }
         }
