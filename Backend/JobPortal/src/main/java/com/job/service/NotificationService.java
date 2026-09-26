@@ -1,11 +1,11 @@
-package com.job.service.interfaces;
+package com.job.service;
 
 import com.job.dto.response.NotificationDTO;
 import com.job.entity.Notification;
 
 import java.util.List;
 
-public interface INotificationService {
+public interface NotificationService {
     List<NotificationDTO> getNotificationsFor(Long jobSeekerId);
     NotificationDTO mapToDTO(Notification notification);
     void deleteAllNotificationsForUser(Long jobSeekerId);

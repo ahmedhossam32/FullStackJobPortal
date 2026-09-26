@@ -6,7 +6,7 @@ import com.job.entity.Notification;
 import com.job.exception.ForbiddenException;
 import com.job.exception.ResourceNotFoundException;
 import com.job.repository.NotificationRepository;
-import com.job.service.interfaces.INotificationService;
+import com.job.service.NotificationService;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NotificationServiceImpl implements INotificationService {
+public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
 

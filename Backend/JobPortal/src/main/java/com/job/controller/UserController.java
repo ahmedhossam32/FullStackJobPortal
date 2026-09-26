@@ -3,8 +3,8 @@ package com.job.controller;
 import com.job.dto.request.UpdateProfileRequestDTO;
 import com.job.dto.response.JobResponseDTO;
 import com.job.security.SecurityUtils;
-import com.job.service.interfaces.IProfileService;
-import com.job.service.interfaces.ISavedJobService;
+import com.job.service.ProfileService;
+import com.job.service.SavedJobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +19,8 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    private final IProfileService profileService;
-    private final ISavedJobService savedJobService;
+    private final ProfileService profileService;
+    private final SavedJobService savedJobService;
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @PostMapping("/jobseeker/upload-resume")

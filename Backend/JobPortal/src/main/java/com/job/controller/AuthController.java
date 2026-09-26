@@ -4,8 +4,8 @@ import com.job.dto.request.EmployerRegisterRequestDTO;
 import com.job.dto.request.JobSeekerRegisterRequestDTO;
 import com.job.dto.request.LoginRequestDTO;
 import com.job.dto.response.AuthResponseDTO;
-import com.job.service.interfaces.IAuthService;
-import com.job.service.interfaces.IUserService;
+import com.job.service.AuthService;
+import com.job.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final IUserService userService;
-    private final IAuthService authService;
+    private final UserService userService;
+    private final AuthService authService;
 
     @PostMapping("/signup/jobseeker")
     public ResponseEntity<String> signUpJobSeeker(@RequestBody @Valid JobSeekerRegisterRequestDTO dto) {

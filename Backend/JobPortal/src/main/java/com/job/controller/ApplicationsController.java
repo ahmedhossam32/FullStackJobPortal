@@ -7,7 +7,7 @@ import com.job.dto.response.ApplicationViewForEmployerDTO;
 import com.job.dto.response.PageResponseDTO;
 import com.job.enums.ApplicationStatus;
 import com.job.security.SecurityUtils;
-import com.job.service.interfaces.IApplicationService;
+import com.job.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ import java.util.List;
 @RequestMapping("/applications")
 public class ApplicationsController {
 
-    private final IApplicationService applicationService;
+    private final ApplicationService applicationService;
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @PostMapping

@@ -4,7 +4,7 @@ import com.job.dto.request.LoginRequestDTO;
 import com.job.dto.response.AuthResponseDTO;
 import com.job.security.CustomUserDetails;
 import com.job.security.JwtService;
-import com.job.service.interfaces.IAuthService;
+import com.job.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AuthServiceImpl implements IAuthService {
+public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;

@@ -1,4 +1,4 @@
-package com.job.service.interfaces;
+package com.job.service;
 
 import com.job.dto.request.JobRequestDTO;
 import com.job.dto.response.JobResponseDTO;
@@ -7,7 +7,7 @@ import com.job.entity.Job;
 
 import java.util.List;
 
-public interface IJobService {
+public interface JobService {
     Job createJob(JobRequestDTO dto, Long employerId);
     PageResponseDTO<JobResponseDTO> getAllJobsSortedByDate(int page, int size);
     PageResponseDTO<JobResponseDTO> searchByTitle(String keyword, int page, int size);

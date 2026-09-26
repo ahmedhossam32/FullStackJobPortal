@@ -12,7 +12,7 @@ import com.job.exception.ForbiddenException;
 import com.job.exception.ResourceNotFoundException;
 import com.job.repository.EmployerRepository;
 import com.job.repository.JobRepository;
-import com.job.service.interfaces.IJobService;
+import com.job.service.JobService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,7 +29,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class JobServiceImpl implements IJobService {
+public class JobServiceImpl implements JobService {
 
     private final JobRepository jobRepository;
     private final EmployerRepository employerRepository;

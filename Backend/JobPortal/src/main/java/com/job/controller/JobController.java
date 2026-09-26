@@ -5,7 +5,7 @@ import com.job.dto.response.JobResponseDTO;
 import com.job.dto.response.PageResponseDTO;
 import com.job.entity.Job;
 import com.job.security.SecurityUtils;
-import com.job.service.interfaces.IJobService;
+import com.job.service.JobService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -25,7 +25,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class JobController {
 
-    private final IJobService jobService;
+    private final JobService jobService;
 
     // ── EMPLOYER-ONLY endpoints ────────────────────────────────────────────
 

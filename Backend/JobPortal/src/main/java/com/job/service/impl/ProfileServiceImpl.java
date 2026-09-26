@@ -12,7 +12,7 @@ import com.job.exception.DuplicateResourceException;
 import com.job.exception.ResourceNotFoundException;
 import com.job.repository.JobSeekerRepository;
 import com.job.repository.UserRepository;
-import com.job.service.interfaces.IProfileService;
+import com.job.service.ProfileService;
 import com.job.validation.FileValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ProfileServiceImpl implements IProfileService {
+public class ProfileServiceImpl implements ProfileService {
 
     private final UserRepository userRepository;
     private final JobSeekerRepository jobSeekerRepository;

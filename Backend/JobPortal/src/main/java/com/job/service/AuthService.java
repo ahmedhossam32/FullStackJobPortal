@@ -1,8 +1,8 @@
-package com.job.service.interfaces;
+package com.job.service;
 
 import com.job.dto.request.LoginRequestDTO;
 import com.job.dto.response.AuthResponseDTO;
 
-public interface IAuthService {
+public interface AuthService {
     AuthResponseDTO login(LoginRequestDTO dto);
 }

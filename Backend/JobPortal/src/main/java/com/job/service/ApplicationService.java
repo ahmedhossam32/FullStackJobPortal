@@ -1,4 +1,4 @@
-package com.job.service.interfaces;
+package com.job.service;
 
 import com.job.dto.request.ApplicationRequestDTO;
 import com.job.dto.response.ApplicationResponseDTO;
@@ -8,7 +8,7 @@ import com.job.enums.ApplicationStatus;
 
 import java.util.List;
 
-public interface IApplicationService {
+public interface ApplicationService {
     ApplicationResponseDTO applyToJob(ApplicationRequestDTO dto, Long jobSeekerId);
     List<ApplicationViewForEmployerDTO> getAllApplicationsForEmployer(Long employerId, ApplicationStatus status);
     PageResponseDTO<ApplicationResponseDTO> getMyApplications(Long jobSeekerId, int page, int size);

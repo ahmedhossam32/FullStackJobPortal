@@ -2,7 +2,7 @@ package com.job.controller;
 
 import com.job.dto.response.NotificationDTO;
 import com.job.security.SecurityUtils;
-import com.job.service.interfaces.INotificationService;
+import com.job.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final INotificationService notificationService;
+    private final NotificationService notificationService;
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @GetMapping

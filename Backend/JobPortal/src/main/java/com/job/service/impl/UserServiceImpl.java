@@ -9,7 +9,7 @@ import com.job.exception.DuplicateResourceException;
 import com.job.repository.EmployerRepository;
 import com.job.repository.JobSeekerRepository;
 import com.job.repository.UserRepository;
-import com.job.service.interfaces.IUserService;
+import com.job.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements IUserService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final EmployerRepository employerRepository;

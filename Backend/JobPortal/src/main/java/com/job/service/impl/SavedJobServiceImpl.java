@@ -7,7 +7,7 @@ import com.job.exception.DuplicateResourceException;
 import com.job.exception.ResourceNotFoundException;
 import com.job.repository.JobRepository;
 import com.job.repository.JobSeekerRepository;
-import com.job.service.interfaces.ISavedJobService;
+import com.job.service.SavedJobService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SavedJobServiceImpl implements ISavedJobService {
+public class SavedJobServiceImpl implements SavedJobService {
 
     private final JobRepository jobRepository;
     private final JobSeekerRepository jobSeekerRepository;

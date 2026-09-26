@@ -18,7 +18,7 @@ import com.job.repository.ApplicationRepository;
 import com.job.repository.JobRepository;
 import com.job.repository.JobSeekerRepository;
 import com.job.service.interfaces.EmailService;
-import com.job.service.interfaces.IApplicationService;
+import com.job.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,7 +31,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ApplicationServiceImpl implements IApplicationService {
+public class ApplicationServiceImpl implements ApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final JobRepository jobRepository;
