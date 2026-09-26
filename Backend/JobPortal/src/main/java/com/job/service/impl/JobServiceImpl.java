@@ -10,6 +10,7 @@ import com.job.enums.WorkMode;
 import com.job.exception.BadRequestException;
 import com.job.exception.ForbiddenException;
 import com.job.exception.ResourceNotFoundException;
+import com.job.mapper.JobMapper;
 import com.job.repository.EmployerRepository;
 import com.job.repository.JobRepository;
 import com.job.service.JobService;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -33,27 +33,19 @@ public class JobServiceImpl implements JobService {
 
     private final JobRepository jobRepository;
     private final EmployerRepository employerRepository;
+    private final JobMapper jobMapper;
 
     @Override
     @Transactional
-    public Job createJob(JobRequestDTO dto, Long employerId) {
+    public JobResponseDTO createJob(JobRequestDTO dto, Long employerId) {
         Employer employer = employerRepository.findById(employerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employer not found"));
         log.info("Creating job '{}' for employer: {}", dto.title(), employer.getUsername());
-        Job job = new Job();
-
-        job.setTitle(dto.title());
-        job.setDescription(dto.description());
-        job.setLocation(dto.location());
-        job.setType(dto.type());
-        job.setWorkMode(dto.workMode());
-        job.setResponsibilities(dto.responsibilities());
-        job.setRequiredSkills(dto.requiredSkills());
-        job.setScreeningQuestions(dto.screeningQuestions()); // Optional field
+        Job job = jobMapper.toEntity(dto);
         job.setPostedAt(LocalDateTime.now());
         job.setEmployer(employer);
 
-        return jobRepository.save(job);
+        return jobMapper.toResponseDTO(jobRepository.save(job));
     }
 
     @Override
@@ -108,7 +100,7 @@ public class JobServiceImpl implements JobService {
     public JobResponseDTO getJobById(Long id) {
         Job job = jobRepository.findByIdWithEmployer(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
-        return mapToDTO(job);
+        return jobMapper.toResponseDTO(job);
     }
 
     @Override
@@ -122,17 +114,10 @@ public class JobServiceImpl implements JobService {
             throw new ForbiddenException("You are not authorized to update this job");
         }
 
-        job.setTitle(dto.title());
-        job.setDescription(dto.description());
-        job.setLocation(dto.location());
-        job.setType(dto.type());
-        job.setWorkMode(dto.workMode());
-        job.setRequiredSkills(dto.requiredSkills());
-        job.setResponsibilities(dto.responsibilities());
-        job.setScreeningQuestions(dto.screeningQuestions());
+        jobMapper.updateJobFromDto(dto, job);
 
         Job updated = jobRepository.save(job);
-        return mapToDTO(updated);
+        return jobMapper.toResponseDTO(updated);
     }
 
     @Override
@@ -153,13 +138,13 @@ public class JobServiceImpl implements JobService {
     @Transactional(readOnly = true)
     public List<JobResponseDTO> getJobsByEmployer(Long employerId) {
         return jobRepository.findByEmployerIdWithEmployer(employerId).stream()
-                .map(this::mapToDTO)
+                .map(jobMapper::toResponseDTO)
                 .toList();
     }
 
     private PageResponseDTO<JobResponseDTO> toPageResponse(Page<Job> page) {
         List<JobResponseDTO> content = page.getContent().stream()
-                .map(this::mapToDTO)
+                .map(jobMapper::toResponseDTO)
                 .toList();
         return new PageResponseDTO<>(
                 content,
@@ -169,23 +154,5 @@ public class JobServiceImpl implements JobService {
                 page.getSize(),
                 page.isLast()
         );
-    }
-
-    private JobResponseDTO mapToDTO(Job job) {
-        JobResponseDTO dto = new JobResponseDTO();
-        dto.setId(job.getId());
-        dto.setTitle(job.getTitle());
-        dto.setDescription(job.getDescription());
-        dto.setLocation(job.getLocation());
-        dto.setPostedAt(job.getPostedAt());
-        dto.setCompanyName(job.getEmployer().getCompanyName());
-        dto.setType(job.getType());
-        dto.setWorkMode(job.getWorkMode());
-        dto.setProfilePicture(job.getEmployer().getProfilePictureUrl());
-        dto.setEmployerId(job.getEmployer().getId());
-        dto.setResponsibilities(new ArrayList<>(job.getResponsibilities() != null ? job.getResponsibilities() : List.of()));
-        dto.setRequiredSkills(new ArrayList<>(job.getRequiredSkills() != null ? job.getRequiredSkills() : List.of()));
-        dto.setScreeningQuestions(new ArrayList<>(job.getScreeningQuestions() != null ? job.getScreeningQuestions() : List.of()));
-        return dto;
     }
 }

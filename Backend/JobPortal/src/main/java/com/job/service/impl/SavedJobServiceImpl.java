@@ -5,6 +5,7 @@ import com.job.entity.Job;
 import com.job.entity.JobSeeker;
 import com.job.exception.DuplicateResourceException;
 import com.job.exception.ResourceNotFoundException;
+import com.job.mapper.JobMapper;
 import com.job.repository.JobRepository;
 import com.job.repository.JobSeekerRepository;
 import com.job.service.SavedJobService;
@@ -13,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -23,6 +23,7 @@ public class SavedJobServiceImpl implements SavedJobService {
 
     private final JobRepository jobRepository;
     private final JobSeekerRepository jobSeekerRepository;
+    private final JobMapper jobMapper;
 
     @Override
     @Transactional
@@ -67,24 +68,7 @@ public class SavedJobServiceImpl implements SavedJobService {
                 .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
 
         return jobSeeker.getSavedJobs().stream()
-                .map(this::mapToDTO)
+                .map(jobMapper::toResponseDTO)
                 .toList();
-    }
-
-    private JobResponseDTO mapToDTO(Job job) {
-        JobResponseDTO dto = new JobResponseDTO();
-        dto.setId(job.getId());
-        dto.setTitle(job.getTitle());
-        dto.setDescription(job.getDescription());
-        dto.setLocation(job.getLocation());
-        dto.setPostedAt(job.getPostedAt());
-        dto.setCompanyName(job.getEmployer().getCompanyName());
-        dto.setProfilePicture(job.getEmployer().getProfilePictureUrl());
-        dto.setType(job.getType());
-        dto.setWorkMode(job.getWorkMode());
-        dto.setResponsibilities(new ArrayList<>(job.getResponsibilities() != null ? job.getResponsibilities() : List.of()));
-        dto.setRequiredSkills(new ArrayList<>(job.getRequiredSkills() != null ? job.getRequiredSkills() : List.of()));
-        dto.setEmployerId(job.getEmployer().getId());
-        return dto;
     }
 }

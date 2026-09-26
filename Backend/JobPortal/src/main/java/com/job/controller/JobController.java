@@ -3,7 +3,6 @@ package com.job.controller;
 import com.job.dto.request.JobRequestDTO;
 import com.job.dto.response.JobResponseDTO;
 import com.job.dto.response.PageResponseDTO;
-import com.job.entity.Job;
 import com.job.security.SecurityUtils;
 import com.job.service.JobService;
 import jakarta.validation.Valid;
@@ -36,10 +35,10 @@ public class JobController {
     public ResponseEntity<?> createJob(@RequestBody @Valid JobRequestDTO dto) {
         Long employerId = SecurityUtils.getCurrentUserId();
         log.info("Creating job '{}' for employer id: {}", dto.title(), employerId);
-        Job createdJob = jobService.createJob(dto, employerId);
-        log.info("Job created with id: {} by employer id: {}", createdJob.getId(), employerId);
+        JobResponseDTO createdJob = jobService.createJob(dto, employerId);
+        log.info("Job created with id: {} by employer id: {}", createdJob.id(), employerId);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of("message", "Job created successfully.", "jobId", createdJob.getId()));
+                .body(Map.of("message", "Job created successfully.", "jobId", createdJob.id()));
     }
 
     @PreAuthorize("hasRole('EMPLOYER')")

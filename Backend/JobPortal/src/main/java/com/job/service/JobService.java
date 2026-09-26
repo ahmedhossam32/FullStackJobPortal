@@ -3,12 +3,11 @@ package com.job.service;
 import com.job.dto.request.JobRequestDTO;
 import com.job.dto.response.JobResponseDTO;
 import com.job.dto.response.PageResponseDTO;
-import com.job.entity.Job;
 
 import java.util.List;
 
 public interface JobService {
-    Job createJob(JobRequestDTO dto, Long employerId);
+    JobResponseDTO createJob(JobRequestDTO dto, Long employerId);
     PageResponseDTO<JobResponseDTO> getAllJobsSortedByDate(int page, int size);
     PageResponseDTO<JobResponseDTO> searchByTitle(String keyword, int page, int size);
     PageResponseDTO<JobResponseDTO> searchByType(String type, int page, int size);
