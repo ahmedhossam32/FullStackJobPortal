@@ -104,7 +104,7 @@ class ApplicationsIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$").value(1));
 
         long notificationId = notificationRepository
-                .findByRecipientOrderByCreatedAtDesc(jobSeekerRepository.findById(seeker.id()).orElseThrow())
+                .findByRecipientIdOrderByCreatedAtDesc(seeker.id())
                 .get(0).getId();
 
         mockMvc.perform(put("/notifications/{id}/read", notificationId)

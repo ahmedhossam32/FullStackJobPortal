@@ -1,7 +1,6 @@
 package com.job.integration;
 
 import com.job.entity.Application;
-import com.job.entity.JobSeeker;
 import com.job.entity.Notification;
 import com.job.integration.support.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
@@ -91,8 +90,7 @@ class OwnershipIntegrationTest extends AbstractIntegrationTest {
                         .content("{\"status\":\"REVIEWED\"}"))
                 .andExpect(status().isOk());
 
-        JobSeeker jobSeeker1 = jobSeekerRepository.findById(seeker1.id()).orElseThrow();
-        Notification notification = notificationRepository.findByRecipientOrderByCreatedAtDesc(jobSeeker1)
+        Notification notification = notificationRepository.findByRecipientIdOrderByCreatedAtDesc(seeker1.id())
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("Expected a notification to have been created"));

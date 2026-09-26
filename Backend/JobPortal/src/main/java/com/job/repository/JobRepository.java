@@ -1,6 +1,5 @@
 package com.job.repository;
 
-import com.job.entity.Employer;
 import com.job.entity.Job;
 import com.job.enums.JobType;
 import com.job.enums.WorkMode;
@@ -16,8 +15,6 @@ import java.util.Optional;
 
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
-
-    List<Job> findByEmployer(Employer employer);
 
     @Query(value = "SELECT j FROM Job j JOIN FETCH j.employer WHERE j.employer.id = :employerId")
     List<Job> findByEmployerIdWithEmployer(@Param("employerId") Long employerId);

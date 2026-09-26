@@ -50,7 +50,6 @@ public class CloudinaryService {
             log.info("Image uploaded successfully to Cloudinary");
             return url;
         } catch (IOException e) {
-            log.error("Image upload to Cloudinary failed", e);
             throw new FileStorageException("Cloudinary image upload failed", e);
         }
     }
@@ -75,7 +74,6 @@ public class CloudinaryService {
             log.info("Resume uploaded successfully: {}", url);
             return url;
         } catch (Exception e) {
-            log.error("Failed to upload resume to Cloudinary", e);
             throw new FileStorageException("Cloudinary resume upload failed", e);
         }
     }

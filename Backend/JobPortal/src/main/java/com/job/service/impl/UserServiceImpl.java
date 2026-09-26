@@ -2,18 +2,14 @@ package com.job.service.impl;
 
 import com.job.dto.request.EmployerRegisterRequestDTO;
 import com.job.dto.request.JobSeekerRegisterRequestDTO;
-import com.job.dto.response.AuthResponseDTO;
 import com.job.entity.Employer;
 import com.job.entity.JobSeeker;
-import com.job.entity.User;
 import com.job.enums.Role;
 import com.job.exception.DuplicateResourceException;
-import com.job.exception.ResourceNotFoundException;
 import com.job.repository.EmployerRepository;
 import com.job.repository.JobSeekerRepository;
 import com.job.repository.UserRepository;
 import com.job.service.interfaces.IUserService;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,17 +26,6 @@ public class UserServiceImpl implements IUserService {
     private final EmployerRepository employerRepository;
     private final JobSeekerRepository jobSeekerRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @Override
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
-    }
-
-    @Override
-    public boolean usernameExists(String username) {
-        return userRepository.existsByUsername(username);
-    }
 
     @Override
     @Transactional
@@ -84,22 +69,6 @@ public class UserServiceImpl implements IUserService {
         employer.setEmail(dto.getEmail());
         employer.setIndustry(dto.getIndustry());
         return employerRepository.save(employer);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public User getUserByUsername(@NotBlank(message = "Username is required") String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public AuthResponseDTO buildAuthResponse(User user, String token) {
-        AuthResponseDTO response = new AuthResponseDTO();
-        response.setToken(token);
-        response.setRole(user.getRole().name());
-        return response;
     }
 
 }
