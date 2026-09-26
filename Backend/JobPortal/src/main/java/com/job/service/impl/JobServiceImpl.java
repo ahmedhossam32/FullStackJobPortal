@@ -8,8 +8,8 @@ import com.job.entity.Job;
 import com.job.enums.JobType;
 import com.job.enums.WorkMode;
 import com.job.exception.BadRequestException;
+import com.job.exception.ForbiddenException;
 import com.job.exception.ResourceNotFoundException;
-import com.job.exception.UnauthorizedException;
 import com.job.repository.EmployerRepository;
 import com.job.repository.JobRepository;
 import com.job.service.interfaces.IJobService;
@@ -119,7 +119,7 @@ public class JobServiceImpl implements IJobService {
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
         if (!job.getEmployer().getId().equals(employerId)) {
-            throw new UnauthorizedException("You are not authorized to update this job");
+            throw new ForbiddenException("You are not authorized to update this job");
         }
 
         job.setTitle(dto.getTitle());
@@ -143,7 +143,7 @@ public class JobServiceImpl implements IJobService {
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
         if (!job.getEmployer().getId().equals(employerId)) {
-            throw new UnauthorizedException("You are not authorized to delete this job");
+            throw new ForbiddenException("You are not authorized to delete this job");
         }
 
         jobRepository.delete(job);

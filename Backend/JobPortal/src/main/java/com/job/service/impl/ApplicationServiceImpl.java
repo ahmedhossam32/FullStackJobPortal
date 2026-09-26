@@ -12,8 +12,8 @@ import com.job.entity.JobSeeker;
 import com.job.enums.ApplicationStatus;
 import com.job.exception.BadRequestException;
 import com.job.exception.DuplicateResourceException;
+import com.job.exception.ForbiddenException;
 import com.job.exception.ResourceNotFoundException;
-import com.job.exception.UnauthorizedException;
 import com.job.repository.ApplicationRepository;
 import com.job.repository.JobRepository;
 import com.job.repository.JobSeekerRepository;
@@ -116,7 +116,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         if (!app.getJobSeeker().getId().equals(requesterId)) {
-            throw new UnauthorizedException("Unauthorized access to application");
+            throw new ForbiddenException("Unauthorized access to application");
         }
 
         return mapToDTO(app);
@@ -130,7 +130,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         if (!app.getJobSeeker().getId().equals(requesterId)) {
-            throw new UnauthorizedException("Unauthorized to withdraw this application");
+            throw new ForbiddenException("Unauthorized to withdraw this application");
         }
 
         applicationRepository.delete(app);
@@ -143,7 +143,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
         if (!job.getEmployer().getId().equals(employerId)) {
-            throw new UnauthorizedException("Unauthorized to view applications for this job");
+            throw new ForbiddenException("Unauthorized to view applications for this job");
         }
 
         List<Application> applications = applicationRepository.findByJob(job);
@@ -160,7 +160,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         if (!app.getJob().getEmployer().getId().equals(employerId)) {
-            throw new UnauthorizedException("Unauthorized to view this application");
+            throw new ForbiddenException("Unauthorized to view this application");
         }
 
         return mapToEmployerDTO(app);
@@ -174,7 +174,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         if (!app.getJob().getEmployer().getId().equals(employerId)) {
-            throw new UnauthorizedException("Unauthorized to update this application");
+            throw new ForbiddenException("Unauthorized to update this application");
         }
 
         app.setStatus(newStatus);

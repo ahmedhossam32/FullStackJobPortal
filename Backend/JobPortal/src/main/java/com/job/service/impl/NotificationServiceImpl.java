@@ -3,8 +3,8 @@ package com.job.service.impl;
 import com.job.dto.response.NotificationDTO;
 import com.job.entity.Application;
 import com.job.entity.Notification;
+import com.job.exception.ForbiddenException;
 import com.job.exception.ResourceNotFoundException;
-import com.job.exception.UnauthorizedException;
 import com.job.repository.NotificationRepository;
 import com.job.service.interfaces.INotificationService;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,7 +66,7 @@ public class NotificationServiceImpl implements INotificationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
 
         if (!notification.getRecipient().getId().equals(jobSeekerId)) {
-            throw new UnauthorizedException("You are not authorized to mark this notification as read");
+            throw new ForbiddenException("You are not authorized to mark this notification as read");
         }
 
         notification.setSeen(true);

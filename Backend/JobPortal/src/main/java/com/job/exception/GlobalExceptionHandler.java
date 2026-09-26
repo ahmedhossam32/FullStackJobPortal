@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.method.ParameterValidationResult;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
@@ -61,8 +62,8 @@ public class GlobalExceptionHandler {
         return respond(HttpStatus.NOT_FOUND, "NOT_FOUND", ex.getMessage(), request);
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ErrorResponse> handleUnauthorized(UnauthorizedException ex, HttpServletRequest request) {
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbidden(ForbiddenException ex, HttpServletRequest request) {
         logClientError(request, HttpStatus.FORBIDDEN, ex.getMessage());
         return respond(HttpStatus.FORBIDDEN, "FORBIDDEN", ex.getMessage(), request);
     }
@@ -96,6 +97,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
         logClientError(request, HttpStatus.FORBIDDEN, "access denied");
         return respond(HttpStatus.FORBIDDEN, "FORBIDDEN", "Access denied", request);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthentication(AuthenticationException ex, HttpServletRequest request) {
+        // Message is always the same generic text regardless of the underlying cause (unknown
+        // username vs wrong password) so the response never reveals which one failed -- see S3.
+        logClientError(request, HttpStatus.UNAUTHORIZED, "authentication failed");
+        return respond(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "Invalid username or password", request);
     }
 
     // ── Request parsing / binding exceptions Spring throws itself ──

@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * A valid token for the wrong owner must still be rejected -- role checks alone aren't enough,
- * the service layer's per-resource ownership checks (mapped to 403 via UnauthorizedException)
+ * the service layer's per-resource ownership checks (mapped to 403 via ForbiddenException)
  * have to actually run.
  */
 class OwnershipIntegrationTest extends AbstractIntegrationTest {
