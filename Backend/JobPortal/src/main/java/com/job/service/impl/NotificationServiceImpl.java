@@ -9,12 +9,10 @@ import com.job.repository.NotificationRepository;
 import com.job.service.NotificationService;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
@@ -39,7 +37,6 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void markAsRead(Long notificationId, Long jobSeekerId) {
-        log.info("Marking notification id: {} as read for user id: {}", notificationId, jobSeekerId);
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
 

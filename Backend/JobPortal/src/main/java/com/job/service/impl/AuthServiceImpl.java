@@ -23,8 +23,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponseDTO login(LoginRequestDTO dto) {
-        log.info("Sign-in attempt for username: {}", dto.username());
-
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(
@@ -36,7 +34,6 @@ public class AuthServiceImpl implements AuthService {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String token = jwtService.generateToken(userDetails.getUserId(), userDetails.getUsername(), userDetails.getRole());
-        log.info("Sign-in successful for username: {}", dto.username());
 
         AuthResponseDTO response = new AuthResponseDTO();
         response.setToken(token);

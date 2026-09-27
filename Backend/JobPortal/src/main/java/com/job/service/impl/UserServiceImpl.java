@@ -11,13 +11,11 @@ import com.job.repository.JobSeekerRepository;
 import com.job.repository.UserRepository;
 import com.job.service.UserService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -36,7 +34,6 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(dto.email())) {
             throw new DuplicateResourceException("Email already registered");
         }
-        log.info("Registering new job seeker: {}", dto.username());
         JobSeeker jobSeeker = new JobSeeker();
         jobSeeker.setName(dto.name());
         jobSeeker.setUsername(dto.username());
@@ -58,7 +55,6 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(dto.email())) {
             throw new DuplicateResourceException("Email already registered");
         }
-        log.info("Registering new employer: {}", dto.username());
         Employer employer = new Employer();
         employer.setName(dto.name());
         employer.setUsername(dto.username());

@@ -15,12 +15,10 @@ import com.job.repository.UserRepository;
 import com.job.service.ProfileService;
 import com.job.validation.FileValidator;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
@@ -37,7 +35,6 @@ public class ProfileServiceImpl implements ProfileService {
         JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
         fileValidator.validateResume(file);
-        log.info("Uploading resume for user: {}, file: {}", jobSeeker.getUsername(), file.getOriginalFilename());
         String url = cloudinaryService.uploadResume(file);
         jobSeeker.setResumeUrl(url);
         userRepository.save(jobSeeker);
@@ -50,7 +47,6 @@ public class ProfileServiceImpl implements ProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         fileValidator.validateImage(file);
-        log.info("Uploading profile picture for user: {}, file: {}", user.getUsername(), file.getOriginalFilename());
         String url = cloudinaryService.uploadImage(file);
         user.setProfilePictureUrl(url);
         userRepository.save(user);
@@ -62,7 +58,6 @@ public class ProfileServiceImpl implements ProfileService {
     public void updateJobSeekerProfile(Long jobSeekerId, UpdateProfileRequestDTO updatedInfo) {
         JobSeeker currentUser = jobSeekerRepository.findById(jobSeekerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
-        log.info("Updating profile for job seeker: {}", currentUser.getUsername());
 
         if (!updatedInfo.username().equals(currentUser.getUsername())
                 && userRepository.existsByUsername(updatedInfo.username())) {

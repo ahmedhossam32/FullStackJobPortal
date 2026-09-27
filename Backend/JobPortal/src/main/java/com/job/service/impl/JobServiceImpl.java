@@ -40,7 +40,6 @@ public class JobServiceImpl implements JobService {
     public JobResponseDTO createJob(JobRequestDTO dto, Long employerId) {
         Employer employer = employerRepository.findById(employerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employer not found"));
-        log.info("Creating job '{}' for employer: {}", dto.title(), employer.getUsername());
         Job job = jobMapper.toEntity(dto);
         job.setPostedAt(LocalDateTime.now());
         job.setEmployer(employer);
@@ -106,7 +105,6 @@ public class JobServiceImpl implements JobService {
     @Override
     @Transactional
     public JobResponseDTO updateJob(Long id, JobRequestDTO dto, Long employerId) {
-        log.info("Updating job id: {} by employer id: {}", id, employerId);
         Job job = jobRepository.findByIdWithEmployer(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
@@ -123,7 +121,6 @@ public class JobServiceImpl implements JobService {
     @Override
     @Transactional
     public void deleteJob(Long jobId, Long employerId) {
-        log.info("Deleting job id: {} by employer id: {}", jobId, employerId);
         Job job = jobRepository.findByIdWithEmployer(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 

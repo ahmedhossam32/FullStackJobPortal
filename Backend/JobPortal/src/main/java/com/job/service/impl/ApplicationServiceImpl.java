@@ -21,14 +21,12 @@ import com.job.service.interfaces.EmailService;
 import com.job.service.ApplicationService;
 import com.job.util.PageMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ApplicationServiceImpl implements ApplicationService {
@@ -45,7 +43,6 @@ public class ApplicationServiceImpl implements ApplicationService {
     public ApplicationResponseDTO applyToJob(ApplicationRequestDTO dto, Long jobSeekerId) {
         JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
-        log.info("Job seeker {} applying to job id: {}", jobSeeker.getUsername(), dto.jobId());
         if (jobSeeker.getResumeUrl() == null || jobSeeker.getResumeUrl().isBlank()) {
             throw new BadRequestException("You must upload a resume before applying to a job.");
         }
@@ -122,7 +119,6 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     @Transactional
     public void withdrawApplication(Long id, Long requesterId) {
-        log.info("Job seeker id {} withdrawing application id: {}", requesterId, id);
         Application app = applicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
@@ -166,7 +162,6 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     @Transactional
     public void updateApplicationStatus(Long applicationId, ApplicationStatus newStatus, Long employerId) {
-        log.info("Employer id {} updating application id: {} to status: {}", employerId, applicationId, newStatus);
         Application app = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 

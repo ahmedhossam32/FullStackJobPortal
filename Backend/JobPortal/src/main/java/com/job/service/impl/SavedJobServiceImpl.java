@@ -10,13 +10,11 @@ import com.job.repository.JobRepository;
 import com.job.repository.JobSeekerRepository;
 import com.job.service.SavedJobService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SavedJobServiceImpl implements SavedJobService {
@@ -28,8 +26,6 @@ public class SavedJobServiceImpl implements SavedJobService {
     @Override
     @Transactional
     public void saveJob(Long jobSeekerId, Long jobId) {
-        log.info("Job seeker id {} saving job id: {}", jobSeekerId, jobId);
-
         JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
 
@@ -46,8 +42,6 @@ public class SavedJobServiceImpl implements SavedJobService {
     @Override
     @Transactional
     public void unsaveJob(Long jobSeekerId, Long jobId) {
-        log.info("Job seeker id {} unsaving job id: {}", jobSeekerId, jobId);
-
         JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
 
