@@ -19,9 +19,9 @@ import com.job.repository.JobRepository;
 import com.job.repository.JobSeekerRepository;
 import com.job.service.interfaces.EmailService;
 import com.job.service.ApplicationService;
+import com.job.util.PageMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,12 +102,8 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     @Transactional(readOnly = true)
     public PageResponseDTO<ApplicationResponseDTO> getMyApplications(Long jobSeekerId, int page, int size) {
-        Page<Application> result = applicationRepository.findByJobSeekerId(jobSeekerId, PageRequest.of(page, size));
-        List<ApplicationResponseDTO> content = result.getContent().stream()
-                .map(applicationMapper::toResponseDTO)
-                .toList();
-        return new PageResponseDTO<>(content, result.getNumber(), result.getTotalPages(),
-                result.getTotalElements(), result.getSize(), result.isLast());
+        return PageMapper.toPageResponse(applicationRepository.findByJobSeekerId(jobSeekerId, PageRequest.of(page, size))
+                .map(applicationMapper::toResponseDTO));
     }
 
     @Override

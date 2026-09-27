@@ -14,9 +14,9 @@ import com.job.mapper.JobMapper;
 import com.job.repository.EmployerRepository;
 import com.job.repository.JobRepository;
 import com.job.service.JobService;
+import com.job.util.PageMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -52,14 +52,14 @@ public class JobServiceImpl implements JobService {
     @Transactional(readOnly = true)
     public PageResponseDTO<JobResponseDTO> getAllJobsSortedByDate(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("postedAt").descending());
-        return toPageResponse(jobRepository.findAllWithEmployer(pageable));
+        return PageMapper.toPageResponse(jobRepository.findAllWithEmployer(pageable).map(jobMapper::toResponseDTO));
     }
 
     @Override
     @Transactional(readOnly = true)
     public PageResponseDTO<JobResponseDTO> searchByTitle(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return toPageResponse(jobRepository.findByTitleContainingIgnoreCaseWithEmployer(keyword, pageable));
+        return PageMapper.toPageResponse(jobRepository.findByTitleContainingIgnoreCaseWithEmployer(keyword, pageable).map(jobMapper::toResponseDTO));
     }
 
     @Override
@@ -68,7 +68,7 @@ public class JobServiceImpl implements JobService {
         try {
             JobType jobType = JobType.valueOf(type.toUpperCase());
             Pageable pageable = PageRequest.of(page, size);
-            return toPageResponse(jobRepository.findByTypeWithEmployer(jobType, pageable));
+            return PageMapper.toPageResponse(jobRepository.findByTypeWithEmployer(jobType, pageable).map(jobMapper::toResponseDTO));
         } catch (IllegalArgumentException e) {
             log.warn("Invalid job type provided: {}", type);
             throw new BadRequestException("Invalid job type: " + type);
@@ -79,7 +79,7 @@ public class JobServiceImpl implements JobService {
     @Transactional(readOnly = true)
     public PageResponseDTO<JobResponseDTO> searchByLocation(String location, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return toPageResponse(jobRepository.findByLocationContainingIgnoreCaseWithEmployer(location, pageable));
+        return PageMapper.toPageResponse(jobRepository.findByLocationContainingIgnoreCaseWithEmployer(location, pageable).map(jobMapper::toResponseDTO));
     }
 
     @Override
@@ -88,7 +88,7 @@ public class JobServiceImpl implements JobService {
         try {
             WorkMode mode = WorkMode.valueOf(workMode.toUpperCase());
             Pageable pageable = PageRequest.of(page, size);
-            return toPageResponse(jobRepository.findByWorkModeWithEmployer(mode, pageable));
+            return PageMapper.toPageResponse(jobRepository.findByWorkModeWithEmployer(mode, pageable).map(jobMapper::toResponseDTO));
         } catch (IllegalArgumentException e) {
             log.warn("Invalid work mode provided: {}", workMode);
             throw new BadRequestException("Invalid work mode: " + workMode);
@@ -140,19 +140,5 @@ public class JobServiceImpl implements JobService {
         return jobRepository.findByEmployerIdWithEmployer(employerId).stream()
                 .map(jobMapper::toResponseDTO)
                 .toList();
-    }
-
-    private PageResponseDTO<JobResponseDTO> toPageResponse(Page<Job> page) {
-        List<JobResponseDTO> content = page.getContent().stream()
-                .map(jobMapper::toResponseDTO)
-                .toList();
-        return new PageResponseDTO<>(
-                content,
-                page.getNumber(),
-                page.getTotalPages(),
-                page.getTotalElements(),
-                page.getSize(),
-                page.isLast()
-        );
     }
 }
