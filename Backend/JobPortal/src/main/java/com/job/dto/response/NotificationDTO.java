@@ -1,15 +1,13 @@
 package com.job.dto.response;
 
-import lombok.Data;
-
 import java.time.LocalDateTime;
 
-@Data
-public class NotificationDTO {
-    private Long id;
-    private String message;
-    private LocalDateTime createdAt;
-    private boolean seen;
-    private String companyLogoUrl;
-    private Long applicationId;
+public record NotificationDTO(
+        Long id,
+        String message,
+        LocalDateTime createdAt,
+        boolean seen,
+        String companyLogoUrl,
+        Long applicationId
+) {
 }

@@ -1,10 +1,10 @@
 package com.job.service.impl;
 
 import com.job.dto.response.NotificationDTO;
-import com.job.entity.Application;
 import com.job.entity.Notification;
 import com.job.exception.ForbiddenException;
 import com.job.exception.ResourceNotFoundException;
+import com.job.mapper.NotificationMapper;
 import com.job.repository.NotificationRepository;
 import com.job.service.NotificationService;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,36 +20,14 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final NotificationMapper notificationMapper;
 
     @Override
     @Transactional(readOnly = true)
     public List<NotificationDTO> getNotificationsFor(Long jobSeekerId) {
         return notificationRepository.findByRecipientIdOrderByCreatedAtDesc(jobSeekerId).stream()
-                .map(this::mapToDTO)
+                .map(notificationMapper::toDTO)
                 .toList();
-    }
-
-    @Override
-    public NotificationDTO mapToDTO(Notification notification) {
-        NotificationDTO dto = new NotificationDTO();
-        dto.setId(notification.getId());
-        dto.setMessage(notification.getMessage());
-        dto.setCreatedAt(notification.getCreatedAt());
-        dto.setSeen(notification.isSeen());
-
-        if (notification.getApplication() != null) {
-            dto.setApplicationId(notification.getApplication().getId());
-
-            Application app = notification.getApplication();
-            if (app.getJob() != null && app.getJob().getEmployer() != null) {
-                String logoUrl = app.getJob().getEmployer().getProfilePictureUrl();
-                if (logoUrl != null) {
-                    dto.setCompanyLogoUrl(logoUrl);
-                }
-            }
-        }
-
-        return dto;
     }
 
     @Override
@@ -83,7 +61,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional(readOnly = true)
     public List<NotificationDTO> getUnreadNotifications(Long jobSeekerId) {
         return notificationRepository.findByRecipientIdAndSeenFalseOrderByCreatedAtDesc(jobSeekerId).stream()
-                .map(this::mapToDTO)
+                .map(notificationMapper::toDTO)
                 .toList();
     }
 }
