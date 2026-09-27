@@ -6,7 +6,6 @@ import com.job.dto.response.ApplicationResponseDTO;
 import com.job.dto.response.ApplicationViewForEmployerDTO;
 import com.job.dto.response.PageResponseDTO;
 import com.job.entity.Application;
-import com.job.entity.Employer;
 import com.job.entity.Job;
 import com.job.entity.JobSeeker;
 import com.job.enums.ApplicationStatus;
@@ -14,6 +13,7 @@ import com.job.exception.BadRequestException;
 import com.job.exception.DuplicateResourceException;
 import com.job.exception.ForbiddenException;
 import com.job.exception.ResourceNotFoundException;
+import com.job.mapper.ApplicationMapper;
 import com.job.repository.ApplicationRepository;
 import com.job.repository.JobRepository;
 import com.job.repository.JobSeekerRepository;
@@ -38,6 +38,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final JobSeekerRepository jobSeekerRepository;
     private final List<ApplicationObserver> observers;
     private final EmailService emailService;
+    private final ApplicationMapper applicationMapper;
 
     @Override
     @Transactional
@@ -79,7 +80,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                 job.getEmployer().getCompanyName()
         );
 
-        return mapToDTO(application);
+        return applicationMapper.toResponseDTO(application);
     }
 
     @Override
@@ -94,7 +95,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         return applications.stream()
-                .map(this::mapToEmployerDTO)
+                .map(applicationMapper::toEmployerView)
                 .toList();
     }
 
@@ -103,7 +104,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     public PageResponseDTO<ApplicationResponseDTO> getMyApplications(Long jobSeekerId, int page, int size) {
         Page<Application> result = applicationRepository.findByJobSeekerId(jobSeekerId, PageRequest.of(page, size));
         List<ApplicationResponseDTO> content = result.getContent().stream()
-                .map(this::mapToDTO)
+                .map(applicationMapper::toResponseDTO)
                 .toList();
         return new PageResponseDTO<>(content, result.getNumber(), result.getTotalPages(),
                 result.getTotalElements(), result.getSize(), result.isLast());
@@ -119,7 +120,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new ForbiddenException("Unauthorized access to application");
         }
 
-        return mapToDTO(app);
+        return applicationMapper.toResponseDTO(app);
     }
 
     @Override
@@ -149,7 +150,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         List<Application> applications = applicationRepository.findByJob(job);
 
         return applications.stream()
-                .map(this::mapToEmployerDTO)
+                .map(applicationMapper::toEmployerView)
                 .toList();
     }
 
@@ -163,7 +164,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new ForbiddenException("Unauthorized to view this application");
         }
 
-        return mapToEmployerDTO(app);
+        return applicationMapper.toEmployerView(app);
     }
 
     @Override
@@ -193,51 +194,6 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Transactional(readOnly = true)
     public boolean hasUserAppliedToJob(Long jobId, Long jobSeekerId) {
         return applicationRepository.existsByJobIdAndJobSeekerId(jobId, jobSeekerId);
-    }
-
-    private ApplicationResponseDTO mapToDTO(Application application) {
-        ApplicationResponseDTO dto = new ApplicationResponseDTO();
-
-        dto.setApplicationId(application.getId());
-        dto.setUsername(application.getJobSeeker().getUsername());
-        dto.setStatus(application.getStatus());
-        dto.setAppliedAt(application.getAppliedAt());
-
-        Job job = application.getJob();
-        dto.setJobId(job.getId());
-        dto.setJobTitle(job.getTitle());
-        dto.setJobType(job.getType().toString());
-        dto.setWorkMode(job.getWorkMode().toString());
-        dto.setLocation(job.getLocation());
-        dto.setJobDescription(job.getDescription());
-
-        Employer employer = job.getEmployer();
-        dto.setCompanyName(employer.getCompanyName());
-        dto.setCompanyLogoUrl(employer.getProfilePictureUrl());
-
-        dto.setResumeUrl(application.getResumeUrl());
-
-        return dto;
-    }
-
-    private ApplicationViewForEmployerDTO mapToEmployerDTO(Application app) {
-        JobSeeker applicant = app.getJobSeeker();
-        Job job = app.getJob();
-
-        ApplicationViewForEmployerDTO dto = new ApplicationViewForEmployerDTO();
-        dto.setApplicantUsername(applicant.getUsername());
-        dto.setApplicantDOB(applicant.getDob());
-        dto.setApplicantEmail(applicant.getEmail());
-        dto.setId(app.getId());
-        dto.setResumeUrl(app.getResumeUrl());
-        dto.setApplicantName(applicant.getName());
-        dto.setApplicantProfilePicture(applicant.getProfilePictureUrl());
-        dto.setStatus(app.getStatus());
-        dto.setAppliedAt(app.getAppliedAt());
-
-        dto.setJobTitle(job.getTitle());
-
-        return dto;
     }
 
     private void notifyObservers(JobSeeker jobSeeker, Application application) {
