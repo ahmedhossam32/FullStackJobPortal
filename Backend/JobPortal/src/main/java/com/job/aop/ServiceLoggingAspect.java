@@ -17,13 +17,7 @@ import java.time.temporal.Temporal;
 import java.util.Locale;
 import java.util.StringJoiner;
 
-/**
- * Entry (DEBUG) and exit (INFO, with duration) logging for the business services. Both lines carry
- * the redacted argument summary, so INFO alone shows which call ran with what.
- * Exceptions pass through untouched and are not logged here: every one of these services is only
- * called from controllers, so GlobalExceptionHandler logs each failure exactly once.
- * EmailServiceImpl and CloudinaryService are deliberately not covered; they keep their own logging.
- */
+
 @Aspect
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
