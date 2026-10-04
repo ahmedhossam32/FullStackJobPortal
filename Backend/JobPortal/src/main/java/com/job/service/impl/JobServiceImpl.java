@@ -1,5 +1,6 @@
 package com.job.service.impl;
 
+import com.job.config.CacheConfig;
 import com.job.dto.request.JobRequestDTO;
 import com.job.dto.response.JobResponseDTO;
 import com.job.dto.response.PageResponseDTO;
@@ -17,6 +18,9 @@ import com.job.service.JobService;
 import com.job.util.PageMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -37,6 +41,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = CacheConfig.JOB_PAGES, allEntries = true)
     public JobResponseDTO createJob(JobRequestDTO dto, Long employerId) {
         Employer employer = employerRepository.findById(employerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employer not found"));
@@ -49,6 +54,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = CacheConfig.JOB_PAGES, condition = "#page < 3 && #size <= 20")
     public PageResponseDTO<JobResponseDTO> getAllJobsSortedByDate(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("postedAt").descending());
         return PageMapper.toPageResponse(jobRepository.findAllWithEmployer(pageable).map(jobMapper::toResponseDTO));
@@ -96,6 +102,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = CacheConfig.JOB_BY_ID)
     public JobResponseDTO getJobById(Long id) {
         Job job = jobRepository.findByIdWithEmployer(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
@@ -104,6 +111,10 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = CacheConfig.JOB_BY_ID, key = "#id"),
+            @CacheEvict(cacheNames = CacheConfig.JOB_PAGES, allEntries = true)
+    })
     public JobResponseDTO updateJob(Long id, JobRequestDTO dto, Long employerId) {
         Job job = jobRepository.findByIdWithEmployer(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
@@ -120,6 +131,10 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = CacheConfig.JOB_BY_ID, key = "#jobId"),
+            @CacheEvict(cacheNames = CacheConfig.JOB_PAGES, allEntries = true)
+    })
     public void deleteJob(Long jobId, Long employerId) {
         Job job = jobRepository.findByIdWithEmployer(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));

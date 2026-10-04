@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.cache.CacheManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
@@ -83,6 +84,8 @@ public abstract class AbstractIntegrationTest {
     @Autowired protected ApplicationRepository applicationRepository;
     @Autowired protected NotificationRepository notificationRepository;
 
+    @Autowired protected CacheManager cacheManager;
+
     @Value("${jwt.secret}")
     protected String jwtSecret;
 
@@ -99,6 +102,12 @@ public abstract class AbstractIntegrationTest {
                 .thenReturn("https://res.cloudinary.test/image/upload/fake-image.png");
         Mockito.lenient().when(cloudinaryService.uploadResume(any()))
                 .thenReturn("https://res.cloudinary.test/raw/upload/fake-resume.pdf");
+    }
+
+    // The Spring context (and its caches) is shared across test classes; start every test cold.
+    @BeforeEach
+    void clearCaches() {
+        cacheManager.getCacheNames().forEach(name -> cacheManager.getCache(name).clear());
     }
 
     // ── Identifiers ──────────────────────────────────────────────────────────

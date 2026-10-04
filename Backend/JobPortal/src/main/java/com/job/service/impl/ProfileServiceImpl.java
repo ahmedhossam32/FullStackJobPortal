@@ -1,5 +1,6 @@
 package com.job.service.impl;
 
+import com.job.config.CacheConfig;
 import com.job.dto.request.UpdateProfileRequestDTO;
 import com.job.dto.response.ProfileResponseDTO;
 import com.job.entity.Employer;
@@ -15,6 +16,7 @@ import com.job.repository.UserRepository;
 import com.job.service.ProfileService;
 import com.job.validation.FileValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -53,7 +55,10 @@ public class ProfileServiceImpl implements ProfileService {
         return url;
     }
 
+    // Job responses embed the employer's picture URL, so a new picture clears both job caches.
+    // Rare event; cheaper than working out which cached jobs belong to this user.
     @Override
+    @CacheEvict(cacheNames = {CacheConfig.JOB_BY_ID, CacheConfig.JOB_PAGES}, allEntries = true)
     public String uploadProfilePicture(MultipartFile file, Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new ResourceNotFoundException("User not found");
