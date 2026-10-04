@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public JobSeeker registerJobSeekerWithoutFiles(JobSeekerRegisterRequestDTO dto) {
+    public void registerJobSeekerWithoutFiles(JobSeekerRegisterRequestDTO dto) {
         if (userRepository.existsByUsername(dto.username())) {
             throw new DuplicateResourceException("Username already taken");
         }
@@ -43,12 +43,12 @@ public class UserServiceImpl implements UserService {
         jobSeeker.setEmail(dto.email());
         jobSeeker.setResumeUrl(null);
         jobSeeker.setProfilePictureUrl(null);
-        return jobSeekerRepository.save(jobSeeker);
+        jobSeekerRepository.save(jobSeeker);
     }
 
     @Override
     @Transactional
-    public Employer registerEmployer(EmployerRegisterRequestDTO dto) {
+    public void registerEmployer(EmployerRegisterRequestDTO dto) {
         if (userRepository.existsByUsername(dto.username())) {
             throw new DuplicateResourceException("Username already taken");
         }
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
         employer.setRole(Role.EMPLOYER);
         employer.setEmail(dto.email());
         employer.setIndustry(dto.industry());
-        return employerRepository.save(employer);
+        employerRepository.save(employer);
     }
 
 }
