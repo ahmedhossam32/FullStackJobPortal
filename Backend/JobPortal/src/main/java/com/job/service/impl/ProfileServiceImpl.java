@@ -17,6 +17,7 @@ import com.job.validation.FileValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -28,28 +29,43 @@ public class ProfileServiceImpl implements ProfileService {
     private final CloudinaryService cloudinaryService;
     private final FileValidator fileValidator;
     private final ProfileMapper profileMapper;
+    private final TransactionTemplate transactionTemplate;
 
+    // The upload methods are deliberately not @Transactional: the Cloudinary round-trip runs with no
+    // transaction (and no pooled connection) open, and only the URL write is wrapped, via
+    // TransactionTemplate rather than a self-invoked @Transactional method, which Spring's proxy
+    // would silently skip. The existence check up front is its own short repository transaction, so
+    // a missing user still fails before anything is uploaded. UploadTransactionBoundaryIntegrationTest
+    // guards that no connection is held during the upload.
     @Override
-    @Transactional
     public String uploadResume(MultipartFile file, Long jobSeekerId) {
-        JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
+        if (!jobSeekerRepository.existsById(jobSeekerId)) {
+            throw new ResourceNotFoundException("Job seeker not found");
+        }
         fileValidator.validateResume(file);
         String url = cloudinaryService.uploadResume(file);
-        jobSeeker.setResumeUrl(url);
-        userRepository.save(jobSeeker);
+        transactionTemplate.executeWithoutResult(status -> {
+            JobSeeker jobSeeker = jobSeekerRepository.findById(jobSeekerId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Job seeker not found"));
+            jobSeeker.setResumeUrl(url);
+            userRepository.save(jobSeeker);
+        });
         return url;
     }
 
     @Override
-    @Transactional
     public String uploadProfilePicture(MultipartFile file, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (!userRepository.existsById(userId)) {
+            throw new ResourceNotFoundException("User not found");
+        }
         fileValidator.validateImage(file);
         String url = cloudinaryService.uploadImage(file);
-        user.setProfilePictureUrl(url);
-        userRepository.save(user);
+        transactionTemplate.executeWithoutResult(status -> {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            user.setProfilePictureUrl(url);
+            userRepository.save(user);
+        });
         return url;
     }
 
