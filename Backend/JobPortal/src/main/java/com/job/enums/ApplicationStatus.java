@@ -6,5 +6,9 @@ public enum ApplicationStatus {
     INTERVIEW,
     OFFERED,
     REJECTED,
-    WITHDRAWN
+    WITHDRAWN;
+
+    public String displayLabel() {
+        return name().substring(0, 1).toUpperCase() + name().substring(1).toLowerCase();
+    }
 }

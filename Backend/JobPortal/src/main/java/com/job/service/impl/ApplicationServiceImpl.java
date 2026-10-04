@@ -1,6 +1,5 @@
 package com.job.service.impl;
 
-import com.job.designpatterns.Observer.ApplicationObserver;
 import com.job.dto.request.ApplicationRequestDTO;
 import com.job.dto.response.ApplicationResponseDTO;
 import com.job.dto.response.ApplicationViewForEmployerDTO;
@@ -13,14 +12,16 @@ import com.job.exception.BadRequestException;
 import com.job.exception.DuplicateResourceException;
 import com.job.exception.ForbiddenException;
 import com.job.exception.ResourceNotFoundException;
+import com.job.event.ApplicationStatusChangedEvent;
+import com.job.event.ApplicationSubmittedEvent;
 import com.job.mapper.ApplicationMapper;
 import com.job.repository.ApplicationRepository;
 import com.job.repository.JobRepository;
 import com.job.repository.JobSeekerRepository;
-import com.job.service.interfaces.EmailService;
 import com.job.service.ApplicationService;
 import com.job.util.PageMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +35,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final JobRepository jobRepository;
     private final JobSeekerRepository jobSeekerRepository;
-    private final List<ApplicationObserver> observers;
-    private final EmailService emailService;
+    private final ApplicationEventPublisher eventPublisher;
     private final ApplicationMapper applicationMapper;
 
     @Override
@@ -70,12 +70,12 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         applicationRepository.save(application);
 
-        emailService.sendApplicationConfirmation(
+        eventPublisher.publishEvent(new ApplicationSubmittedEvent(
                 jobSeeker.getEmail(),
                 jobSeeker.getName(),
                 job.getTitle(),
                 job.getEmployer().getCompanyName()
-        );
+        ));
 
         return applicationMapper.toResponseDTO(application);
     }
@@ -171,25 +171,22 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         app.setStatus(newStatus);
         applicationRepository.save(app);
-        notifyObservers(app.getJobSeeker(), app);
 
-        emailService.sendApplicationStatusUpdate(
-                app.getJobSeeker().getEmail(),
-                app.getJobSeeker().getName(),
+        JobSeeker jobSeeker = app.getJobSeeker();
+        eventPublisher.publishEvent(new ApplicationStatusChangedEvent(
+                app.getId(),
+                jobSeeker.getId(),
+                jobSeeker.getEmail(),
+                jobSeeker.getName(),
                 app.getJob().getTitle(),
-                newStatus.toString()
-        );
+                app.getJob().getEmployer().getCompanyName(),
+                newStatus
+        ));
     }
 
     @Override
     @Transactional(readOnly = true)
     public boolean hasUserAppliedToJob(Long jobId, Long jobSeekerId) {
         return applicationRepository.existsByJobIdAndJobSeekerId(jobId, jobSeekerId);
-    }
-
-    private void notifyObservers(JobSeeker jobSeeker, Application application) {
-        for (ApplicationObserver observer : observers) {
-            observer.notify(jobSeeker, application);
-        }
     }
 }
